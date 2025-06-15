@@ -4,8 +4,9 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { useAppDispatch } from '../Redux/hooks';
+import { useAppDispatch, useAppSelector } from '../Redux/hooks';
 import { userLogin } from '../Redux/slices/authSlice';
+import { useRouter } from 'next/navigation';
 // import { useAppDispatch, useAppSelector } from '@/Redux/hooks';
 // import { loginUser, clearAuthError } from '../../Redux/slices/authSlice';
 // import { useRouter } from 'next/navigation';
@@ -22,32 +23,39 @@ type LoginFormValues = {
 
 function Login() {
   const dispatch = useAppDispatch();
-//   const router = useRouter();
-
-//   const { loading, error, user } = useAppSelector((state: any) => state.auth);
-
-//   useEffect(() => {
-//     dispatch(clearAuthError());
-
-//     // If user is already logged in (e.g., successful login or hydrated from token)
-//     if (user) {
-//       router.push('/'); // Redirect to home page
-//     }
-//   }, [dispatch, user, router]);
+  const router = useRouter();
 
 
+  const {userInfo, status, error} = useAppSelector((state) => state.auth)
 
-  const handleLoginSubmit = async (values: LoginFormValues) => {
+//   console.log('user role is', userInfo.role);
+  
+
+  useEffect(() => {
     
-    try {
-
-    //   await dispatch(loginUser({ email: values.email, password: values.password })).unwrap();
-      // On success, the useEffect will handle redirection
-    } catch (err: any) {
-      console.error('Login failed in component:', err);
-      // The `error` state from Redux will automatically update
+   if(status === 'succeeded' && userInfo){
+    if(userInfo.role === 'admin'){
+        router.push('/AdminDashboard');
+    }else if(userInfo.role  === 'librarian' ){
+        router.push('/LibrarianDashboard')
+    }else if(userInfo.role === 'member'){
+        router.push('/MemberDashboard')
     }
-  };
+   }
+  },[status, userInfo, router])
+  
+
+//   const handleLoginSubmit = async (values: LoginFormValues) => {
+    
+//     try {
+
+//     //   await dispatch(loginUser({ email: values.email, password: values.password })).unwrap();
+//       // On success, the useEffect will handle redirection
+//     } catch (err: any) {
+//       console.error('Login failed in component:', err);
+//       // The `error` state from Redux will automatically update
+//     }
+//   };
 
   return (
     <div
@@ -64,8 +72,10 @@ function Login() {
           onSubmit={async (values, { setSubmitting, resetForm }) => {
             console.log('loggedIn values submitted', values);
             await dispatch(userLogin(values));
-            resetForm();
+            // resetForm();
             setSubmitting(false);
+            // Link('/DashBoard')
+            
           }}
         >
           {({

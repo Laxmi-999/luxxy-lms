@@ -4,10 +4,11 @@ import jwt from 'jsonwebtoken';
 import User from '../models/user.js';
 
 
-const JWT_SECRET = 'abcdefghijkalmnopqrstuvwuxyz1234567890'
+const JWT_SECRET = 'abcdefghijkalmnopqrstuvwxyz1234567890'
+
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, JWT_SECRET, {
-    expiresIn: '7d',
+    expiresIn: '1d',
   });
 };
 
@@ -26,8 +27,8 @@ export const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
-    name:  username,
-       email,
+     name: username,
+     email,
       password: hashedPassword,
       role: 'member',
     });
@@ -36,7 +37,7 @@ export const registerUser = async (req, res) => {
 
     res.status(201).json({
       _id: user._id,
-      name: user.username,
+      name: user.name,
       email: user.email,
       role: user.role,
       token,
@@ -69,12 +70,12 @@ export const loginUser = async (req, res) => {
 
     res.json({
       _id: user._id,
-      name: user.username,
+      name: user.name,
       email: user.email,
       role: user.role,
       token,
     });
-  console.log(`User logged in successfully: ID - ${user._id}, Email - ${user.email}, Username - ${user.username}, role-${user.role} token-${token}`);
+  console.log(`User logged in successfully: ID - ${user._id}, Email - ${user.email}, Username - ${user.name}, role-${user.role} token-${token}`);
 
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
