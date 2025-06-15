@@ -1,2 +1,2 @@
 # luxxy-lms
-A basic library management system
+A basic library management syste
