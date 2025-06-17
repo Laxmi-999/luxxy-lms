@@ -1,6 +1,8 @@
 // import Book from '../models/Book.js';
 
 import User from "../models/user.js";
+import bcrypt from 'bcryptjs';
+
 
 // Get Admin Profile
 export const getAdminProfile = async (req, res) => {
@@ -23,14 +25,59 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-// Update user role
-export const updateUserRole = async (req, res) => {
+// Update user
+export const updateUsere = async (req, res) => {
   try {
-    const { userId, role } = req.body;
-    const user = await User.findByIdAndUpdate(userId, { role }, { new: true }).select('-password');
-    res.json(user);
+    const userId = req.params.id;
+    const  userData  = req.body;
+
+    console.log('userId', userId , 'formDat', userData);
+    
+    if (!userId || !userData) {
+      return res.status(400).json({ message: 'User ID and update data are required.' });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      userData, // Pass the entire userData object for update
+      { new: true, runValidators: true } // runValidators ensures schema validators run on update
+    ).select('-password');
+
+
+    // Check if the user was found and updated
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    res.json({message:'User details updated successfully'}, user);
+
   } catch (error) {
-    res.status(500).json({ message: 'Failed to update user role' });
+    console.error("Error updating user:", error); 
+    res.status(500).json({ message: 'Failed to update user.' });
+  }
+};
+
+// Add a user
+export const addUser = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    console.log('user details are', name, email, password);
+    
+
+    const userExists = await User.findOne({ email });
+    if (userExists) return res.status(400).json({ message: 'User already exists' });
+      
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await User.create({ name, email, password: hashedPassword, role: 'member' });
+    const userWithoutPassword = { ...newUser._doc };
+    delete userWithoutPassword.password;
+    console.log('user is ', newUser);
+    
+
+    res.status(201).json(userWithoutPassword);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to add new user' });
   }
 };
 
@@ -43,8 +90,9 @@ export const addLibrarian = async (req, res) => {
 
     const userExists = await User.findOne({ email });
     if (userExists) return res.status(400).json({ message: 'User already exists' });
-
-    const newUser = await User.create({ name, email, password, role: 'librarian' });
+        
+   const hashedPassword =  await bcrypt.hash(password, 10);
+    const newUser = await User.create({ name, email, password:hashedPassword, role: 'librarian' });
     const userWithoutPassword = { ...newUser._doc };
     delete userWithoutPassword.password;
     console.log('librarian is ', newUser);
@@ -56,6 +104,30 @@ export const addLibrarian = async (req, res) => {
   }
 };
 
+
+export const deleteUser = async(req, res) => {
+
+  try {
+
+    const userId = req.params.id;
+     if(!userId){
+      return res.status(400).json({message: 'user id is required in URL'})
+     }
+
+     const user = await User.findByIdAndDelete(userId);
+     if(!user){
+      return res.status(400).json({message: "user not found"})
+     }
+     
+     return res.json({message: "User deleted successfully"})
+    
+  } catch (error) {
+    console.log('error while deleting user', error);
+    res.status(500).json({ message: 'Failed to delete user.' });
+    
+    
+  }
+}
 // View all books
 export const getAllBooks = async (req, res) => {
   try {

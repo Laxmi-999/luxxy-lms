@@ -5,8 +5,9 @@ import Link from 'next/link';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useAppDispatch, useAppSelector } from '../Redux/hooks';
-import { userLogin } from '../Redux/slices/authSlice';
+import { clearAuthError, userLogin } from '../Redux/slices/authSlice';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 // import { useAppDispatch, useAppSelector } from '@/Redux/hooks';
 // import { loginUser, clearAuthError } from '../../Redux/slices/authSlice';
 // import { useRouter } from 'next/navigation';
@@ -26,14 +27,17 @@ function Login() {
   const router = useRouter();
 
 
-  const {userInfo, status, error} = useAppSelector((state) => state.auth)
+  const {userInfo, status, error, isError, isSuccess} = useAppSelector((state) => state.auth)
 
-//   console.log('user role is', userInfo.role);
+  console.log('userInfo is', userInfo);
   
 
   useEffect(() => {
     
    if(status === 'succeeded' && userInfo){
+     toast.success(userInfo.message || 'Login Successfully', {
+      position:'top-center'
+     });
     if(userInfo.role === 'admin'){
         router.push('/AdminDashboard');
     }else if(userInfo.role  === 'librarian' ){
@@ -41,7 +45,13 @@ function Login() {
     }else if(userInfo.role === 'member'){
         router.push('/MemberDashboard')
     }
+      dispatch(clearAuthError());
+   }else if(status === 'falied' || isError){
+    toast.error(error, {
+      position:'top-center'
+    });
    }
+
   },[status, userInfo, router])
   
 
@@ -72,7 +82,7 @@ function Login() {
           onSubmit={async (values, { setSubmitting, resetForm }) => {
             console.log('loggedIn values submitted', values);
             await dispatch(userLogin(values));
-            // resetForm();
+            toast(userInfo.message)
             setSubmitting(false);
             // Link('/DashBoard')
             

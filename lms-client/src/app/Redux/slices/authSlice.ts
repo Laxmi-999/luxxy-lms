@@ -65,8 +65,10 @@ export const userLogin = createAsyncThunk(
       return res.data;
 
     } catch (error: any) {
-      const message =
-        error.response?.data?.message || error.message || 'Login failed';
+      console.log('error ', error);
+      
+
+      const message = error.response?.data?.message || error.message || 'Login failed';
       return thunkAPI.rejectWithValue(message);
     }
   }

@@ -33,14 +33,12 @@ export const registerUser = async (req, res) => {
       role: 'member',
     });
 
-    const token = generateToken(user._id);
 
     res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
-      token,
     });
     console.log('user is', user);
     
@@ -58,11 +56,13 @@ export const loginUser = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(400).json({ message: 'can not found email' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      console.log('password not match');
+      
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
@@ -73,6 +73,8 @@ export const loginUser = async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      isLoggedIn:true,
+      message :"logged In successfully",
       token,
     });
   console.log(`User logged in successfully: ID - ${user._id}, Email - ${user.email}, Username - ${user.name}, role-${user.role} token-${token}`);

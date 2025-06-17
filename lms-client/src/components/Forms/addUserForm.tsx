@@ -10,11 +10,7 @@ import { toast } from 'sonner';
 import { addLibrarian } from '@/app/Redux/slices/adminSlice';
 import { useAppDispatch, useAppSelector } from '@/app/Redux/hooks';
 
-/**
- * Yup validation schema for the Librarian Add Form.
- * Ensures that name, email, and password meet specific criteria.
- */
-const LibrarianAddSchema = Yup.object().shape({
+const AddUserSchema = Yup.object().shape({
   name: Yup.string()
     .min(3, 'Name must be at least 3 characters')
     .max(50, 'Name must not exceed 50 characters')
@@ -27,43 +23,28 @@ const LibrarianAddSchema = Yup.object().shape({
     .required('Password is required'),
 });
 
-/**
- * LibrarianAddForm Component
- * A standalone form component for adding a new librarian.
- * Handles form state, validation, submission, and displays success/error messages.
- *
- * @param {object} props - Component props.
- * @param {function} props.onClose - Callback function to be called when the form submission is successful,
- * typically used by the parent to close a modal/dialog.
- */
-const LibrarianAddForm = ({ onClose }) => {
+
+const AddUserForm = ({ onClose }) => {
   const dispatch = useAppDispatch();
-  // Destructure loading, error, and successMessage from the admin slice
   const { loading, error, successMessage } = useAppSelector((state) => state.admin);
 
-  // Initialize Formik for form state management and validation
   const formik = useFormik({
     initialValues: {
       name: '',
       email: '',
       password: '',
     },
-    validationSchema: LibrarianAddSchema, // Apply the Yup validation schema
+    validationSchema: AddUserSchema,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
-      // Set submitting to true to disable the button during API call
       setSubmitting(true);
       try {
-        // Dispatch the addLibrarian async thunk
-        // .unwrap() is used to get the actual payload or throw the error from the thunk
         await dispatch(addLibrarian(values)).unwrap();
-        toast.success(successMessage || 'Librarian added successfully!'); // Show success toast
-        resetForm(); // Reset form fields to initial values
-        onClose(); // Call the onClose prop to signal parent to close the dialog
+        toast.success(successMessage || 'Librarian added successfully!'); 
+        resetForm(); 
+        onClose(); 
       } catch (err) {
-        // Show error toast if the thunk rejects
         toast.error(error || 'Failed to add librarian.');
       } finally {
-        // Always reset submitting state, regardless of success or failure
         setSubmitting(false);
       }
     },
@@ -78,10 +59,10 @@ const LibrarianAddForm = ({ onClose }) => {
         </Label>
         <Input
           id="name"
-          name="name" // Important for Formik to link input to state
+          name="name" 
           value={formik.values.name}
-          onChange={formik.handleChange} // Updates Formik state on change
-          onBlur={formik.handleBlur}     // Triggers validation on blur
+          onChange={formik.handleChange} 
+          onBlur={formik.handleBlur}     
           className="col-span-3 rounded-md"
         />
       </div>
@@ -143,4 +124,4 @@ const LibrarianAddForm = ({ onClose }) => {
   );
 };
 
-export default LibrarianAddForm;
+export default AddUserForm;
