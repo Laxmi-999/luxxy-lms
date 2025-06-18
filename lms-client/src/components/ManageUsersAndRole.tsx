@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, FileEdit, Trash2 } from 'lucide-react';
-import { useAppDispatch, useAppSelector } from '@/app/Redux/hooks';
 import UpdateUserForm from './Forms/UpdateUserForm';
 import {
     Dialog,
@@ -18,12 +17,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { addUser, deleteUser } from '@/Redux/slices/adminSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 
 const ManageUsersAndRoles = () => {
-    const { users } = useAppSelector((state) => state.admin);
-    const dispatch = useAppDispatch();
+    const { users } = useSelector((state) => state.admin);
+    const dispatch = useDispatch();
 
     // State for the update user dialog
     const [isUpdateUserDialogOpen, setIsUpdateUserDialogOpen] = useState(false);

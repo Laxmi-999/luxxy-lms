@@ -1,12 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authSlice from './slices/authSlice';
 import adminSlice from './slices/adminSlice';
+import bookSlice from './slices/bookSlice';
 
 
 const store = configureStore({
   reducer: {
     auth: authSlice,
     admin:adminSlice,
+    books:bookSlice,
   },
 });
 

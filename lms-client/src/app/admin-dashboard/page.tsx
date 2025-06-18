@@ -3,21 +3,22 @@ import React, { useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { LogOut, BarChart2 } from 'lucide-react';
-import { useAppDispatch, useAppSelector } from '../Redux/hooks';
 import { useRouter } from 'next/navigation';
 import ManageUsersAndRoles from '@/components/ManageUsersAndRole';
 import ManageAllBooks from '@/components/ManageAllBooks';
 import AssignLibrarians from '@/components/AssignLibrarian';
 import { logout } from '@/Redux/slices/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllUsers } from '@/Redux/slices/adminSlice';
-// Import the new components
 
 
 const AdminDashboard = () => {
-    const { userInfo } = useAppSelector((state) => state.auth);
-    const { users } = useAppSelector((state) => state.admin);
+    const { userInfo } = useSelector((state) => state.auth);
+    const { users } = useSelector((state) => state.admin);
+    // const {books} = useSelector((state) => state.book )
 
-    const dispatch = useAppDispatch();
+
+    const dispatch = useDispatch();
     const router = useRouter();
 
     useEffect(() => {
@@ -28,11 +29,11 @@ const AdminDashboard = () => {
             console.log("No user info found or token is missing. Redirecting to login.");
             router.push('/Login');
         }
-    }, [dispatch, userInfo, router]); // Added router to dependency array
+    }, [dispatch, userInfo, router]); // Addedp router to dependency array
 
     const handleLogout = () => {
         dispatch(logout());
-        router.push('/Login');
+        router.push('/login');
     };
 
     // Calculate total librarians for the summary card

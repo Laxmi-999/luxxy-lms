@@ -4,13 +4,10 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { useAppDispatch, useAppSelector } from '../Redux/hooks';
-import { clearAuthError, userLogin } from '../Redux/slices/authSlice';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-// import { useAppDispatch, useAppSelector } from '@/Redux/hooks';
-// import { loginUser, clearAuthError } from '../../Redux/slices/authSlice';
-// import { useRouter } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearAuthError, userLogin } from '@/Redux/slices/authSlice';
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Email is required'),
@@ -23,11 +20,11 @@ type LoginFormValues = {
 };
 
 function Login() {
-  const dispatch = useAppDispatch();
+  const dispatch = useDispatch();
   const router = useRouter();
 
 
-  const {userInfo, status, error, isError, isSuccess} = useAppSelector((state) => state.auth)
+  const {userInfo, status, error, isError, isSuccess} = useSelector((state) => state.auth)
 
   console.log('userInfo is', userInfo);
   
@@ -39,11 +36,11 @@ function Login() {
       position:'top-center'
      });
     if(userInfo.role === 'admin'){
-        router.push('/AdminDashboard');
+        router.push('/admin-dashboard');
     }else if(userInfo.role  === 'librarian' ){
-        router.push('/LibrarianDashboard')
+        router.push('/librarian-dashboard')
     }else if(userInfo.role === 'member'){
-        router.push('/MemberDashboard')
+        router.push('/member-dashboard')
     }
       dispatch(clearAuthError());
    }else if(status === 'falied' || isError){

@@ -29,7 +29,7 @@ const Header = () => {
         </nav> */}
 
         <div className="flex items-center space-x-4">
-        <Link href="/Login" >
+        <Link href="/login" >
             <Button
                 asChild
                 variant="outline"
@@ -38,7 +38,7 @@ const Header = () => {
                 <span>Sign In</span>
             </Button>
         </Link>
-        <Link href='/Register'>
+        <Link href='/register'>
             <Button className="bg-orange-600 cursor-pointer hover:bg-orange-700 text-white font-semibold rounded-full px-6 shadow-md hover:shadow-lg transition-all duration-300">
                 Register
             </Button>

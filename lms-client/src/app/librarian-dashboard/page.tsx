@@ -4,17 +4,17 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { PlusCircle, FileEdit, Trash2, LogOut } from 'lucide-react';
-import { useAppDispatch } from '../Redux/hooks';
 import { useRouter } from 'next/navigation';
 import { logout } from '@/Redux/slices/authSlice';
+import { useDispatch } from 'react-redux';
 
 const LibrarianDashboard = () => {
-    const dispatch = useAppDispatch();
+    const dispatch = useDispatch();
     const router = useRouter();
 
     const handleLogout = () => {
         dispatch(logout());
-        router.push('/Login');
+        router.push('/login');
     };
 
     return (

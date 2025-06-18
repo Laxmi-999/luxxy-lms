@@ -12,13 +12,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { useAppDispatch } from '@/app/Redux/hooks';
-import { updateUser } from '@/app/Redux/slices/adminSlice';
+import { updateUser } from '@/Redux/slices/adminSlice';
+import { useDispatch } from 'react-redux';
 
 
 
 const UpdateUserForm = ({ user, isOpen, onClose }) => {
-    const dispatch = useAppDispatch();
+    const dispatch = useDispatch();
     console.log('user to be updated is', user);
     
     const [formData, setFormData] = useState({

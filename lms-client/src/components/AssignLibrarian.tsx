@@ -15,12 +15,13 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAppDispatch, useAppSelector } from '@/app/Redux/hooks';
+// import { addLibrarian } from '@/Redux/slices/adminSlice';
+import { useDispatch, useSelector } from 'react-redux';
 import { addLibrarian } from '@/Redux/slices/adminSlice';
 
 const AssignLibrarians = () => {
-    const dispatch = useAppDispatch();
-    const { users } = useAppSelector((state) => state.admin);
+    const dispatch = useDispatch();
+    const { users } = useSelector((state) => state.admin);
 
     const [isAddLibrarianDialogOpen, setIsAddLibrarianDialogOpen] = useState(false);
     const [newLibrarian, setNewLibrarian] = useState({
