@@ -58,6 +58,7 @@ export const userLogin = createAsyncThunk(
         },
       });
       console.log('Login response data:', res.data);
+      
       // Store user info in localStorage directly within the thunk
       if (res.data) {
         localStorage.setItem('user', JSON.stringify(res.data));

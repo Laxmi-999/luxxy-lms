@@ -15,8 +15,8 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { addLibrarian } from '@/app/Redux/slices/adminSlice';
 import { useAppDispatch, useAppSelector } from '@/app/Redux/hooks';
+import { addLibrarian } from '@/Redux/slices/adminSlice';
 
 const AssignLibrarians = () => {
     const dispatch = useAppDispatch();

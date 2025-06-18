@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle, FileEdit, Trash2 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/app/Redux/hooks';
 import UpdateUserForm from './Forms/UpdateUserForm';
-import { addUser, deleteUser } from '@/app/Redux/slices/adminSlice';
 import {
     Dialog,
     DialogContent,
@@ -18,6 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { addUser, deleteUser } from '@/Redux/slices/adminSlice';
 
 
 

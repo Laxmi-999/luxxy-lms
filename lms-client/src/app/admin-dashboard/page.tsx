@@ -4,12 +4,12 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { LogOut, BarChart2 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../Redux/hooks';
-import { logout } from '../Redux/slices/authSlice';
 import { useRouter } from 'next/navigation';
-import { fetchAllUsers } from '../Redux/slices/adminSlice';
 import ManageUsersAndRoles from '@/components/ManageUsersAndRole';
 import ManageAllBooks from '@/components/ManageAllBooks';
 import AssignLibrarians from '@/components/AssignLibrarian';
+import { logout } from '@/Redux/slices/authSlice';
+import { fetchAllUsers } from '@/Redux/slices/adminSlice';
 // Import the new components
 
 

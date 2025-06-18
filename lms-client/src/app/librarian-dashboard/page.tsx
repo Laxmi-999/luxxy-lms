@@ -4,9 +4,9 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { PlusCircle, FileEdit, Trash2, LogOut } from 'lucide-react';
-import { logout } from '../Redux/slices/authSlice';
 import { useAppDispatch } from '../Redux/hooks';
 import { useRouter } from 'next/navigation';
+import { logout } from '@/Redux/slices/authSlice';
 
 const LibrarianDashboard = () => {
     const dispatch = useAppDispatch();

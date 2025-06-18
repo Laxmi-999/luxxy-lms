@@ -3,10 +3,10 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { logout } from '../Redux/slices/authSlice';
 import { CalendarDays, BookOpen, LogOut, User } from 'lucide-react';
 import { useAppDispatch } from '../Redux/hooks';
 import { useRouter } from 'next/navigation';
+import { logout } from '@/Redux/slices/authSlice';
 
 
 const MemberDashboard = () => {
