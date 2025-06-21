@@ -19,12 +19,12 @@ type LoginFormValues = {
   password: string;
 };
 
-function Login() {
+function login() {
   const dispatch = useDispatch();
   const router = useRouter();
 
 
-  const {userInfo, status, error, isError, isSuccess} = useSelector((state) => state.auth)
+  const {userInfo, status, error, isError, isSuccess, isLoggedIn} = useSelector((state) => state.auth)
 
   console.log('userInfo is', userInfo);
   
@@ -35,34 +35,32 @@ function Login() {
      toast.success(userInfo.message || 'Login Successfully', {
       position:'top-center'
      });
-    if(userInfo.role === 'admin'){
-        router.push('/admin-dashboard');
+     if(isLoggedIn)
+     {
+         if(userInfo.role === 'admin'){
+        router.push('/admin/dashboard');
     }else if(userInfo.role  === 'librarian' ){
-        router.push('/librarian-dashboard')
+        router.push('/librarian/dashboard')
     }else if(userInfo.role === 'member'){
-        router.push('/member-dashboard')
+        router.push('/member')
     }
       dispatch(clearAuthError());
    }else if(status === 'falied' || isError){
     toast.error(error, {
       position:'top-center'
     });
+   }else{
+    router.back();
    }
+
+
+     }
+
 
   },[status, userInfo, router])
   
 
-//   const handleLoginSubmit = async (values: LoginFormValues) => {
-    
-//     try {
 
-//     //   await dispatch(loginUser({ email: values.email, password: values.password })).unwrap();
-//       // On success, the useEffect will handle redirection
-//     } catch (err: any) {
-//       console.error('Login failed in component:', err);
-//       // The `error` state from Redux will automatically update
-//     }
-//   };
 
   return (
     <div
@@ -76,12 +74,12 @@ function Login() {
             password: '',
           }}
           validationSchema={LoginSchema}
-          onSubmit={async (values, { setSubmitting, resetForm }) => {
+          onSubmit={ (values, { setSubmitting, resetForm }) => {
             console.log('loggedIn values submitted', values);
-            await dispatch(userLogin(values));
+             dispatch(userLogin(values));
             toast(userInfo.message)
             setSubmitting(false);
-            // Link('/DashBoard')
+          
             
           }}
         >
@@ -103,7 +101,7 @@ function Login() {
                 </h1>
                 <p className="mt-2 text-white text-sm font-['Roboto','Open Sans','Lato','sans-serif'] font-medium">
                   Doesn't have an account?
-                  <Link href="/Register" className="text-yellow-300 ml-1 hover:text-yellow-100 font-semibold underline italic transition duration-300 ease-in-out">
+                  <Link href="/register" className="text-yellow-300 ml-1 hover:text-yellow-100 font-semibold underline italic transition duration-300 ease-in-out">
                     Sign Up
                   </Link>
                 </p>
@@ -193,4 +191,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default login;

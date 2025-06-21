@@ -1,0 +1,15 @@
+{
+    "admin": [
+        {"id":1, "label": "Dashboard", "icon": "dashboard", "path": "/admin/dashboard"},
+        {"id":2, "label": "Manage Role", "icon": "users", "path": "/admin/assign-librarian"},
+        {"id":3, "label": "Manage All Books", "icon": "Books", "path": "/admin/manage-all-book"},
+        {"id":4, "label": "Manage All Users", "icon": "Users", "path": "/admin/manage-user-role"}
+
+
+    ],
+    "librarian": [
+        {"id":1, "label": "Dashboard", "icon": "dashboard", "path": "/librarian/dashboard"},
+        {"id":2, "label": "Manage Books", "icon": "Books", "path": "/librarian/manage-books"},
+        {"id":3, "label": "Manage Users", "icon": "Users", "path": "/librarian/manage-users"}
+    ]
+}

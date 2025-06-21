@@ -3,7 +3,6 @@ import axiosInstance from '../axiosInstance';
 
 
 
-
 // to get admin
 export const fetchAdminProfile = createAsyncThunk('user/fetchAdminProfile', async (_, thunkAPI) => {
   try {
@@ -19,7 +18,9 @@ export const fetchAdminProfile = createAsyncThunk('user/fetchAdminProfile', asyn
 
 export const fetchAllUsers = createAsyncThunk('user/fetchAllUsers', async (_, thunkAPI) => {
   try {
- const res = await axiosInstance.get('/admin/users')
+ const res = await axiosInstance.get('/user/get-all-users')
+ console.log('users at userSlice are', res);
+ 
     return res.data;
   } catch (err) {
     console.log(err);
@@ -34,7 +35,7 @@ export const updateUser = createAsyncThunk('user/updateUser',
 
   async ({ userId, userData}, thunkAPI) => {
   try {
-    const res = await axiosInstance.put(`/admin/update-user/${userId}`, userData );
+    const res = await axiosInstance.put(`/user/update-user/${userId}`, userData );
     return res.data;
   } catch (err) {
     console.log('error while updating user is ', err);
@@ -47,7 +48,7 @@ export const updateUser = createAsyncThunk('user/updateUser',
 // to add new user
 export const addUser = createAsyncThunk('/addUser', async (userData, thunkAPI) => {
   try {
-    const res = await axiosInstance.post('/admin/add-user', userData);
+    const res = await axiosInstance.post('/user/add-user', userData);
     console.log('new user data is', res);
     
     return res.data;
@@ -59,11 +60,10 @@ export const addUser = createAsyncThunk('/addUser', async (userData, thunkAPI) =
 });
 
 
-
 // to add new librarian
 export const addLibrarian = createAsyncThunk('/addLibrarian', async (librarianData, thunkAPI) => {
   try {
-    const res = await axiosInstance.post('/admin/add-librarian', librarianData);
+    const res = await axiosInstance.post('/user/add-librarian', librarianData);
     console.log('new librarian data is', res);
     
     return res.data;
@@ -73,22 +73,6 @@ export const addLibrarian = createAsyncThunk('/addLibrarian', async (librarianDa
     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to add librarian');
   }
 });
-
-
-
-
-
-// to get all books
-export const fetchAllBooks = createAsyncThunk('user/fetchAllBooks', async (_, thunkAPI) => {
-  try {
-    const res = await axiosInstance.get('/books');
-    return res.data;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to fetch books');
-  }
-});
-
-
 
 
 
@@ -123,8 +107,8 @@ export const deleteUser = createAsyncThunk(
 
 // Slice
 
-const adminSlice = createSlice({
-  name: 'admin',
+const userSlice = createSlice({
+  name: 'user',
   initialState: {
     adminProfile: null,
     users: [],
@@ -154,6 +138,13 @@ const adminSlice = createSlice({
         state.error = action.payload;
       })
 
+
+      //fetching all users
+       .addCase(fetchAllUsers.pending, (state, action) => {
+        state.loading = true;
+        state.error = null;
+      })
+      
       .addCase(fetchAllUsers.fulfilled, (state, action) => {
         state.users = action.payload;
       })
@@ -187,12 +178,6 @@ const adminSlice = createSlice({
         state.error = action.payload;
       })
 
-      .addCase(fetchAllBooks.fulfilled, (state, action) => {
-        state.books = action.payload;
-      })
-      .addCase(fetchAllBooks.rejected, (state, action) => {
-        state.error = action.payload;
-      })
 
       .addCase(fetchReport.fulfilled, (state, action) => {
         state.report = action.payload;
@@ -203,5 +188,5 @@ const adminSlice = createSlice({
   },
 });
 
-export const { clearMessages } = adminSlice.actions;
-export default adminSlice.reducer;
+export const { clearMessages } = userSlice.actions;
+export default userSlice.reducer;

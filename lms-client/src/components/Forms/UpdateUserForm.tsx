@@ -12,7 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { updateUser } from '@/Redux/slices/adminSlice';
+import { updateUser } from '@/Redux/slices/userSlice';
 import { useDispatch } from 'react-redux';
 
 

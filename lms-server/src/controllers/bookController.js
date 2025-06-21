@@ -1,12 +1,11 @@
 import Book from "../models/book.js";
 
 
-
 //add new book
 export const createBook = async(req, res) => {
 
     try{
-        const {title, author, isbn, category, coverImage, totalCopies} = req.body;
+        const {title, author, isbn, category, coverImage, isAvailable, totalCopies} = req.body;
 
         const newBook = await Book.create({
             title,
@@ -15,6 +14,7 @@ export const createBook = async(req, res) => {
             category,
             coverImage,
             totalCopies,
+            isAvailable,
             availableCopies : totalCopies
 
         });
@@ -29,11 +29,11 @@ export const getAllBooks = async(req, res) => {
     try {
 
         const books  = await Book.find();
-        res.status.json(books);
-        
+        return  res.status(200).json(books);
         
     } catch (error) {
 
+        
         return res.status(500).json({message: 'error while getting all books'})
         
     }
@@ -44,10 +44,10 @@ export const getAllBooks = async(req, res) => {
 export const getBookById = async(req, res) =>{
 
     try {
-        const bookId = req.params.id;
+        // const bookId = req.params.id;
 
-        const book = await Book.findById(bookId);
-        res.status.json(booj);
+        const book = await Book.findById(req.params.id);
+        return res.status(200).json(book);
         
     } catch (error) {
 
@@ -105,3 +105,15 @@ export const searchBook = async(req, res) => {
         res.status(500).json({message:'search failed', error});
     }
 }
+
+
+// Reports (basic example)
+export const getReport = async (req, res) => {
+  try {
+    const userCount = await User.countDocuments();
+    const bookCount = await Book.countDocuments();
+    res.json({ totalUsers: userCount, totalBooks: bookCount });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch reports' });
+  }
+};

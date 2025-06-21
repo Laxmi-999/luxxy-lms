@@ -20,9 +20,9 @@ export const getAdminProfile = async (req, res) => {
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select('-password');
-    res.json(users);
+   return  res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch users' });
+    return res.status(500).json({ message: 'Failed to fetch users' });
   }
 };
 
@@ -129,23 +129,5 @@ export const deleteUser = async(req, res) => {
     
   }
 }
-// View all books
-export const getAllBooks = async (req, res) => {
-  try {
-    const books = await Book.find();
-    res.json(books);
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch books' });
-  }
-};
 
-// Reports (basic example)
-export const getReport = async (req, res) => {
-  try {
-    const userCount = await User.countDocuments();
-    const bookCount = await Book.countDocuments();
-    res.json({ totalUsers: userCount, totalBooks: bookCount });
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch reports' });
-  }
-};
+

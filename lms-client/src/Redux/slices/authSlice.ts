@@ -89,6 +89,7 @@ const authSlice = createSlice({
     isLoading: false,
     isError: false,
     isSuccess: false,
+    isLoggedIn:false,
     error: '',
     status: user ? 'succeeded' : 'idle' // 'idle' | 'loading' | 'succeeded' | 'failed'
   },
@@ -143,6 +144,7 @@ const authSlice = createSlice({
       .addCase(userLogin.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
+        state.isLoggedIn = true;
         state.userInfo = action.payload;
         state.status = 'succeeded'; // Added
         state.isError = false; // Clear any error on success
@@ -161,6 +163,7 @@ const authSlice = createSlice({
       .addCase(logout.fulfilled, (state) => {
         state.userInfo = null;
         state.isSuccess = false;
+        state.isLoggedIn = false;
         state.isLoading = false;
         state.isError = false;
         state.error = '';

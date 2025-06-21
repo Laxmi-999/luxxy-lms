@@ -2,10 +2,8 @@
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import Link from 'next/link';
-import { userRegister } from '../Redux/slices/authSlice';
-import {useAppDispatch} from '../Redux/hooks'
-// import { registerUser } from '@/Redux/slices/authSlice';
-// import { useAppDispatch } from '@/Redux/hooks';
+import { useDispatch } from 'react-redux';
+import { userRegister } from '@/Redux/slices/authSlice';
 
 
 const RegisterSchema = Yup.object().shape({
@@ -27,7 +25,7 @@ const RegisterSchema = Yup.object().shape({
 
 const Register = () => {
 
-const dispatch = useAppDispatch();
+const dispatch = useDispatch();
 
 
   return (
@@ -79,7 +77,7 @@ const dispatch = useAppDispatch();
                 </h1>
                 <p className="mt-2 text-white text-sm font-['Roboto','Open Sans','Lato','sans-serif'] font-medium">
                   Already have an account?{' '}
-                  <Link href="/Login" className="text-yellow-300 ml-1 hover:text-yellow-100 font-semibold underline italic transition duration-300 ease-in-out">
+                  <Link href="/login" className="text-yellow-300 ml-1 hover:text-yellow-100 font-semibold underline italic transition duration-300 ease-in-out">
                     Sign In
                   </Link>
                 </p>

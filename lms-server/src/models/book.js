@@ -17,10 +17,14 @@ const bookSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  isAvailable:{
+    type:Boolean,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
+  
 });
 
 const Book = mongoose.model("Book", bookSchema);

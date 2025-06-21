@@ -1,25 +1,33 @@
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../axiosInstance';
+import axios from 'axios';
 
 
+
+const baseUrl = 'http://localhost:8000/api';
 
 // ========================= Async Thunks ==============================
 
 // Get all books
-export const fetchBooks = createAsyncThunk('books/fetchBooks', async (_, thunkAPI) => {
+export const fetchAllBooks = createAsyncThunk('books/fetchAllBooks', async (_, thunkAPI) => {
   try {
-    const res = await axiosInstance.get('/admin/get-books');
-    return res.data;
+    const res = await axios.get(`${baseUrl}/book/get-all-books`);
+     console.log('books are', res);
+      return res.data;
+    
   } catch (error) {
+    console.log('error while  fetching all books', error); 
     return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to fetch books');
   }
 });
 
+
+
 // Search books
 export const searchBooks = createAsyncThunk('books/searchBooks', async (query, thunkAPI) => {
   try {
-    const res = await axiosInstance.get(`/admin/search-book/search?query=${query}`);
+    const res = await axios.get(`${baseUrl}/book/search-book/search?query=${query}`);
     return res.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response?.data?.message || 'Search failed');
@@ -27,10 +35,11 @@ export const searchBooks = createAsyncThunk('books/searchBooks', async (query, t
 });
 
 
+
 // Add new book (admin or librarian only)
 export const addBook = createAsyncThunk('books/addBook', async (bookData, thunkAPI) => {
   try {
-    const res = await axiosInstance.post('admin/add-book', bookData);
+    const res = await axiosInstance.post('/book/add-book', bookData);
     return res.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to add book');
@@ -41,7 +50,7 @@ export const addBook = createAsyncThunk('books/addBook', async (bookData, thunkA
 // Update book
 export const updateBook = createAsyncThunk('books/updateBook', async ({ id, updatedData }, thunkAPI) => {
   try {
-    const res = await axiosInstance.put(`/admin/update-book/${id}`, updatedData);
+    const res = await axiosInstance.put(`/book/update-book/${id}`, updatedData);
     return res.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to update book');
@@ -53,13 +62,23 @@ export const updateBook = createAsyncThunk('books/updateBook', async ({ id, upda
 // Delete book
 export const deleteBook = createAsyncThunk('books/deleteBook', async (id, thunkAPI) => {
   try {
-    await axiosInstance.delete(`/admin/delete-book/${id}`);
+    await axiosInstance.delete(`/book/delete-book/${id}`);
     return id;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to delete book');
   }
 });
 
+// get single book
+export const getSingleBook = createAsyncThunk('books/getSingleBook', async(id, thunkAPI) =>{
+    try{
+       const res = await axiosInstance.get(`/book/get-single-book/${id}`);
+       return res.data ; // this will becomes payload for fullfilled status
+    }catch(error){
+        return thunkAPI.rejectWithValue(error.response?.data?.message || 'failed to get the book by id');
+
+    }
+})
 
 
 
@@ -68,7 +87,8 @@ export const deleteBook = createAsyncThunk('books/deleteBook', async (id, thunkA
 const bookSlice = createSlice({
   name: 'books',
   initialState: {
-    books: [],
+   books: [],
+   selectedBook:null,
     loading: false,
     error: null,
     searchResults: [],
@@ -82,17 +102,17 @@ const bookSlice = createSlice({
     builder
 
       // Fetch books
-      .addCase(fetchBooks.pending, (state) => {
+      .addCase(fetchAllBooks.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchBooks.fulfilled, (state, action) => {
+      .addCase(fetchAllBooks.fulfilled, (state, action) => {
         state.loading = false;
         state.books = action.payload;
       })
-      .addCase(fetchBooks.rejected, (state, action) => {
+      .addCase(fetchAllBooks.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload  || 'failed to fetch the books';
       })
 
 
@@ -107,7 +127,7 @@ const bookSlice = createSlice({
       })
       .addCase(searchBooks.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || 'Book not found';
       })
 
 
@@ -123,22 +143,60 @@ const bookSlice = createSlice({
       })
       .addCase(addBook.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || 'failed to add book';
       })
 
-
-
       // Update book
-      .addCase(updateBook.fulfilled, (state, action) => {
-        state.books = state.books.map((book) =>
+       .addCase(updateBook.pending, (state, action) => {
+       state.loading =  true;
+       state.error  = null;
+      })
+       .addCase(updateBook.fulfilled, (state, action) => {
+        state.loading= false;
+         state.books = state.books.map((book) =>
           book._id === action.payload._id ? action.payload : book
         );
       })
 
+      .addCase(updateBook.rejected, (state, action) => {
+       state.loading = false;
+       state.error = action.payload || 'failed to update book';
+      })
+
+
       // Delete book
+       .addCase(deleteBook.pending, (state, action) => {
+        state.loading  = true;
+        state.error = null;
+      })
+
       .addCase(deleteBook.fulfilled, (state, action) => {
+         state.loading= false;
         state.books = state.books.filter((book) => book._id !== action.payload);
-      });
+      })
+
+       .addCase(deleteBook.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || 'failed to delete Book';
+      })
+
+      //get single book
+      .addCase(getSingleBook.pending, (state, action) => {
+        state.loading = true;
+        state.error = null;
+
+      })
+      .addCase(getSingleBook.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedBook = action.payload;
+       
+
+      })
+      .addCase(getSingleBook.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+
+      })
   },
 });
 

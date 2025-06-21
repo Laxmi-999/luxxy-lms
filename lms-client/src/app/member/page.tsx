@@ -1,19 +1,28 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CalendarDays, BookOpen, LogOut, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { logout } from '@/Redux/slices/authSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAllBooks } from '@/Redux/slices/bookSlice';
+import Link from 'next/link';
 
 
-const MemberDashboard = () => {
-  const user = { name: 'John Doe' };
+const page = () => {
+  const {userInfo, isLoggedIn} = useSelector((state) => state.auth);
+  const {books} = useSelector((state) => state.books)
+
   const dispatch = useDispatch();
   const router = useRouter();
-  
+   
+  useEffect(() => {
+
+    dispatch(fetchAllBooks());
+  }, [dispatch])
+
 
   const handleLogout = () => {
     dispatch(logout());
@@ -26,7 +35,14 @@ const MemberDashboard = () => {
       {/* Welcome Header */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold">Welcome, {user.name} 📚</CardTitle>
+          { isLoggedIn && 
+          <div>
+            <CardTitle className="text-2xl font-semibold text-green-600">Welcome, <span className='text-2xl font-semibold text-orange-600'>{userInfo.name}</span></CardTitle>
+            <p className='text-orange-800'>{userInfo.email}</p>
+          </div>
+          }
+          
+
         </CardHeader>
         <CardContent className="flex items-center justify-between">
           <p className="text-muted-foreground">Here's a quick overview of your library activity.</p>
@@ -44,7 +60,7 @@ const MemberDashboard = () => {
       </Card>
 
       {/* Stats Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Borrowed Books</CardTitle>
@@ -74,6 +90,18 @@ const MemberDashboard = () => {
             <p className="text-muted-foreground text-sm">Return Due in 3 Days</p>
           </CardContent>
         </Card>
+       
+       <Link href='/member/all-book'>
+          <Card  className='cursor-pointer'>
+            <CardHeader>
+              <CardTitle className="text-lg">Total Books </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-red-500">{books.length ||  '0'}</p>
+              <p className="text-muted-foreground text-sm">Available for you</p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       {/* Activity Timeline */}
@@ -123,4 +151,4 @@ const MemberDashboard = () => {
   );
 };
 
-export default MemberDashboard;
+export default page;

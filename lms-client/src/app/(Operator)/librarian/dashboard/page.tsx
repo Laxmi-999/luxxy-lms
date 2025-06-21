@@ -6,19 +6,27 @@ import { Badge } from '@/components/ui/badge';
 import { PlusCircle, FileEdit, Trash2, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { logout } from '@/Redux/slices/authSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import ManageAllBooks from '@/components/ManageAllBooks';
+import ManageUsersAndRoles from '@/components/ManageUsersAndRole';
 
 const LibrarianDashboard = () => {
+    const {userInfo, isLoggedIn} = useSelector((state) => state.auth);
+    const {users} = useSelector((state) =>  state.user);
+    console.log('users are', users);
+    
+
     const dispatch = useDispatch();
     const router = useRouter();
 
     const handleLogout = () => {
         dispatch(logout());
+
         router.push('/login');
     };
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 w-full">
             {/* Librarian Profile Section */}
             <Card className="flex flex-col md:flex-row items-center justify-between p-4">
                 <div className="flex items-center gap-4">
@@ -27,9 +35,16 @@ const LibrarianDashboard = () => {
                         alt="Profile"
                         className="w-16 h-16 rounded-full border"
                     />
-                    <div>
-                        <h2 className="text-xl font-semibold">Priya Sharma</h2>
-                        <p className="text-sm text-muted-foreground">librarian@university.edu</p>
+                    <div className='flex flex-col'>
+                        {isLoggedIn && 
+                         <div className=" ">
+                            <div className='flex gap-3'>
+                                <h2 className="text-xl font-extrabold text-green-600 ">Welcome : </h2> 
+                                <h2 className="text-xl font-semibold text-orange-600 ">{userInfo.name}({userInfo.role})</h2>
+                            </div>
+                            <p className="text-sm text-muted-foreground">{userInfo.email}</p>             
+                       </div>}
+                       
                     </div>
                 </div>
                 <div className="flex gap-2 mt-4 md:mt-0">
@@ -74,41 +89,8 @@ const LibrarianDashboard = () => {
                     </CardContent>
                 </Card>
             </div>
-
-            {/* Book Management */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Manage Books</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                    <div className="flex items-center justify-between border rounded p-3">
-                        <div>
-                            <p className="font-medium">The Alchemist</p>
-                            <p className="text-sm text-muted-foreground">Available</p>
-                        </div>
-                        <div className="flex gap-2">
-                            <Button size="sm" variant="outline"><FileEdit className="w-4 h-4" /></Button>
-                            <Button size="sm" variant="destructive"><Trash2 className="w-4 h-4" /></Button>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center justify-between border rounded p-3">
-                        <div>
-                            <p className="font-medium">Sapiens</p>
-                            <p className="text-sm text-muted-foreground">Issued</p>
-                        </div>
-                        <div className="flex gap-2">
-                            <Button size="sm" variant="outline"><FileEdit className="w-4 h-4" /></Button>
-                            <Button size="sm" variant="destructive"><Trash2 className="w-4 h-4" /></Button>
-                        </div>
-                    </div>
-
-                    <Button className="flex items-center gap-2 mt-3">
-                        <PlusCircle className="w-4 h-4" />
-                        Add New Book
-                    </Button>
-                </CardContent>
-            </Card>
+            {/* <ManageUsersAndRoles /> */}
+            {/* <ManageAllBooks /> */}
 
             {/* Issue / Return Books */}
             <Card>

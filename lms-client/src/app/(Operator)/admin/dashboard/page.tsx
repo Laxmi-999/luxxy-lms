@@ -4,18 +4,16 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { LogOut, BarChart2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import ManageUsersAndRoles from '@/components/ManageUsersAndRole';
-import ManageAllBooks from '@/components/ManageAllBooks';
-import AssignLibrarians from '@/components/AssignLibrarian';
 import { logout } from '@/Redux/slices/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllUsers } from '@/Redux/slices/adminSlice';
+import { fetchAllUsers } from '@/Redux/slices/userSlice';
+import Link from 'next/link';
 
 
 const AdminDashboard = () => {
     const { userInfo } = useSelector((state) => state.auth);
-    const { users } = useSelector((state) => state.admin);
-    // const {books} = useSelector((state) => state.book )
+    const { users } = useSelector((state) => state.user);
+    const {books} = useSelector((state) => state.books);
 
 
     const dispatch = useDispatch();
@@ -27,20 +25,20 @@ const AdminDashboard = () => {
             dispatch(fetchAllUsers());
         } else {
             console.log("No user info found or token is missing. Redirecting to login.");
-            router.push('/Login');
+            router.push('/login');
         }
     }, [dispatch, userInfo, router]); // Addedp router to dependency array
 
     const handleLogout = () => {
         dispatch(logout());
-        router.push('/login');
+        // router.push('/login');
     };
 
     // Calculate total librarians for the summary card
     const totalLibrarians = users?.filter(user => user.role === 'librarian').length || 0;
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 w-full">
             {/* Admin Profile Section */}
             <Card className="flex flex-col md:flex-row items-center justify-between p-4">
                 <div className="flex items-center gap-4">
@@ -56,14 +54,13 @@ const AdminDashboard = () => {
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline">Edit Profile</Button>
-                    <Button
-                        onClick={handleLogout}
-                        variant="destructive"
-                        className="flex items-center gap-2"
-                    >
-                        <LogOut className="w-4 h-4" />
-                        Logout
-                    </Button>
+                        <Button
+                            onClick={handleLogout}
+                            variant="destructive"
+                            className="flex items-center gap-2"
+                        >
+                            Logout
+                        </Button>
                 </div>
             </Card>
 
@@ -84,7 +81,7 @@ const AdminDashboard = () => {
                     </CardHeader>
                     <CardContent>
                         {/* This number would ideally be dynamic from your books state/API */}
-                        <p className="text-3xl font-bold">1,203</p>
+                        <p className="text-3xl font-bold">{books?.length || 0}</p>
                     </CardContent>
                 </Card>
 
@@ -107,14 +104,7 @@ const AdminDashboard = () => {
                 </Card>
             </div>
 
-            {/* Integrated Components */}
-            <ManageUsersAndRoles />
-
-            <ManageAllBooks />
-
-            <AssignLibrarians />
-
-            {/* View Reports - Kept here as it's a single button, or you could make a component */}
+            {/* View Reports -*/}
             <Card>
                 <CardHeader>
                     <CardTitle>Reports & Analytics</CardTitle>

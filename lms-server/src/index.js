@@ -2,12 +2,13 @@ import express from 'express';
 import connection from './db/connection.js';
 import authRoutes from './routes/authRoutes.js'
 import cors from 'cors';
-import adminRoute from './routes/adminRoutes.js';
+import bookRoute from './routes/bookRoutes.js';
+import userRoute from './routes/userRoutes.js';
 
 
 const app = express()
 const port = 8000
-app.use(cors())
+app.use(cors());
 
 
 app.use(express.json());
@@ -19,15 +20,14 @@ connection();
 //auth routes
 app.use('/api/users', authRoutes)
 
-//adminRoutes
-app.use('/api/admin', adminRoute)
-//eg. (localhost:8000/api/admin/profile)
-//eg. (localhost:8000/api/admin/users)
-//eg. (localhost:8000/api/admin/users/role)
-//eg. (localhost:8000/api/admin/librarians)
-//eg. (localhost:8000/api/admin/books)
-//eg. (localhost:8000/api/admin/reports)
 
+
+//admin and librarian routes for managing users
+app.use('/api/user', userRoute);
+
+
+//book route
+app.use('/api/book', bookRoute);
 
 
 app.listen(port, () => {

@@ -26,7 +26,7 @@ const AddUserSchema = Yup.object().shape({
 
 const AddUserForm = ({ onClose }) => {
   const dispatch = useAppDispatch();
-  const { loading, error, successMessage } = useAppSelector((state) => state.admin);
+  const { loading, error, successMessage } = useAppSelector((state) => state.user);
 
   const formik = useFormik({
     initialValues: {
