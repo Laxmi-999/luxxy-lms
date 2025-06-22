@@ -89,13 +89,13 @@ I am  developing LibraryConnect in distinct phases to ensure a robust and featur
 **Goal**: Equip librarians with the tools to manage the book catalog and handle day-to-day book issuance and returns.
 
 * **Frontend**:
-    * ⬜ Librarian Dashboard interface.
+    * ✅ Librarian Dashboard interface.
     * ⬜ Add/Edit/Delete Book forms and interfaces.
     * ⬜ Book Issue/Return forms.
     * ⬜ View Users and Manage Reservations interfaces.
 * **Backend**:
-    * ⬜ Endpoints for **Librarian Authentication** and access control.
-    * ⬜ API endpoints for **Add/Edit/Delete Books**.
+    *✅ Endpoints for **Librarian Authentication** and access control.
+    * ✅ API endpoints for **Add/Edit/Delete Books**.
     * ⬜ API endpoints for **Issue/Return Books**.
     * ⬜ API endpoints for **View Users** and **Manage Reservations**.
 
@@ -104,12 +104,12 @@ I am  developing LibraryConnect in distinct phases to ensure a robust and featur
 **Goal**: Provide members with an intuitive interface to interact with the library, search for books, and track their borrowing activities.
 
 * **Frontend**:
-    * ⬜ Member Dashboard with personalized borrowing history.
+    * ✅ Member Dashboard with personalized borrowing history.
     * ⬜ Search and View Books interface with filtering options.
     * ⬜ Request/Reserve Books functionality.
     * ⬜ Mark Books as Returned functionality.
 * **Backend**:
-    * ⬜ API endpoints for **View/Search Available Books**.
+    * ✅ API endpoints for **View/Search Available Books**.
     * ⬜ API endpoints for **Request/Reserve Books**.
     * ⬜ API endpoints for **View Borrowing History**.
     * ⬜ API endpoints for **Mark Books as Returned**.
