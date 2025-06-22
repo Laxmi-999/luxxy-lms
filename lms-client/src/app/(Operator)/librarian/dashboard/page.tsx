@@ -9,6 +9,7 @@ import { logout } from '@/Redux/slices/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import ManageAllBooks from '@/components/ManageAllBooks';
 import ManageUsersAndRoles from '@/components/ManageUsersAndRole';
+import Link from 'next/link';
 
 const LibrarianDashboard = () => {
     const {userInfo, isLoggedIn} = useSelector((state) => state.auth);
@@ -58,7 +59,7 @@ const LibrarianDashboard = () => {
             </Card>
 
             {/* Dashboard Summary */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card>
                     <CardHeader>
                         <CardTitle>Total Books Issued</CardTitle>
@@ -88,6 +89,17 @@ const LibrarianDashboard = () => {
                         <p className="text-muted-foreground text-sm">Waiting for pickup</p>
                     </CardContent>
                 </Card>
+                <Link href='/member/pending-reservations'>
+                    <Card className='cursor-pointer'>
+                        <CardHeader>
+                            <CardTitle>Pending Reservations</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-3xl font-bold">6</p>
+                            <p className="text-muted-foreground text-sm">Waiting for Approvals</p>
+                        </CardContent>
+                    </Card>
+                </Link>
             </div>
             {/* <ManageUsersAndRoles /> */}
             {/* <ManageAllBooks /> */}

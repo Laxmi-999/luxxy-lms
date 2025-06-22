@@ -10,6 +10,8 @@
     "librarian": [
         {"id":1, "label": "Dashboard", "icon": "dashboard", "path": "/librarian/dashboard"},
         {"id":2, "label": "Manage Books", "icon": "Books", "path": "/librarian/manage-books"},
-        {"id":3, "label": "Manage Users", "icon": "Users", "path": "/librarian/manage-users"}
+        {"id":3, "label": "Manage Users", "icon": "Users", "path": "/librarian/manage-users"},
+        {"id":3, "label": "Pending Reservations", "icon": "Users", "path": "/librarian/pending-reservation"}
+
     ]
 }

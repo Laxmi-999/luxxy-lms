@@ -4,6 +4,7 @@ import authRoutes from './routes/authRoutes.js'
 import cors from 'cors';
 import bookRoute from './routes/bookRoutes.js';
 import userRoute from './routes/userRoutes.js';
+import reservationRoute from './routes/reservationRoutes.js';
 
 
 const app = express()
@@ -28,6 +29,9 @@ app.use('/api/user', userRoute);
 
 //book route
 app.use('/api/book', bookRoute);
+
+//Reservation Routes
+app.use('/api/reservation', reservationRoute)
 
 
 app.listen(port, () => {

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { FileEdit, Trash2 } from 'lucide-react';
@@ -8,11 +8,14 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { fetchAllBooks, getSingleBook } from '@/Redux/slices/bookSlice';
 import { useRouter } from 'next/navigation';
+import { createReservation } from '@/Redux/slices/reservationSlice';
 
 const AllBook = () => {
   const { books } = useSelector((state) => state.books);
   const dispatch = useDispatch();
   const router = useRouter();
+
+const [reservingBookId, setReservingBookId] = useState(null);
 
   const handleDetailClick = (id) => {
     router.push(`/member/book-details/${id}`);
@@ -23,6 +26,11 @@ const AllBook = () => {
     dispatch(fetchAllBooks());
   }, [dispatch])
 
+  const handleReservationClick = (id) => {
+    dispatch(createReservation(id));
+
+  }
+  
   return (
     <Card>
       <CardHeader>
@@ -49,7 +57,10 @@ const AllBook = () => {
                 >
                   View Details
                 </Button>
-                <Button className="bg-gray-800 cursor-pointer" size="sm">
+                <Button
+                onClick={() => handleReservationClick(book._id)}
+                
+                className="bg-gray-800 cursor-pointer" size="sm">
                   Request for Reservation
                 </Button>
               </div>
