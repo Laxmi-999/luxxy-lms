@@ -26,19 +26,12 @@ export const userRegister = createAsyncThunk(
   'users/register',
   async (userData: any, thunkAPI) => {
     try {
-      const response = await axiosInstance.post('/users/register', userData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      console.log('User registered successfully:', response.data);
-      // It's usually good to automatically log in after registration,
-      // and thus store the user in localStorage here as well.
-      // if (response.data) {
-      //   localStorage.setItem('user', JSON.stringify(response.data));
-      // }
+      const response = await axiosInstance.post('/users/register', userData);
+       
+       console.log('User registered successfully:', response.data);
+       return response.data;
 
-      return response.data;
+
     } catch (error: any) {
       const message =
         error.response?.data?.message || error.message || 'Registration failed';
@@ -52,14 +45,9 @@ export const userLogin = createAsyncThunk(
   'users/login',
   async (userData: any, thunkAPI) => {
     try {
-      const res = await axiosInstance.post('/users/login', userData, { // Ensure this port (8000) is correct for your backend!
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      console.log('Login response data:', res.data);
+      const res = await axiosInstance.post('/users/login', userData);
+       console.log('Login response data:', res);
       
-      // Store user info in localStorage directly within the thunk
       if (res.data) {
         localStorage.setItem('user', JSON.stringify(res.data));
       }

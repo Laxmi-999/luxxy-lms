@@ -53,7 +53,12 @@ const UpdateBookForm = ({ book, isOpen, onClose }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log('Updating book with data:', formData);
-        dispatch(updateBook({ bookId: book._id, bookData: formData }));
+          const dataToDispatch = {
+            ...formData,
+            totalCopies: Number(formData.totalCopies),
+            availableCopies: Number(formData.availableCopies),
+        };
+        dispatch(updateBook({ bookId: book._id, updatedBookData: dataToDispatch }));
         onClose();
     };
 

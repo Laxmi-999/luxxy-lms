@@ -48,11 +48,16 @@ export const addBook = createAsyncThunk('books/addBook', async (bookData, thunkA
 
 
 // Update book
-export const updateBook = createAsyncThunk('books/updateBook', async ({ id, updatedData }, thunkAPI) => {
+export const updateBook = createAsyncThunk('books/updateBook',
+   async ({ bookId, updatedBookData }, thunkAPI) => {
   try {
-    const res = await axiosInstance.put(`/book/update-book/${id}`, updatedData);
+    const res = await axiosInstance.put(`/book/update-book/${bookId}`, updatedBookData);
+    console.log('updated book data are', res.data);
+    
     return res.data;
   } catch (error) {
+    console.log('error while updating book', error);
+    
     return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to update book');
   }
 });
@@ -60,14 +65,17 @@ export const updateBook = createAsyncThunk('books/updateBook', async ({ id, upda
 
 
 // Delete book
-export const deleteBook = createAsyncThunk('books/deleteBook', async (id, thunkAPI) => {
+export const deleteBook = createAsyncThunk('books/deleteBook',
+   async (bookId, thunkAPI) => {
   try {
-    await axiosInstance.delete(`/book/delete-book/${id}`);
-    return id;
+    await axiosInstance.delete(`/book/delete-book/${bookId}`);
+    return bookId;
   } catch (error) {
+    console.log('error while deleting book', error);
     return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to delete book');
   }
 });
+
 
 // get single book
 export const getSingleBook = createAsyncThunk('books/getSingleBook', async(id, thunkAPI) =>{

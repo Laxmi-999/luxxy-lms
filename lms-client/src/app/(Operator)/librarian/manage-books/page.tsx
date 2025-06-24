@@ -15,7 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useDispatch, useSelector } from 'react-redux';
-import { addBook, fetchAllBooks, updateBook } from '@/Redux/slices/bookSlice';
+import { addBook, deleteBook, fetchAllBooks, updateBook } from '@/Redux/slices/bookSlice';
 import UpdateBookForm from '@/components/Forms/UpdateBookForm';
 
 
@@ -32,7 +32,7 @@ const ManageAllBooks = () => {
    
     useEffect(() => {
         dispatch(fetchAllBooks());
-    }, [])
+    }, [dispatch])
    
 
    
@@ -61,15 +61,12 @@ const ManageAllBooks = () => {
      const handleAddNewBookSubmit = (e) => {
             e.preventDefault();
             console.log('Registering new book:', newBook);
+
             dispatch(addBook(newBook));    
             setNewBook({
-                     title:'',
-                     author:'',
-                     isbn:'',
-                     category:'',
-                     coverImage:'',
-                     totalCopies:'',
-                     availableCopies:'',
+                    ...newBook,
+            totalCopies: Number(newBook.totalCopies),
+            availableCopies: Number(newBook.availableCopies)
                 
             });
             setIsAddBookDialogOpen(false);
@@ -77,13 +74,24 @@ const ManageAllBooks = () => {
 
     const handleEditClick = (book) => {
         setSelectedBook(book); 
+        
         setIsUpdateBookDialogOpen(true); 
     };
 
-    const handleDeleteBookClick = (book) => {
-        console.log('Delete book:', book);
-        // Implement delete book logic
+   const handleDeleteBookClick = (bookId) => {
+        console.log('Delete book:', bookId);
+        dispatch(deleteBook(bookId))
+            .unwrap() // Use .unwrap() to handle success/failure of the thunk
+            .then(() => {
+                console.log('Book deleted successfully, re-fetching books...');
+                dispatch(fetchAllBooks()); // Dispatch fetchAllBooks after successful deletion
+            })
+            .catch((err) => {
+                console.error('Failed to delete book:', err);
+                // Optionally show a toast notification or error message
+            });
     };
+
 
   
      const handleCloseUpdateDialog = () => {
@@ -117,7 +125,7 @@ const ManageAllBooks = () => {
                                 <Button
                                     size="sm"
                                     variant="destructive"
-                                    onClick={() => handleDeleteBookClick(book)}
+                                    onClick={() => handleDeleteBookClick(book._id)}
                                 >
                                     <Trash2 className="w-4 h-4" />
                                 </Button>

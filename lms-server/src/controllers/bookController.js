@@ -63,9 +63,12 @@ export const updateBook = async(req, res) => {
         
         const updatedBook = await Book.findByIdAndUpdate(req.params.id, {...req.body}, {new:true});
         if (!updatedBook) return res.status(404).json({ message: 'Book not found' });
-        res.status.json(updatedBook);
+       console.log('updated book is', updateBook);
+       
+     return res.status(200).json(updatedBook);
     } catch (error) {
-
+         console.log('error while updating book', error);
+         
         return res.status(500).json({message: 'error while updating book', error})
         
     }
@@ -77,11 +80,14 @@ export const updateBook = async(req, res) => {
 export const deleteBook = async(req, res) =>{
     try {
         const deletedBook = await Book.findByIdAndDelete(req.params.id);
-        if(!deletedBook) return res.status.json({message:'book not found'})
-        res.status.json(deletedBook);
+        if(!deletedBook) return res.status(400).json({message:'book not found'})
+       console.log('deleted book is', deletedBook);
+       
+        res.status(200).json(deletedBook);
         
     } catch (error) {
-
+         console.log('error while deleting book', error);
+         
         res.status(500).json({message:'error while deleting book', error})
         
     }

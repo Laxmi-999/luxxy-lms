@@ -15,7 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useDispatch, useSelector } from 'react-redux';
-import { addBook, fetchAllBooks, updateBook } from '@/Redux/slices/bookSlice';
+import { addBook, deleteBook, fetchAllBooks, updateBook } from '@/Redux/slices/bookSlice';
 import UpdateBookForm from '@/components/Forms/UpdateBookForm';
 
 
@@ -30,6 +30,9 @@ const ManageAllBooks = () => {
     const [isAddBookDialogOpen, setIsAddBookDialogOpen] = useState(false);
     const [isUpdateBookDialogOpen, setIsUpdateBookDialogOpen] = useState(false);
    
+
+
+
     useEffect(() => {
         dispatch(fetchAllBooks());
     }, [])
@@ -75,14 +78,16 @@ const ManageAllBooks = () => {
             setIsAddBookDialogOpen(false);
         };
 
-    const handleEditClick = (book) => {
+ const handleEditClick = (book) => {
         setSelectedBook(book); 
+        console.log('Selected book:', book);
+
         setIsUpdateBookDialogOpen(true); 
     };
 
-    const handleDeleteBookClick = (book) => {
-        console.log('Delete book:', book);
-        // Implement delete book logic
+    const handleDeleteBookClick = (bookId) => {
+        console.log('Delete book:', bookId);
+        dispatch(deleteBook(bookId));
     };
 
   
@@ -117,7 +122,7 @@ const ManageAllBooks = () => {
                                 <Button
                                     size="sm"
                                     variant="destructive"
-                                    onClick={() => handleDeleteBookClick(book)}
+                                    onClick={() => handleDeleteBookClick(book._id)}
                                 >
                                     <Trash2 className="w-4 h-4" />
                                 </Button>

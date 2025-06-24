@@ -52,10 +52,12 @@ const ManageUsers = () => {
         setIsUpdateUserDialogOpen(true); 
     };
 
-    const handleDeleteClick = (user) => {
-        console.log('Delete user:', user);
-        if (window.confirm(`Are you sure you want to delete ${user.name}?`)) {
-            dispatch(deleteUser(user._id)); 
+    const handleDeleteClick = (userId) => {
+        console.log('Delete user:', userId);
+        if (window.confirm(`Are you sure you want to delete ${userId}?`))
+             {
+            dispatch(deleteUser(userId)); 
+            dispatch(fetchAllUsers());
         }
     };
 
@@ -113,7 +115,7 @@ const ManageUsers = () => {
                                     <FileEdit className="w-4 h-4" />
                                 </Button>
                                 <Button
-                                    onClick={() => handleDeleteClick(user)}
+                                    onClick={() => handleDeleteClick(user._id)}
                                     size="sm"
                                     variant="destructive"
                                 >

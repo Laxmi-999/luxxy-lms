@@ -14,6 +14,8 @@ export const fetchAdminProfile = createAsyncThunk('user/fetchAdminProfile', asyn
   }
 });
 
+
+//admin and librarian
 // to get all users
 
 export const fetchAllUsers = createAsyncThunk('user/fetchAllUsers', async (_, thunkAPI) => {
@@ -30,6 +32,7 @@ export const fetchAllUsers = createAsyncThunk('user/fetchAllUsers', async (_, th
 });
 
 
+//admin and librarian
 // to update user
 export const updateUser = createAsyncThunk('user/updateUser', 
 
@@ -44,6 +47,9 @@ export const updateUser = createAsyncThunk('user/updateUser',
   }
 });
 
+
+
+////librarian and admin
 
 // to add new user
 export const addUser = createAsyncThunk('/addUser', async (userData, thunkAPI) => {
@@ -60,6 +66,7 @@ export const addUser = createAsyncThunk('/addUser', async (userData, thunkAPI) =
 });
 
 
+// admin only
 // to add new librarian
 export const addLibrarian = createAsyncThunk('/addLibrarian', async (librarianData, thunkAPI) => {
   try {
@@ -93,7 +100,7 @@ export const deleteUser = createAsyncThunk(
     'admin/deleteUser', 
     async (userId, thunkAPI) => {
         try {
-            const res = await axiosInstance.delete(`/admin/delete-user/${userId}`); 
+            const res = await axiosInstance.delete(`/user/delete-user/${userId}`); 
              console.log(`User ${userId} deleted successfully`, res);
 
             return userId; 

@@ -105,7 +105,7 @@ export const addLibrarian = async (req, res) => {
   }
 };
 
-
+//delete user
 export const deleteUser = async(req, res) => {
 
   try {
@@ -120,7 +120,7 @@ export const deleteUser = async(req, res) => {
       return res.status(400).json({message: "user not found"})
      }
      
-     return res.json({message: "User deleted successfully"})
+     return res.status(200).json({message: "User deleted successfully"})
     
   } catch (error) {
     console.log('error while deleting user', error);

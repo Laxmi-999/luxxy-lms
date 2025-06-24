@@ -19,7 +19,8 @@ const PendingReservations = () => {
 
 const handleApprove = async (reservationId) => {
   try {
-    await dispatch(approveReservation(reservationId)).unwrap(); // throws if error
+    await dispatch(approveReservation(reservationId)).unwrap(); 
+    // throws if error
     dispatch(getPendingReservations());
   } catch (err) {
     console.error('Failed to approve reservation:', err); 

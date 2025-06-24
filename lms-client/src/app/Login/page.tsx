@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearAuthError, userLogin } from '@/Redux/slices/authSlice';
+import { clearAuthError, userLogin} from '@/Redux/slices/authSlice';
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Email is required'),
@@ -62,7 +62,11 @@ function login() {
   },[status, userInfo, router])
   
 
+const handleSubmit = (values) => {
 
+             dispatch(userLogin(values));
+            toast(userInfo.message)
+          }
 
   return (
     <div
@@ -76,14 +80,9 @@ function login() {
             password: '',
           }}
           validationSchema={LoginSchema}
-          onSubmit={ (values, { setSubmitting, resetForm }) => {
-            console.log('loggedIn values submitted', values);
-             dispatch(userLogin(values));
-            toast(userInfo.message)
-            setSubmitting(false);
+          onSubmit={handleSubmit}
           
-            
-          }}
+
         >
           {({
             values,

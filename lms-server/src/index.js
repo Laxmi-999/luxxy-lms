@@ -31,7 +31,7 @@ app.use('/api/user', userRoute);
 
 
 
-//book route
+//book routes
 app.use('/api/book', bookRoute);
 
 
