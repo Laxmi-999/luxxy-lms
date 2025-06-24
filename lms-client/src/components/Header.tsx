@@ -3,9 +3,43 @@ import { Button } from "@/components/ui/button";
 import { BookOpen, Menu } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import { toast } from 'sonner';
+
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const {isLoggedIn, userInfo} = useSelector((state) => state.auth)
+  const router = useRouter();
+
+  const handleSignInClick = () => {
+    if(isLoggedIn){
+      if(userInfo.role === 'admin'){
+       toast.success('you are already logged In', {
+        position:"top-center"
+       });
+        router.push('/admin/dashboard');
+        
+      }else if(userInfo.role === 'librarian'){
+       toast.success('you are already logged In', {
+        position:"top-center"
+       });        
+       router.push('/librarian/dashboard');
+
+      }else if(userInfo.role === 'member'){
+       toast.success('you are already logged In', {
+        position:"top-center"
+       });        
+       router.push('/member')
+      }
+      
+    }else {
+      router.push('/login');
+    }
+     
+
+  }
 
   return (
     <header className="w-full bg-gradient-to-r from-amber-50 to-orange-100 backdrop-blur-lg border-b border-amber-200/50 sticky top-0 z-50 shadow-sm">
@@ -29,15 +63,14 @@ const Header = () => {
         </nav> */}
 
         <div className="flex items-center space-x-4">
-        <Link href="/login" >
             <Button
+               onClick={() => handleSignInClick()}
                 asChild
                 variant="outline"
                 className="border-orange-400 cursor-pointer text-orange-700 hover:bg-orange-100/50 hover:text-orange-800 transition-all duration-300 font-semibold rounded-full px-6"
             >
                 <span>Sign In</span>
             </Button>
-        </Link>
         <Link href='/register'>
             <Button className="bg-orange-600 cursor-pointer hover:bg-orange-700 text-white font-semibold rounded-full px-6 shadow-md hover:shadow-lg transition-all duration-300">
                 Register

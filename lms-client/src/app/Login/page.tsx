@@ -24,13 +24,15 @@ function login() {
   const router = useRouter();
 
 
-  const {userInfo, status, error, isError, isSuccess, isLoggedIn} = useSelector((state) => state.auth)
+  const {userInfo, status, error, isError, isLoggedIn} = useSelector((state) => state.auth)
+  console.log('userInfo is', userInfo);
+  
 
   console.log('userInfo is', userInfo);
   
 
   useEffect(() => {
-    
+  
    if(status === 'succeeded' && userInfo){
      toast.success(userInfo.message || 'Login Successfully', {
       position:'top-center'

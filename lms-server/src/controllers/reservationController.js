@@ -63,15 +63,17 @@ export const getUserReservations = async (req, res) => {
 export const approveReservation = async(req, res) => {
     try{
         const reservation = await Reservation.findById(req.params.id);
-        if(reservation) return res.status(404).json({message: "Not found"});
+        if(!reservation) return res.status(404).json({message: "Not found"});
 
         reservation.status = 'approved';
         reservation.approvedAt = Date.now();
         await reservation.save();
         console.log(reservation);
         
-        return res.status(201).json({message: 'Reservation Approved'})
+        return res.status(200).json(reservation);
     }catch(error) {
+        console.log();
+        
         return res.status(500).json({message: 'failed to approved'});
     };
 }

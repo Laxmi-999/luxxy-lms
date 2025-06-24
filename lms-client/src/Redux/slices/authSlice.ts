@@ -1,33 +1,32 @@
-// authSlice.ts
-// Removed 'use client' as it's not strictly necessary for a slice file
+
+import axiosInstance from '@/lib/axiosInstance';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Function to get user from localStorage safely
-const getUserFromLocalStorage = () => {
-  if (typeof window !== 'undefined') { // Check if window is defined (for client-side execution)
-    const user = localStorage.getItem('user');
-    try {
-      return user ? JSON.parse(user) : null;
-    } catch (e) {
-      console.error("Failed to parse user from localStorage", e);
-      localStorage.removeItem('user'); // Clear corrupted data
-      return null;
-    }
-  }
-  return null;
-};
+// // Function to get user from localStorage safely
+// const getUserFromLocalStorage = () => {
+//   if (typeof window !== 'undefined') { // Check if window is defined (for client-side execution)
+//     const user = localStorage.getItem('user');
+//     try {
+//       return user ? JSON.parse(user) : null;
+//     } catch (e) {
+//       console.error("Failed to parse user from localStorage", e);
+//       localStorage.removeItem('user'); // Clear corrupted data
+//       return null;
+//     }
+//   }
+//   return null;
+// };
 
-const user = getUserFromLocalStorage();
-console.log('user from local storage is', user);
-
+// const user = getUserFromLocalStorage();
+// console.log('user from local storage is', user);
 
 // Register user
 export const userRegister = createAsyncThunk(
   'users/register',
   async (userData: any, thunkAPI) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/users/register', userData, {
+      const response = await axiosInstance.post('/users/register', userData, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -35,9 +34,10 @@ export const userRegister = createAsyncThunk(
       console.log('User registered successfully:', response.data);
       // It's usually good to automatically log in after registration,
       // and thus store the user in localStorage here as well.
-      if (response.data) {
-        localStorage.setItem('user', JSON.stringify(response.data));
-      }
+      // if (response.data) {
+      //   localStorage.setItem('user', JSON.stringify(response.data));
+      // }
+
       return response.data;
     } catch (error: any) {
       const message =
@@ -52,7 +52,7 @@ export const userLogin = createAsyncThunk(
   'users/login',
   async (userData: any, thunkAPI) => {
     try {
-      const res = await axios.post('http://localhost:8000/api/users/login', userData, { // Ensure this port (8000) is correct for your backend!
+      const res = await axiosInstance.post('/users/login', userData, { // Ensure this port (8000) is correct for your backend!
         headers: {
           'Content-Type': 'application/json',
         },
@@ -85,13 +85,13 @@ export const logout = createAsyncThunk('users/logout', async () => {
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    userInfo: user,
+    userInfo: {},
     isLoading: false,
     isError: false,
     isSuccess: false,
     isLoggedIn:false,
     error: '',
-    status: user ? 'succeeded' : 'idle' // 'idle' | 'loading' | 'succeeded' | 'failed'
+    status: 'idle' // 'idle' | 'loading' | 'succeeded' | 'failed'
   },
   reducers: {
     reset: (state) => {
@@ -137,8 +137,8 @@ const authSlice = createSlice({
       // Login
       .addCase(userLogin.pending, (state) => {
         state.isLoading = true;
-        state.status = 'loading'; // Added
-        state.isError = false; // Clear previous errors
+        state.status = 'loading'; 
+        state.isError = false; 
         state.error = '';
       })
       .addCase(userLogin.fulfilled, (state, action) => {
@@ -146,8 +146,8 @@ const authSlice = createSlice({
         state.isSuccess = true;
         state.isLoggedIn = true;
         state.userInfo = action.payload;
-        state.status = 'succeeded'; // Added
-        state.isError = false; // Clear any error on success
+        state.status = 'succeeded'; 
+        state.isError = false;
         state.error = '';
         // localStorage.setItem('user', JSON.stringify(action.payload)); // Moved to thunk
       })

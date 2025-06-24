@@ -13,13 +13,18 @@ const PendingReservations = () => {
   console.log('pending reservations are', pendingReservations);
   
   useEffect(() => {
+
     dispatch(getPendingReservations());
   }, [dispatch]);
 
-  const handleApprove = (reservationId) => {
-    dispatch(approveReservation(reservationId));
-    // dispatch(getPendingReservations());
-  };
+const handleApprove = async (reservationId) => {
+  try {
+    await dispatch(approveReservation(reservationId)).unwrap(); // throws if error
+    dispatch(getPendingReservations());
+  } catch (err) {
+    console.error('Failed to approve reservation:', err); 
+  }
+};
 
   const handleReject = (id) => {
     dispatch(rejectReservation(id));
@@ -65,9 +70,11 @@ const PendingReservations = () => {
             </p>
 
             <div className="flex gap-3 mt-2">
-              <Button className='bg-yellow-500 pointer-cursor' onClick={() => handleApprove(reservation._id)}>
+              <Button className='bg-yellow-500 pointer-cursor'
+               onClick={() => handleApprove(reservation._id)}>
                 Approve
               </Button>
+
               <Button variant="destructive" onClick={() => handleReject(reservation._id)}>
                 Reject
               </Button>

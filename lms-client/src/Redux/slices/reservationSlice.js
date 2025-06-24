@@ -1,6 +1,7 @@
 // src/Redux/slices/reservationSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axiosInstance from '../axiosInstance';
+import axiosInstance from '../../lib/axiosInstance';
+import axios from 'axios';
 
 
 // Member : Create a reservation
@@ -40,8 +41,12 @@ export const getPendingReservations = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const res = await axiosInstance.get('/reservation/pending');
+      console.log('pending reservation response is', res);
+      
       return res.data;
     } catch (err) {
+      console.log('error while getting pending reservations', err);
+      
       return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to fetch pending reservations');
     }
   }
@@ -50,15 +55,18 @@ export const getPendingReservations = createAsyncThunk(
 
 //approve reservation
  export const approveReservation = createAsyncThunk('reservation/approveReservation',
-   async (reservationId) => {
+   async (reservationId, thunkAPI) => {
+
   try{
-     const res = await axios.put(`/reservation/approve/${reservationId}`, { status: 'approved' });
-    console.log('approve reservation', res);
+     const res = await axiosInstance.put(`/reservation/approve/${reservationId}`,
+      { status: 'approved' });
+      console.log('approve reservation', res.data);
     
-     return res.status(200).json(res.data);
+      return res.data;
 
   }catch(error){
-  
+   console.log('error while approving reservation', error);
+   
     return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to approve reservation');
 
   }

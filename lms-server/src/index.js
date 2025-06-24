@@ -4,11 +4,14 @@ import authRoutes from './routes/authRoutes.js'
 import cors from 'cors';
 import bookRoute from './routes/bookRoutes.js';
 import userRoute from './routes/userRoutes.js';
+import dotenv from  'dotenv';
 import reservationRoute from './routes/reservationRoutes.js';
 
 
+dotenv.config();
+const port = process.env.PORT
+
 const app = express()
-const port = 8000
 app.use(cors());
 
 
@@ -27,8 +30,11 @@ app.use('/api/users', authRoutes)
 app.use('/api/user', userRoute);
 
 
+
 //book route
 app.use('/api/book', bookRoute);
+
+
 
 //Reservation Routes
 app.use('/api/reservation', reservationRoute)

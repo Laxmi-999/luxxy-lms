@@ -8,14 +8,19 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { fetchAllBooks, getSingleBook } from '@/Redux/slices/bookSlice';
 import { useRouter } from 'next/navigation';
-import { createReservation } from '@/Redux/slices/reservationSlice';
+import { createReservation, getPendingReservations } from '@/Redux/slices/reservationSlice';
 
 const AllBook = () => {
   const { books } = useSelector((state) => state.books);
+  const {userReservations} = useSelector((state) => state.reservations);
+
+  console.log('user reservations are', userReservations);
+  
   const dispatch = useDispatch();
   const router = useRouter();
 
 const [reservingBookId, setReservingBookId] = useState(null);
+const [isAlreadyPending, setIsAlreadyPending] = useState(false);
 
   const handleDetailClick = (id) => {
     router.push(`/member/book-details/${id}`);
@@ -23,13 +28,15 @@ const [reservingBookId, setReservingBookId] = useState(null);
   
   useEffect(() =>{
 
+
     dispatch(fetchAllBooks());
   }, [dispatch])
 
-  const handleReservationClick = (id) => {
-    dispatch(createReservation(id));
-
-  }
+ 
+const handleReservationClick = (bookId) => {
+ 
+  dispatch(createReservation(bookId));
+};
   
   return (
     <Card>
@@ -57,10 +64,11 @@ const [reservingBookId, setReservingBookId] = useState(null);
                 >
                   View Details
                 </Button>
+                
                 <Button
                 onClick={() => handleReservationClick(book._id)}
                 
-                className="bg-gray-800 cursor-pointer" size="sm">
+                className= {`${isAlreadyPending ? 'bg-white cursor-pointer text-gray-800 border-2 border-gray-800' : 'bg-gray-800 cursor-pointer'} `} size="sm">
                   Request for Reservation
                 </Button>
               </div>

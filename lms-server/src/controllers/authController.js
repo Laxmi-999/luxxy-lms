@@ -4,13 +4,13 @@ import jwt from 'jsonwebtoken';
 import User from '../models/user.js';
 
 
-const JWT_SECRET = 'abcdefghijkalmnopqrstuvwxyz1234567890'
 
 const generateToken = (userId) => {
-  return jwt.sign({ id: userId }, JWT_SECRET, {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRETE, {
     expiresIn: '1d',
   });
 };
+
 
 // Register a new user (default role: member)
 export const registerUser = async (req, res) => {
@@ -27,8 +27,8 @@ export const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
-     name: username,
-     email,
+      name: username,
+      email,
       password: hashedPassword,
       role: 'member',
     });
@@ -48,6 +48,7 @@ export const registerUser = async (req, res) => {
     res.status(500).json({ message: 'Server error', error });
   }
 };
+
 
 // Login user
 export const loginUser = async (req, res) => {
