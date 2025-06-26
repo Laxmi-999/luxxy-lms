@@ -27,5 +27,25 @@ const bookSchema = new mongoose.Schema({
   
 });
 
+// Pre-save hook to update isAvailable based on availableCopies
+bookSchema.pre('save', function (next) {
+  this.isAvailable = this.availableCopies > 0;
+  next();
+});
+
+
+// Also update on findOneAndUpdate or updateOne
+bookSchema.pre('findOneAndUpdate', function (next) {
+  const update = this.getUpdate();
+  const availableCopies = update.availableCopies;
+
+  if (typeof availableCopies === 'number') {
+    update.isAvailable = availableCopies > 0;
+    this.setUpdate(update);
+  }
+
+  next();
+});
+
 const Book = mongoose.model("Book", bookSchema);
 export default Book;
