@@ -6,11 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Search, BookOpen } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllBooks } from '@/Redux/slices/bookSlice';
+import { useRouter } from 'next/navigation';
 
 const FindBook = () => {
   const { books } = useSelector((state) => state.books);
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState('');
+
+  const router = useRouter();
 
   useEffect(() => {
     dispatch(fetchAllBooks());
@@ -28,6 +31,13 @@ const FindBook = () => {
     const heights = ['h-64', 'h-80', 'h-96', 'h-72']; // Different height classes
     return heights[Math.floor(Math.random() * heights.length)];
   };
+
+  const handleBookClick = (bookId) => {
+
+     router.push(`/member/book-details/${bookId}`);    
+   
+  }
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white w-full">
@@ -58,6 +68,7 @@ const FindBook = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-2 w-full" style={{ alignItems: 'start' }}>
               {filteredBooks.map((book) => (
                 <Card
+                onClick={() => handleBookClick(book._id)}
                   key={book.id}
                   className={`bg-white overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-xl border border-gray-100 ${getRandomHeightClass()}`}
                   style={{ minHeight: '0', height: 'auto' }}
