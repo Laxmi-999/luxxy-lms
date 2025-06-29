@@ -8,13 +8,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllBooks } from '@/Redux/slices/bookSlice';
 import Link from 'next/link';
 import Header from '../../components/MemberHeader';
+import { getUserReservations } from '@/Redux/slices/reservationSlice';
 
 const Dashboard = () => {
   const { books } = useSelector((state) => state.books);
+  const {userReservations} = useSelector((state) =>  state.reservations)
   const dispatch = useDispatch();
+  console.log('user reservation are', userReservations);
+  console.log('books are', books);
+  
+  
 
   useEffect(() => {
     dispatch(fetchAllBooks());
+    dispatch(getUserReservations());
   }, [dispatch]);
 
   return (
@@ -38,7 +45,7 @@ const Dashboard = () => {
               <CardTitle className="text-lg text-gray-700">Reserved Books</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-yellow-600">2</p>
+              <p className="text-3xl font-bold text-yellow-600">{userReservations.length || 0}</p>
               <p className="text-sm text-gray-500">On Hold</p>
             </CardContent>
           </Card>

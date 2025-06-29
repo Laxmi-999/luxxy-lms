@@ -15,6 +15,7 @@ import authSlice from './slices/authSlice';
 import bookSlice from './slices/bookSlice';
 import userSlice from './slices/userSlice';
 import reservationSlice from './slices/reservationSlice';
+import borrowSlice from './slices/borrowSlice';
 
 
 let logger;
@@ -28,6 +29,7 @@ const rootReducer = combineReducers({
   user: userSlice,
   books: bookSlice,
   reservations: reservationSlice,
+  borrows: borrowSlice,
 });
 
 const persistConfig = {

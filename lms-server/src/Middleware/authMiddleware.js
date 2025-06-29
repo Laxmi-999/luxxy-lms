@@ -1,9 +1,10 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/user.js';
 
-const JWT_SECRET = 'abcdefghijkalmnopqrstuvwxyz1234567890';
 
-// Protect routes
+
+
+// Protect route or isTokenVerify
 export const protect = async (req, res, next) => {
   let token;
 
@@ -14,7 +15,7 @@ export const protect = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(' ')[1];
 
-      const decoded = jwt.verify(token, JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRETE);
       req.user = await User.findById(decoded.id).select('-password');
       console.log('success');
       
@@ -47,5 +48,14 @@ export const isLibrarian = (req, res, next) => {
     next();
   } else {
     res.status(403).json({ message: 'Access denied: Librarians only' });
+  }
+};
+
+// member only 
+export const isMember = (req, res, next) => {
+  if (req.user.role === 'member') {
+    next();
+  } else {
+    res.status(403).json({ message: 'Access denied. Members only.' });
   }
 };

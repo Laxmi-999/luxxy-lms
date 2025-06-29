@@ -69,7 +69,7 @@ const FindBook = () => {
               {filteredBooks.map((book) => (
                 <Card
                 onClick={() => handleBookClick(book._id)}
-                  key={book.id}
+                  key={book._id}
                   className={`bg-white overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-xl border border-gray-100 ${getRandomHeightClass()}`}
                   style={{ minHeight: '0', height: 'auto' }}
                 >

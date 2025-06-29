@@ -6,6 +6,7 @@ import bookRoute from './routes/bookRoutes.js';
 import userRoute from './routes/userRoutes.js';
 import dotenv from  'dotenv';
 import reservationRoute from './routes/reservationRoutes.js';
+import borrowRouter from './routes/borrowRoutes.js';
 
 
 dotenv.config();
@@ -38,6 +39,9 @@ app.use('/api/book', bookRoute);
 
 //Reservation Routes
 app.use('/api/reservation', reservationRoute)
+
+// BorrowRequest route
+app.use('/api/borrow', borrowRouter);
 
 
 app.listen(port, () => {

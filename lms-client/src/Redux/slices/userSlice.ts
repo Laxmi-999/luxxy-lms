@@ -19,11 +19,13 @@ export const fetchAdminProfile = createAsyncThunk('user/fetchAdminProfile', asyn
 // to get all users
 
 export const fetchAllUsers = createAsyncThunk('user/fetchAllUsers', async (_, thunkAPI) => {
+   console.log("getting users");
   try {
- const res = await axiosInstance.get('/user/get-all-users')
- console.log('users at userSlice are', res);
  
-    return res.data;
+ const res = await axiosInstance.get('/user/get-all-users')
+ console.log('users at userSlice are', res.data);
+ if(res)  return res.data;
+
   } catch (err) {
     console.log(err);
     
@@ -155,7 +157,10 @@ const userSlice = createSlice({
       })
       
       .addCase(fetchAllUsers.fulfilled, (state, action) => {
+        console.log('payload is', action.payload);
+        
         state.users = action.payload;
+        
       })
       .addCase(fetchAllUsers.rejected, (state, action) => {
         state.error = action.payload;
