@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,15 +10,44 @@ import { useDispatch, useSelector } from 'react-redux';
 import ManageAllBooks from '@/components/ManageAllBooks';
 import ManageUsersAndRoles from '@/components/ManageUsersAndRole';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+
 
 const LibrarianDashboard = () => {
+    const searchParams = useSearchParams();
+    const {pendingBorrows} = useSelector((state) => state.borrows);
+    
+
     const {userInfo, isLoggedIn} = useSelector((state) => state.auth);
     const {users} = useSelector((state) =>  state.user);
     console.log('users are', users);
+   
+     const borrowId = searchParams.get('borrowId');
+
+    const BorrowToBeIssue = pendingBorrows?.find(borrow => borrow._id === borrowId);
+    const bookToBeIssue = BorrowToBeIssue?.book;
+    const userToBeBorrow = BorrowToBeIssue?.user;
+
+
+    console.log('borrow to be approve', BorrowToBeIssue);
+    
     
 
+  
+// Function to format ISO date to mm/dd/yyyy
+    const formatDate = (isoDate) => {
+    if (!isoDate) return '';
+    const date = new Date(isoDate);
+    return date.toLocaleDateString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric'
+    });
+  };
+
+
     const dispatch = useDispatch();
-    const router = useRouter();
+      
 
     const handleLogout = () => {
         dispatch(logout());
@@ -90,33 +119,83 @@ const LibrarianDashboard = () => {
                     </CardContent>
                 </Card>
             </div>
-            {/* <ManageUsersAndRoles /> */}
-            {/* <ManageAllBooks /> */}
+                    {/* <ManageUsersAndRoles /> */}
+                    {/* <ManageAllBooks /> */}
 
-            {/* Issue / Return Books */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Issue / Return Book</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="flex flex-col md:flex-row gap-4">
-                        <input
+              <div className="flex gap-2 w-full ">
+                    {/* Book Details Section */}
+                    <Card className='w-1/2'>
+                        <CardHeader>
+                        <CardTitle>Borrowing Book Details</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                        <div className="flex flex-col gap-4">
+                            <input
                             type="text"
-                            placeholder="User ID"
-                            className="w-full border rounded px-4 py-2"
-                        />
-                        <input
-                            type="text"
+                            value={bookToBeIssue?._id}
                             placeholder="Book ID"
                             className="w-full border rounded px-4 py-2"
-                        />
-                    </div>
-                    <div className="flex gap-4">
-                        <Button variant="default">Issue Book</Button>
-                        <Button variant="secondary">Return Book</Button>
-                    </div>
-                </CardContent>
-            </Card>
+                            />
+                            <input
+                            type="text"
+                            value={bookToBeIssue?.title}
+
+                            placeholder="Book Title"
+                            className="w-full border rounded px-4 py-2"
+                            />
+                            <div className="flex flex-col md:flex-row gap-4">
+                            <input
+                                type="text"
+                                value={formatDate(bookToBeIssue?.borrowDate)}
+                                placeholder="Borrow Date"
+                                className="w-full border rounded px-4 py-2"
+                            />
+                            <input
+                                type="text"
+
+                                value={formatDate(bookToBeIssue?.dueDate)}
+                                placeholder="Due Date"
+                                className="w-full border rounded px-4 py-2"
+                            />
+                            </div>
+                        </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Borrowing Member Section */}
+                    <Card className='w-1/2'>
+                        <CardHeader>
+                        <CardTitle>Borrowing Member</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                        <div className="flex flex-col gap-4">
+                            <input
+                            type="text"
+                            value={userToBeBorrow?._id}
+                            placeholder="User ID"
+                            className="w-full border rounded px-4 py-2"
+                            />
+                            <input
+                            type="text"
+                           value={userToBeBorrow?.name}
+
+                            placeholder="User Name"
+                            className="w-full border rounded px-4 py-2"
+                            />
+                            <input
+                            type="email"
+                            value={userToBeBorrow?.email}
+                            placeholder="User Email"
+                            className="w-full border rounded px-4 py-2"
+                            />
+                        </div>
+                        <div className="flex gap-4">
+                            <Button variant="default">Issue Book</Button>
+                            <Button variant="secondary">Return Book</Button>
+                        </div>
+                        </CardContent>
+                    </Card>
+         </div>
 
             {/* Manage Users / Reservations */}
             <Card>
