@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Loader2 } from 'lucide-react';
 import { approveReservation, getPendingReservations, rejectReservation } from '@/Redux/slices/reservationSlice';
 import { getPendingBorrows } from '@/Redux/slices/borrowSlice';
+import { useRouter } from 'next/navigation';
 
 const PendingRequests = () => {
   const dispatch = useDispatch();
@@ -17,6 +18,8 @@ const PendingRequests = () => {
     dispatch(getPendingReservations());
     dispatch(getPendingBorrows());
   }, [dispatch]);
+
+  const router = useRouter();
 
   const handleApproveReservation = async (reservationId) => {
     try {
@@ -31,14 +34,11 @@ const PendingRequests = () => {
     dispatch(rejectReservation(id));
   };
 
-  // const handleApproveBorrow = async (borrowId) => {
-  //   try {
-  //     await dispatch(approveBorrow(borrowId)).unwrap();
-  //     dispatch(getPendingBorrows());
-  //   } catch (err) {
-  //     console.error('Failed to approve borrow:', err);
-  //   }
-  // };
+
+  const handleApproveBorrow = async(borrowId) => {
+
+            router.push(`/librarian/dashboard?borrowId=${borrowId}`);
+  };
 
   // const handleRejectBorrow = (id) => {
   //   dispatch(rejectBorrow(id));
@@ -123,7 +123,7 @@ const PendingRequests = () => {
 
               <div className="flex gap-3 mt-2">
                 <Button className="bg-yellow-500 pointer-cursor" 
-                // onClick={() => handleApproveBorrow(borrow._id)}
+                onClick={() => handleApproveBorrow(borrow._id)}
                 >
                   Approve
                 </Button>
