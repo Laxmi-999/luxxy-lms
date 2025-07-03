@@ -31,6 +31,7 @@ const LibrarianDashboard = () => {
 
     console.log('borrow to be approve', BorrowToBeIssue);
     
+    console.log('due date of borrow book is', BorrowToBeIssue?.dueDate);
     
 
   
@@ -135,27 +136,30 @@ const LibrarianDashboard = () => {
                             value={bookToBeIssue?._id}
                             placeholder="Book ID"
                             className="w-full border rounded px-4 py-2"
+                            readOnly
                             />
                             <input
                             type="text"
                             value={bookToBeIssue?.title}
-
+                            readOnly
                             placeholder="Book Title"
                             className="w-full border rounded px-4 py-2"
                             />
                             <div className="flex flex-col md:flex-row gap-4">
                             <input
                                 type="text"
-                                value={formatDate(bookToBeIssue?.borrowDate)}
+                                value={formatDate(BorrowToBeIssue?.borrowDate)}
                                 placeholder="Borrow Date"
                                 className="w-full border rounded px-4 py-2"
+                                readOnly
                             />
                             <input
                                 type="text"
 
-                                value={formatDate(bookToBeIssue?.dueDate)}
+                                value={formatDate(BorrowToBeIssue?.dueDate)}
                                 placeholder="Due Date"
                                 className="w-full border rounded px-4 py-2"
+                                readOnly
                             />
                             </div>
                         </div>
@@ -173,11 +177,13 @@ const LibrarianDashboard = () => {
                             type="text"
                             value={userToBeBorrow?._id}
                             placeholder="User ID"
+                            readOnly
                             className="w-full border rounded px-4 py-2"
                             />
                             <input
                             type="text"
                            value={userToBeBorrow?.name}
+                           readOnly
 
                             placeholder="User Name"
                             className="w-full border rounded px-4 py-2"
@@ -185,6 +191,7 @@ const LibrarianDashboard = () => {
                             <input
                             type="email"
                             value={userToBeBorrow?.email}
+                            readOnly
                             placeholder="User Email"
                             className="w-full border rounded px-4 py-2"
                             />
