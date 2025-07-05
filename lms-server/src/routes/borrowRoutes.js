@@ -68,4 +68,44 @@ borrowRouter.get('/requests', protect, isLibrarian, async (req, res) => {
   }
 });
 
+//approve the borrow request
+// Approve a borrow request (Issue the book)
+borrowRouter.put('/approve/:borrowId', protect, isLibrarian, async (req, res) => {
+  try {
+    const { borrowId } = req.params;
+
+    const borrow = await Borrow.findById(borrowId).populate('book');
+    if (!borrow) {
+      return res.status(404).json({ message: 'Borrow request not found' });
+    }
+
+    if (borrow.status !== 'pending') {
+      return res.status(400).json({ message: 'This request has already been processed' });
+    }
+
+    const book = borrow.book;
+    if (book.availableCopies <= 0) {
+      return res.status(400).json({ message: 'No available copies to issue' });
+    }
+
+    // Update borrow status and dates
+    borrow.status = 'approved';
+    borrow.borrowDate = new Date();
+    borrow.dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // e.g., 7 days later
+    borrow.issuedBy = req.user._id;
+
+    await borrow.save();
+
+    // Update book copies
+    book.availableCopies -= 1;
+    await book.save();
+
+    return res.status(200).json({ message: 'Book issued successfully', borrow });
+  } catch (error) {
+    console.error('Error approving borrow:', error);
+    return res.status(500).json({ message: 'Failed to issue book' });
+  }
+});
+
+
 export default borrowRouter;
