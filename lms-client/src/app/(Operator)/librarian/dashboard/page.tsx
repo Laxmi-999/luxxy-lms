@@ -11,10 +11,19 @@ import ManageAllBooks from '@/components/ManageAllBooks';
 import ManageUsersAndRoles from '@/components/ManageUsersAndRole';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import axios from 'axios';
+import axiosInstance from '@/lib/axiosInstance';
+import { toast } from 'sonner';
+import { removePendingBorrow } from '@/Redux/slices/borrowSlice';
 
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
 const LibrarianDashboard = () => {
+    
     const searchParams = useSearchParams();
+    const dispatch = useDispatch();
+    const router = useRouter();
     const {pendingBorrows} = useSelector((state) => state.borrows);
     
 
@@ -47,7 +56,6 @@ const LibrarianDashboard = () => {
   };
 
 
-    const dispatch = useDispatch();
       
 
     const handleLogout = () => {
@@ -55,6 +63,24 @@ const LibrarianDashboard = () => {
 
         router.push('/login');
     };
+const handleIssueBookClick = async (borrowId) => {
+    try {
+        const { data } = await axiosInstance.put(`/borrow/approve/` + borrowId);
+        toast.success(`${bookToBeIssue.title} book is issued to ${userToBeBorrow.name} user`, {
+            position: 'top-center'
+        });
+
+         dispatch(removePendingBorrow(borrowId));
+         
+         // Clear the borrowId from the URL to clear the fields
+        router.replace('/librarian/dashboard', undefined, { shallow: true });
+
+    } catch (error) {
+        toast.error('Failed to issue the book', {
+            position: 'top-center'
+        });
+    }
+};
 
     return (
         <div className="p-6 space-y-6 w-full">
@@ -197,7 +223,9 @@ const LibrarianDashboard = () => {
                             />
                         </div>
                         <div className="flex gap-4">
-                            <Button variant="default">Issue Book</Button>
+                            <Button 
+                            onClick={() => handleIssueBookClick(BorrowToBeIssue._id)}
+                            variant="default">Issue Book</Button>
                             <Button variant="secondary">Return Book</Button>
                         </div>
                         </CardContent>

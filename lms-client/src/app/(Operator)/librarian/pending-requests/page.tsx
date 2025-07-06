@@ -74,7 +74,7 @@ const PendingRequests = () => {
 
             <CardContent className="flex flex-col gap-2">
               <p>
-                <strong>Book:</strong> {reservation.book.title} by {reservation.book.author}
+                <strong>Book:</strong> {reservation?.book?.title} by {reservation?.book?.author}
               </p>
 
               <div className="flex gap-3 mt-2">

@@ -93,6 +93,8 @@ borrowRouter.put('/approve/:borrowId', protect, isLibrarian, async (req, res) =>
     borrow.borrowDate = new Date();
     borrow.dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // e.g., 7 days later
     borrow.issuedBy = req.user._id;
+    console.log('issued book is', borrow);
+    
 
     await borrow.save();
 

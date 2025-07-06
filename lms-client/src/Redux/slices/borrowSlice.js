@@ -53,7 +53,16 @@ const borrowSlice = createSlice({
    loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    setPendingBorrows(state, action) {
+            state.pendingBorrows = action.payload;
+        },
+        removePendingBorrow(state, action) {
+            state.pendingBorrows = state.pendingBorrows.filter(
+                (borrow) => borrow._id !== action.payload
+            );
+        },
+  },
   extraReducers: (builder) => {
     builder
 
@@ -99,5 +108,5 @@ const borrowSlice = createSlice({
       });
   },
 });
-
+export const { setPendingBorrows, removePendingBorrow } = borrowSlice.actions;
 export default borrowSlice.reducer;
