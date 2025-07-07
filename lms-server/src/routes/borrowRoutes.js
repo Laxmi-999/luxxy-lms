@@ -4,6 +4,7 @@ import Book from '../models/book.js';
 import { isLibrarian, protect } from '../Middleware/authMiddleware.js';
 import Borrow from '../models/borrow.js';
 import { isMember } from '../Middleware/authMiddleware.js';
+import Activity from '../models/activity.js';
 
 
 
@@ -68,13 +69,12 @@ borrowRouter.get('/requests', protect, isLibrarian, async (req, res) => {
   }
 });
 
-//approve the borrow request
 // Approve a borrow request (Issue the book)
 borrowRouter.put('/approve/:borrowId', protect, isLibrarian, async (req, res) => {
   try {
     const { borrowId } = req.params;
 
-    const borrow = await Borrow.findById(borrowId).populate('book');
+    const borrow = await Borrow.findById(borrowId).populate('book').populate('user');
     if (!borrow) {
       return res.status(404).json({ message: 'Borrow request not found' });
     }
@@ -99,8 +99,27 @@ borrowRouter.put('/approve/:borrowId', protect, isLibrarian, async (req, res) =>
     await borrow.save();
 
     // Update book copies
-    book.availableCopies -= 1;
-    await book.save();
+      book.availableCopies -= 1;
+      await book.save();
+
+
+       const user = borrow.user;
+       await Activity.create({
+        type: 'issued', // or 'returned'
+        book: {
+          _id: book._id,
+          title: book.title,
+        },
+        user: {
+          _id: user._id,
+          email: user.email,
+        },
+        librarian: {
+          _id: req.user._id,
+          email: req.user.email,
+        },
+      });
+
 
     return res.status(200).json({ message: 'Book issued successfully', borrow });
   } catch (error) {

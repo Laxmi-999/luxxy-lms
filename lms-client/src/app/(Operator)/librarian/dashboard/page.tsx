@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,7 +20,13 @@ import { removePendingBorrow } from '@/Redux/slices/borrowSlice';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
 const LibrarianDashboard = () => {
-    
+    const [selectedBorrow, setSelectedBorrow] = useState(null);
+   const [bookDetails, setBookDetails] = useState(null);
+   const [userDetails, setUserDetails] = useState(null);
+   const [recentActivities, setRecentActivities] = useState([]);
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState('');
+
     const searchParams = useSearchParams();
     const dispatch = useDispatch();
     const router = useRouter();
@@ -30,18 +36,44 @@ const LibrarianDashboard = () => {
     const {userInfo, isLoggedIn} = useSelector((state) => state.auth);
     const {users} = useSelector((state) =>  state.user);
     console.log('users are', users);
-   
-     const borrowId = searchParams.get('borrowId');
-
-    const BorrowToBeIssue = pendingBorrows?.find(borrow => borrow._id === borrowId);
-    const bookToBeIssue = BorrowToBeIssue?.book;
-    const userToBeBorrow = BorrowToBeIssue?.user;
 
 
-    console.log('borrow to be approve', BorrowToBeIssue);
+
+
+
+    const fetchActivities = async () => {
+      try {
+        const { data } = await axiosInstance.get('/activity');
+        console.log('recent activites are', data);
+        
+        setRecentActivities(data);
+      } catch (err) {
+        console.error('Error fetching activities:', err);
+        setError('Failed to load recent activities.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+ 
+
     
-    console.log('due date of borrow book is', BorrowToBeIssue?.dueDate);
-    
+
+   useEffect(() => {
+        
+        fetchActivities();
+
+        const borrowId = searchParams.get('borrowId');
+        const foundBorrow = pendingBorrows?.find(b => b._id === borrowId);
+        if (foundBorrow) {
+            setSelectedBorrow(foundBorrow);
+            setBookDetails(foundBorrow.book);
+            setUserDetails(foundBorrow.user);
+        }
+        }, [searchParams, pendingBorrows]);
+      
+
+      
 
   
 // Function to format ISO date to mm/dd/yyyy
@@ -63,24 +95,38 @@ const LibrarianDashboard = () => {
 
         router.push('/login');
     };
-const handleIssueBookClick = async (borrowId) => {
-    try {
-        const { data } = await axiosInstance.put(`/borrow/approve/` + borrowId);
-        toast.success(`${bookToBeIssue.title} book is issued to ${userToBeBorrow.name} user`, {
-            position: 'top-center'
-        });
 
-         dispatch(removePendingBorrow(borrowId));
-         
-         // Clear the borrowId from the URL to clear the fields
-        router.replace('/librarian/dashboard', undefined, { shallow: true });
 
-    } catch (error) {
-        toast.error('Failed to issue the book', {
-            position: 'top-center'
-        });
-    }
+
+ const handleIssueBookClick = async(borrowId) => {
+  try {
+    const { data } = await axiosInstance.put(`/borrow/approve/${borrowId}`);
+
+    const message = `${bookDetails.title} book is issued to ${userDetails.name} user`;
+
+    toast.success(message, {
+      position: 'top-center',
+    });
+
+    // Clear state
+    setSelectedBorrow(null);
+    setBookDetails(null);
+    setUserDetails(null);
+
+    // Clear URL
+    const newParams = new URLSearchParams(window.location.search);
+    newParams.delete('borrowId');
+    const newUrl = `${window.location.pathname}?${newParams.toString()}`;
+    window.history.replaceState({}, '', newUrl);
+
+  } catch (error) {
+    console.log('Failed to issue book:', error);
+    toast.error('Failed to issue the book', {
+      position: 'top-center',
+    });
+  }
 };
+
 
     return (
         <div className="p-6 space-y-6 w-full">
@@ -159,14 +205,14 @@ const handleIssueBookClick = async (borrowId) => {
                         <div className="flex flex-col gap-4">
                             <input
                             type="text"
-                            value={bookToBeIssue?._id}
-                            placeholder="Book ID"
+                            value={bookDetails?._id || ''}
+                              placeholder="Book ID"
                             className="w-full border rounded px-4 py-2"
                             readOnly
                             />
                             <input
                             type="text"
-                            value={bookToBeIssue?.title}
+                            value={bookDetails?.title || ''}
                             readOnly
                             placeholder="Book Title"
                             className="w-full border rounded px-4 py-2"
@@ -174,7 +220,7 @@ const handleIssueBookClick = async (borrowId) => {
                             <div className="flex flex-col md:flex-row gap-4">
                             <input
                                 type="text"
-                                value={formatDate(BorrowToBeIssue?.borrowDate)}
+                                value={formatDate(selectedBorrow?.borrowDate)}
                                 placeholder="Borrow Date"
                                 className="w-full border rounded px-4 py-2"
                                 readOnly
@@ -182,7 +228,7 @@ const handleIssueBookClick = async (borrowId) => {
                             <input
                                 type="text"
 
-                                value={formatDate(BorrowToBeIssue?.dueDate)}
+                                value={formatDate(selectedBorrow?.dueDate)}
                                 placeholder="Due Date"
                                 className="w-full border rounded px-4 py-2"
                                 readOnly
@@ -201,14 +247,14 @@ const handleIssueBookClick = async (borrowId) => {
                         <div className="flex flex-col gap-4">
                             <input
                             type="text"
-                            value={userToBeBorrow?._id}
+                            value={userDetails?._id  || ''}
                             placeholder="User ID"
                             readOnly
                             className="w-full border rounded px-4 py-2"
                             />
                             <input
                             type="text"
-                           value={userToBeBorrow?.name}
+                           value={userDetails?.name || ''}
                            readOnly
 
                             placeholder="User Name"
@@ -216,7 +262,7 @@ const handleIssueBookClick = async (borrowId) => {
                             />
                             <input
                             type="email"
-                            value={userToBeBorrow?.email}
+                            value={userDetails?.email || ''}
                             readOnly
                             placeholder="User Email"
                             className="w-full border rounded px-4 py-2"
@@ -224,7 +270,7 @@ const handleIssueBookClick = async (borrowId) => {
                         </div>
                         <div className="flex gap-4">
                             <Button 
-                            onClick={() => handleIssueBookClick(BorrowToBeIssue._id)}
+                            onClick={() => handleIssueBookClick(selectedBorrow._id)}
                             variant="default">Issue Book</Button>
                             <Button variant="secondary">Return Book</Button>
                         </div>
@@ -233,28 +279,53 @@ const handleIssueBookClick = async (borrowId) => {
            </div>
 
             {/* Manage Users / Reservations */}
-            <Card>
+           <Card>
                 <CardHeader>
-                    <CardTitle>Manage Users & Reservations</CardTitle>
+                    <CardTitle>Recent Activities</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                    <div className="flex items-center justify-between border rounded p-3">
+                    {recentActivities.length === 0 ? (
+                    <p className="text-muted-foreground text-sm">No recent activity</p>
+                    ) : (
+                    recentActivities.map((activity, index) => (
+                        <div
+                        key={activity?._id || index}
+                        className="flex items-center justify-between border rounded p-3"
+                        >
                         <div>
-                            <p className="font-medium">Jane Doe (User123)</p>
-                            <p className="text-sm text-muted-foreground">Reserved: "Atomic Habits"</p>
+                            <p className="text-sm text-muted-foreground">
+                            {activity?.type === 'issued' && (
+                                <>
+                                "{activity?.book?.title}" was issued to {activity?.user?.email}
+                                </>
+                            )}
+                            {activity?.type === 'returned' && (
+                                <>
+                                {activity?.user?.email} returned "{activity?.book?.title}"
+                                </>
+                            )}
+                            </p>
+                            <p className="text-xs text-gray-400">
+                            {new Date(activity?.createdAt).toLocaleString()}
+                            </p>
                         </div>
-                        <Badge variant="outline" className="text-yellow-600">Reserved</Badge>
-                    </div>
-
-                    <div className="flex items-center justify-between border rounded p-3">
-                        <div>
-                            <p className="font-medium">John Smith (User456)</p>
-                            <p className="text-sm text-muted-foreground">Borrowed: "1984"</p>
+                        <Badge
+                            variant="outline"
+                            className={
+                            activity?.type === 'issued'
+                                ? 'text-green-600'
+                                : 'text-blue-600'
+                            }
+                        >
+                            {activity?.type?.charAt(0).toUpperCase() + activity?.type?.slice(1)}
+                        </Badge>
                         </div>
-                        <Badge variant="outline" className="text-green-600">Issued</Badge>
-                    </div>
+                    ))
+                    )}
                 </CardContent>
-            </Card>
+        </Card>
+
+
         </div>
     );
 };

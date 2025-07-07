@@ -40,9 +40,7 @@ const PendingRequests = () => {
             router.push(`/librarian/dashboard?borrowId=${borrowId}`);
   };
 
-  // const handleRejectBorrow = (id) => {
-  //   dispatch(rejectBorrow(id));
-  // };
+
 
   return (
     <div className="p-6 gap-[5rem] flex justify-between ">
