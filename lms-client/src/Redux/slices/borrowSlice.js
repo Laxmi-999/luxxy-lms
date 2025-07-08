@@ -50,6 +50,7 @@ const borrowSlice = createSlice({
   initialState: {
     userBorrows: [],
     pendingBorrows: [],
+    borrows:[],
    loading: false,
     error: null,
   },
@@ -73,7 +74,7 @@ const borrowSlice = createSlice({
       })
       .addCase(getUserBorrows.fulfilled, (state, action) => {
         state.loading = false;
-        state.borrows = action.payload;
+        state.userBorrows = action.payload;
       })
       .addCase(getUserBorrows.rejected, (state, action) => {
         state.loading = false;

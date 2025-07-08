@@ -40,6 +40,7 @@ borrowRouter.post('/request', protect,isMember,  async (req, res) => {
     res.status(500).json({ message: 'Failed to request borrow' });
   }
 });
+
 //to get all borrows
 borrowRouter.get('/request', protect, isMember, async(req, res) => {
 
@@ -125,6 +126,56 @@ borrowRouter.put('/approve/:borrowId', protect, isLibrarian, async (req, res) =>
   } catch (error) {
     console.error('Error approving borrow:', error);
     return res.status(500).json({ message: 'Failed to issue book' });
+  }
+});
+
+
+// Return a borrowed book
+borrowRouter.put('/return/:borrowId', protect, async (req, res) => {
+  try {
+    const { borrowId } = req.params;
+
+    const borrow = await Borrow.findById(borrowId).populate('book').populate('user');
+    if (!borrow) {
+      return res.status(404).json({ message: 'Borrow record not found' });
+    }
+
+    if (borrow.status !== 'approved') {
+      return res.status(400).json({ message: 'Book has not been issued or already returned' });
+    }
+
+    // Update borrow status
+    borrow.status = 'returned';
+    borrow.returnDate = new Date();
+    await borrow.save();
+
+    // Update book availability
+    const book = borrow.book;
+    book.availableCopies += 1;
+    await book.save();
+
+    // Create activity log
+    await Activity.create({
+      type: 'returned',
+      book: {
+        _id: book._id,
+        title: book.title,
+      },
+      user: {
+        _id: borrow.user._id,
+        email: borrow.user.email,
+      },
+      librarian: {
+        _id: req.user._id,
+        email: req.user.email,
+      },
+    });
+    console.log('book returned successfully');
+    
+    res.status(200).json({ message: 'Book returned successfully', borrow });
+  } catch (error) {
+    console.error('Error returning book:', error);
+    res.status(500).json({ message: 'Failed to return book' });
   }
 });
 
