@@ -33,16 +33,16 @@ const MemberHeader = () => {
 
       {/* Navigation Links - Center */}
       <div className="flex gap-8">
-        <Link href="/member">
+        {/* <Link href="/member">
           <span className="text-lg font-medium text-gray-700 hover:text-green-600 transition-colors cursor-pointer">
             Dashboard
           </span>
-        </Link>
-        <Link href="/member/find-book">
+        </Link> */}
+        {/* <Link href="/member/find-book">
           <span className="text-lg font-medium text-gray-700 hover:text-green-600 transition-colors cursor-pointer">
             Find Book
           </span>
-        </Link>
+        </Link> */}
       </div>
 
       {/* Logout Button - Right */}

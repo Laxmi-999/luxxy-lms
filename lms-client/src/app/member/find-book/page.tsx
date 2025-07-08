@@ -43,57 +43,65 @@ const FindBook = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white w-full">
       {/* Main Content */}
       <main className="p-6 w-full">
-        <div className="w-full">
-          {/* Search Bar */}
-          <div className="flex items-center gap-4 mb-10 w-full max-w-2xl mx-auto">
-            <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-yellow-600" />
-              <Input
-                type="text"
-                placeholder="Search by title or author..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-12 pr-4 py-3 w-full border-2 border-yellow-500 rounded-lg focus:border-yellow-600 focus:ring-2 focus:ring-yellow-200 bg-white text-gray-900 font-medium shadow-md transition-all duration-300"
-              />
+          <div className="w-full max-w-6xl mx-auto">
+            {/* Search Bar */}
+            <div className="flex items-center gap-4 mb-10 w-full">
+              <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <Input
+                  type="text"
+                  placeholder="Search books..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-12 pr-4 py-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-900"
+                />
+              </div>
             </div>
-            <Button className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
-              <Search className="w-5 h-5 mr-2" />
-              Search
-            </Button>
-          </div>
 
-          {filteredBooks.length === 0 ? (
-            <p className="text-center text-gray-500 text-xl font-semibold py-10">No books found.</p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-2 w-full" style={{ alignItems: 'start' }}>
-              {filteredBooks.map((book) => (
-                <Card
-                onClick={() => handleBookClick(book._id)}
-                  key={book._id}
-                  className={`bg-white overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-xl border border-gray-100 ${getRandomHeightClass()}`}
-                  style={{ minHeight: '0', height: 'auto' }}
-                >
-                  <CardHeader className="p-0">
-                    <div className="relative w-full h-[60vh]">
+            {/* Book Grid */}
+            {filteredBooks.length === 0 ? (
+              <p className="text-center text-gray-500 text-xl font-semibold py-10">
+                No books found.
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+                {filteredBooks.map((book) => (
+                  <Card
+                    key={book._id}
+                    onClick={() => handleBookClick(book._id)}
+                    className="overflow-hidden shadow-md hover:shadow-lg transition duration-300 rounded-xl cursor-pointer border border-gray-200"
+                  >
+                    <div className="h-[220px] bg-gray-100 flex justify-center items-center">
                       <img
                         src={book.coverImage || 'https://via.placeholder.com/150x200?text=Book+Cover'}
                         alt={book.title}
-                        className="w-full h-full object-cover"
+                        className="h-full object-contain"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
-                        <CardTitle className="text-white text-lg font-bold line-clamp-1">{book.title}</CardTitle>
-                      </div>
                     </div>
-                  </CardHeader>
-                  <CardContent className="p-4 bg-gray-50">
-                    <p className="text-sm text-gray-700 font-medium">{book.author || 'Unknown'}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
-      </main>
+                    <CardContent className="p-4">
+                      <h2 className="text-lg font-semibold text-gray-800 line-clamp-1">{book.title}</h2>
+                      <p className="text-sm text-gray-500">{book.author || 'Unknown Author'}</p>
+
+                      {/* Availability Badge */}
+                      <div className="mt-3">
+                        {book.availableCopies > 0 ? (
+                          <span className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full">
+                            Available
+                          </span>
+                        ) : (
+                          <span className="px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded-full">
+                            Reserve
+                          </span>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+    </main>
+
     </div>
   );
 };

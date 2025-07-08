@@ -1,3 +1,4 @@
+// Dashboard.jsx
 'use client';
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,9 +13,7 @@ import { getUserReservations } from '@/Redux/slices/reservationSlice';
 import { getUserBorrows } from '@/Redux/slices/borrowSlice';
 import BorrowedBooks from '@/components/BorrowedBooks';
 import axiosInstance from '@/lib/axiosInstance';
-
-
-
+import Sidebar from './Sidebar';
 
 const Dashboard = () => {
   const { books } = useSelector((state) => state.books);
@@ -23,128 +22,116 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const [showBorrowedBooks, setShowBorrowedBooks] = useState(false);
   const [recentActivities, setRecentActivities] = useState([]);
-  // const [loading, setLoading] = useState(false);
 
   console.log('recent activities are', recentActivities);
-  
 
-
-   const fetchActivities = async () => {
-      try {
-        const { data } = await axiosInstance.get('/activity');
-        console.log('recent activites are', data);
-        
-        setRecentActivities(data);
-      } catch (err) {
-        console.error('Error fetching activities:', err);
-        setError('Failed to load recent activities.');
-      } finally {
-        // setLoading(false);
-      }
-    };
-
-
+  const fetchActivities = async () => {
+    try {
+      const { data } = await axiosInstance.get('/activity');
+      console.log('recent activites are', data);
+      setRecentActivities(data);
+    } catch (err) {
+      console.error('Error fetching activities:', err);
+      setError('Failed to load recent activities.');
+    }
+  };
 
   useEffect(() => {
     dispatch(fetchAllBooks());
-   dispatch(getUserReservations());
+    dispatch(getUserReservations());
     dispatch(getUserBorrows());
     fetchActivities();
   }, [dispatch]);
 
-
-
   const activeBorrows = userBorrows.filter((b) => b.status === 'approved');
   const totalReturns = userBorrows.filter((b) => b.status === 'returned');
 
-
   const getBadgeStyle = (type) => {
-  switch (type.toLowerCase()) {
-    case 'borrowed':
-      return 'text-green-600 border-green-600';
-    case 'reserved':
-      return 'text-yellow-600 border-yellow-600';
-    case 'returned':
-      return 'text-blue-600 border-blue-600';
-    default:
-      return 'text-gray-600 border-gray-400';
-  }
-};
+    switch (type.toLowerCase()) {
+      case 'borrowed':
+        return 'text-green-600 border-green-600';
+      case 'reserved':
+        return 'text-yellow-600 border-yellow-600';
+      case 'returned':
+        return 'text-blue-600 border-blue-600';
+      default:
+        return 'text-gray-600 border-gray-400';
+    }
+  };
 
-
-const generateActivityMessage = (activity) => {
-  const bookTitle = activity.book?.title || 'a book';
-
-  switch (activity.type.toLowerCase()) {
-    case 'issued':
-      return `You have borrowed "${bookTitle}"`;
-    case 'pending':
-      return `You have requested "${bookTitle}"`;
-    case 'returned':
-      return `You have returned "${bookTitle}"`;
-    default:
-      return `You performed an action on "${bookTitle}"`;
-  }
-};
+  const generateActivityMessage = (activity) => {
+    const bookTitle = activity.book?.title || 'a book';
+    switch (activity.type.toLowerCase()) {
+      case 'issued':
+        return `You have borrowed "${bookTitle}"`;
+      case 'pending':
+        return `You have requested "${bookTitle}"`;
+      case 'returned':
+        return `You have returned "${bookTitle}"`;
+      default:
+        return `You performed an action on "${bookTitle}"`;
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen w-full bg-gray-100 flex">
       {/* Main Content */}
-      <main className="p-6 space-y-6 w-full">
-        {/* Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <main className="flex-1 p-6">
+        <h1 className="text-2xl font-bold mb-4">Welcome, Bob Johnson</h1>
+        {/* First Row: Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <Card 
-            className="hover:shadow-lg transition-shadow cursor-pointer"
+            className="bg-blue-700 text-white hover:shadow-lg transition-shadow cursor-pointer"
             onClick={() => setShowBorrowedBooks(true)}
           >
             <CardHeader>
-              <CardTitle className="text-lg text-gray-700">Total Borrowed Books</CardTitle>
+              <CardTitle className="text-lg">Total Borrowed Books</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-green-600">{userBorrows.length || 0}</p>
-              <p className="text-sm text-gray-500">Books you have  Borrowed</p>
+              <p className="text-3xl font-bold">{userBorrows.length || 0}</p>
+              <p className="text-sm text-white">Books you have borrowed</p>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="bg-blue-700 text-white hover:shadow-lg transition-shadow">
             <CardHeader>
-              <CardTitle className="text-lg text-gray-700">Active Borrows</CardTitle>
+              <CardTitle className="text-lg">Active Borrows</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-yellow-600">{activeBorrows.length || 0}</p>
-              <p className="text-sm text-gray-500">On Hold</p>
+              <p className="text-3xl font-bold">{activeBorrows.length || 0}</p>
+              <p className="text-sm text-white">On hold</p>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="bg-blue-700 text-white hover:shadow-lg transition-shadow">
             <CardHeader>
-              <CardTitle className="text-lg text-gray-700">Total Returns</CardTitle>
+              <CardTitle className="text-lg">Total Returns</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-red-500">{totalReturns.length || 0}</p>
-              <p className="text-sm text-gray-500">Books you have returned</p>
+              <p className="text-3xl font-bold">{totalReturns.length || 0}</p>
+              <p className="text-sm text-white">Books you have returned</p>
             </CardContent>
           </Card>
 
           <Link href="/member/find-book">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Card className="bg-blue-700 text-white hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader>
-                <CardTitle className="text-lg text-gray-700">Total over due returns</CardTitle>
+                <CardTitle className="text-lg">Total Overdue Returns</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-blue-600">{0}</p>
-                <p className="text-sm text-gray-500">Active over dues</p>
+                <p className="text-3xl font-bold">{0}</p>
+                <p className="text-sm text-white">Active overdues</p>
               </CardContent>
             </Card>
           </Link>
         </div>
 
-        {/* Activity Timeline */}
-      <Card className="hover:shadow-lg transition-shadow">
+        {/* Third Row: Recent Activities */}
+        <Card className="bg-white shadow-md rounded-lg">
           <CardHeader>
             <CardTitle className="text-xl text-gray-700">Recent Activity</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent>
             {recentActivities.length > 0 ? (
               recentActivities.map((activity, index) => (
                 <div
@@ -153,12 +140,7 @@ const generateActivityMessage = (activity) => {
                 >
                   <div>
                     <p className="font-medium text-gray-800">
-                      <p className="font-medium text-gray-800">
-                        {generateActivityMessage(activity)}
-                      </p>                    
-                      <span className="font-semibold">
-                        "{activity.book?.title || 'a book'}"
-                      </span>
+                      {generateActivityMessage(activity)}
                     </p>
                     <p className="text-sm text-gray-500">
                       {new Date(activity.createdAt).toLocaleDateString('en-US', {
@@ -179,15 +161,13 @@ const generateActivityMessage = (activity) => {
             ) : (
               <p className="text-gray-500">No recent activities found.</p>
             )}
-          </CardContent>  
-      </Card>
+          </CardContent>
+        </Card>
 
-
+        {showBorrowedBooks && (
+          <BorrowedBooks onClose={() => setShowBorrowedBooks(false)} />
+        )}
       </main>
-
-      {showBorrowedBooks && (
-        <BorrowedBooks onClose={() => setShowBorrowedBooks(false)} />
-      )}
     </div>
   );
 };

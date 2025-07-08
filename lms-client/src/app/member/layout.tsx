@@ -1,11 +1,17 @@
 import MemberHeader from '@/components/MemberHeader'
+import Sidebar from '@/components/MemberSidebar'
 import React from 'react'
 
 const Layout = ({children}) => {
   return (
-    <div >
+    <div className=''>
+      
         <MemberHeader />
-         {children}
+        <div className='flex '>
+          <Sidebar  />
+          {children}
+
+        </div>
   
         </div>
   )
