@@ -22,12 +22,12 @@ const MemberHeader = () => {
       {/* User Info - Left */}
       {isLoggedIn && (
         <div className="flex items-center gap-4">
-          <div className="text-left">
+          {/* <div className="text-left">
             <p className="text-lg font-semibold text-green-600">
               Welcome, <span className="text-orange-600">{userInfo.name}</span>
             </p>
             <p className="text-sm text-orange-800">{userInfo.email}</p>
-          </div>
+          </div> */}
         </div>
       )}
 

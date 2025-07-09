@@ -17,6 +17,7 @@ import Sidebar from './Sidebar';
 
 const Dashboard = () => {
   const { books } = useSelector((state) => state.books);
+  const { userInfo, isLoggedIn } = useSelector((state) => state.auth);
   const { userReservations } = useSelector((state) => state.reservations);
   const { userBorrows, loading, error } = useSelector((state) => state.borrows);
   const dispatch = useDispatch();
@@ -77,8 +78,12 @@ const Dashboard = () => {
     <div className="min-h-screen w-full bg-gray-100 flex">
       {/* Main Content */}
       <main className="flex-1 p-6">
-        <h1 className="text-2xl font-bold mb-4">Welcome, Bob Johnson</h1>
-        {/* First Row: Stats Cards */}
+      <div className="text-left">
+            <p className="text-lg font-semibold text-green-600">
+              Welcome, <span className="text-orange-600">{userInfo.name}</span>
+            </p>
+            <p className="text-sm text-orange-800">{userInfo.email}</p>
+          </div>        {/* First Row: Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <Card 
             className="bg-blue-700 text-white hover:shadow-lg transition-shadow cursor-pointer"
