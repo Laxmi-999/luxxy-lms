@@ -15,7 +15,7 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="w-64 bg-gray-700 text-white p-4 space-y-4">
+    <section className="w-64 text-white bg-black/80 p-4 space-y-4">
       <div className="text-2xl font-bold">Library</div>
       <div className="space-y-2">
         <button onClick={handleDashboardClick} className="w-full text-left p-2 rounded hover:bg-gray-600">
@@ -32,7 +32,7 @@ const Sidebar = () => {
           <span className="mr-2">👤</span> Account
         </button>
       </div>
-    </aside>
+    </section>
   );
 };
 

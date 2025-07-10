@@ -22,12 +22,12 @@ const Header = () => {
       } else if (userInfo.role === 'librarian') {
         toast.success('You are already logged In', {
           position: "top-center"
-        });        
+        });         
         router.push('/librarian/dashboard');
       } else if (userInfo.role === 'member') {
         toast.success('You are already logged In', {
           position: "top-center"
-        });        
+        });         
         router.push('/member');
       }
     } else {
@@ -36,38 +36,25 @@ const Header = () => {
   };
 
   return (
-    <header className="w-full bg-gradient-to-r from-blue-800 via-blue-700 to-blue-600 backdrop-blur-md border-b border-blue-500/30 sticky top-0 z-50 shadow-lg">
-      <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <BookOpen className="h-10 w-10 text-white animate-pulse" />
-          <span className="text-3xl font-extrabold text-white tracking-wide">LibraryHub</span>
+    <header className="w-full flex justify-between bg-orange-500 h-25 backdrop-blur-md border-b border-gray-300 sticky top-0 z-50 shadow-lg">
+       
+        <div className="flex ml-5 items-center"> 
+          <img src='/assests/logo.png' alt="LibraryHub Logo" className="h-20   w-auto object-contain" /> 
         </div>
 
-        {/* <nav className="hidden md:flex items-center space-x-8">
-          {["Home", "Books", "About", "Contact"].map((item) => (
-            <a
-              key={item}
-              href={`#${item.toLowerCase()}`}
-              className="text-white font-semibold hover:text-blue-200 transition-colors duration-300 relative group"
-            >
-              {item}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-200 transition-all duration-300 group-hover:w-full"></span>
-            </a>
-          ))}
-        </nav> */}
-        <h1 className="text-xl font-extrabold text-white tracking-wide">Welcome to you digital library</h1>
+        <h1 className="text-xl pt-2 font-extrabold text-white tracking-wide hidden md:block">Welcome to your digital library</h1>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 right-5">
           <Button
             onClick={() => handleSignInClick()}
             asChild
             variant="outline"
-            className="border-blue-300 text-blue-700 hover:bg-blue-700 hover:border-blue-500 transition-all duration-300 font-semibold rounded-full px-6 py-2"
+            className="border-yellow-300 text-black  hover:bg-yellow-500 hover:text-black hover:border-yellow-600 transition-all duration-300 font-semibold rounded-full px-6 py-2"
           >
             <span>Sign In</span>
           </Button>
           <Link href='/register'>
-            <Button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-full px-6 py-2 shadow-md hover:shadow-lg transition-all duration-300">
+            <Button className="bg-yellow-500 text-black font-semibold rounded-full px-6 py-2 shadow-md hover:bg-yellow-600 hover:shadow-lg transition-all duration-300">
               Register
             </Button>
           </Link>
@@ -78,16 +65,15 @@ const Header = () => {
             <Menu className="h-8 w-8" />
           </button>
         </div>
-      </div>
 
       {isMenuOpen && (
-        <div className="md:hidden bg-blue-700/90 border-t border-blue-500">
+        <div className="md:hidden bg-gray-200/90 border-t border-gray-300">
           <div className="container mx-auto px-6 py-4 flex flex-col space-y-4">
             {["Home", "Books", "About", "Contact"].map((item) => (
               <a
                 key={item}
                 href={`#${item.toLowerCase()}`}
-                className="text-white font-medium hover:text-blue-200 transition-colors duration-300"
+                className="text-white font-medium hover:text-yellow-300 transition-colors duration-300"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {item}

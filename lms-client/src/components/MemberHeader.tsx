@@ -18,37 +18,23 @@ const MemberHeader = () => {
   };
 
   return (
-    <header className="bg-white shadow-sm py-4 px-6 flex items-center justify-between">
+    <header className="bg-orange-500 shadow-sm py-4 px-6 flex items-center justify-between">
       {/* User Info - Left */}
-      {isLoggedIn && (
-        <div className="flex items-center gap-4">
-          {/* <div className="text-left">
-            <p className="text-lg font-semibold text-green-600">
-              Welcome, <span className="text-orange-600">{userInfo.name}</span>
-            </p>
-            <p className="text-sm text-orange-800">{userInfo.email}</p>
-          </div> */}
+        <div className="flex items-center ml-5">
+         <img src = '/assests/logo.png' className='h-15 w-auto'/>
         </div>
-      )}
 
       {/* Navigation Links - Center */}
-      <div className="flex gap-8">
-        {/* <Link href="/member">
-          <span className="text-lg font-medium text-gray-700 hover:text-green-600 transition-colors cursor-pointer">
-            Dashboard
-          </span>
-        </Link> */}
-        {/* <Link href="/member/find-book">
-          <span className="text-lg font-medium text-gray-700 hover:text-green-600 transition-colors cursor-pointer">
-            Find Book
-          </span>
-        </Link> */}
-      </div>
+      <div className="text-left px-2">
+            <p className="text-3xl font-bold text-green-800">
+              Welcome, <span className="text-white text-2xl font-bold">{userInfo?.name}</span>
+            </p>
+            <p className=" text-orange-500 font-bold text-xl">{userInfo?.email}</p>
+          </div> 
 
       {/* Logout Button - Right */}
       <Button 
-        variant="destructive" 
-        className="flex items-center gap-2 bg-red-500 hover:bg-red-600 transition-colors" 
+        className="flex items-center gap-2 bg-red-700 hover:bg-red-600 transition-colors" 
         onClick={handleLogout}
       >
         <LogOut className="w-4 h-4" />

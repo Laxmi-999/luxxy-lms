@@ -16,7 +16,7 @@ const Sidebar = () => {
     }
   return (
     <div>
-        <div className='flex flex-col bg-gray-100 h-screen w-64 shadow-lg'>
+        <div className='flex flex-col bg-black/80 h-screen text-white w-64 shadow-lg'>
             {isLoggedIn && userInfo.role && sidebarItems[userInfo.role].map((item,id)=>{
             return (
                 <Link href={item.path} key={id} className="block p-4 text-gray-700 hover:bg-gray-200">

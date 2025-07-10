@@ -35,7 +35,7 @@ const ReviewsSection = () => {
         {[...Array(5)].map((_, i) => (
           <span
             key={i}
-            className={`text-lg ${i < rating ? 'text-amber-500' : 'text-amber-200'}`}
+            className={`text-lg ${i < rating ? 'text-[#D69E2E]' : 'text-[#F6AD55]/50'}`}
           >
             ★
           </span>
@@ -45,12 +45,12 @@ const ReviewsSection = () => {
   };
 
   return (
-    <section className="py-24 bg-gradient-to-br from-amber-50 to-orange-100">
+    <section className="py-24 mb-1 bg-black/80">
       <div className="container mx-auto px-4">
-        <h2 className="text-5xl font-extrabold text-center text-orange-900 mb-4 tracking-tight">
+        <h2 className="text-5xl font-extrabold text-center text-white mb-4 tracking-tight">
           Our Readers Love Us
         </h2>
-        <p className="text-xl text-center text-orange-700/80 mb-16 max-w-2xl mx-auto">
+        <p className="text-xl text-center text-white mb-16 max-w-2xl mx-auto">
           Join thousands of book lovers who trust LibraryHub for their reading journey
         </p>
 
@@ -58,23 +58,23 @@ const ReviewsSection = () => {
           {reviews.map((review) => (
             <Card
               key={review.id}
-              className="bg-white/80 backdrop-blur-sm border-amber-200 shadow-xl hover:shadow-2xl transition-all duration-300 rounded-2xl overflow-hidden"
+              className="bg-[#FFFFFF]/80 backdrop-blur-sm border-[#D1D5DB] shadow-xl hover:shadow-2xl transition-all duration-300 rounded-2xl overflow-hidden"
             >
               <CardContent className="p-8">
                 <div className="flex items-center mb-6">
-                  <Avatar className="h-14 w-14 mr-4 ring-2 ring-orange-300">
+                  <Avatar className="h-14 w-14 mr-4 ring-2 ring-[#D69E2E]">
                     <AvatarImage src={review.avatar} alt={review.name} />
                     <AvatarFallback>{review.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <h3 className="font-semibold text-lg text-orange-900">{review.name}</h3>
-                    <p className="text-sm text-orange-600">{review.role}</p>
+                    <h3 className="font-semibold text-lg text-[#1F2937]">{review.name}</h3>
+                    <p className="text-sm text-[#374151]">{review.role}</p>
                   </div>
                 </div>
 
                 {renderStars(review.rating)}
 
-                <p className="text-orange-800 mt-4 leading-relaxed font-medium">
+                <p className="text-[#374151] mt-4 leading-relaxed font-medium">
                   "{review.text}"
                 </p>
               </CardContent>

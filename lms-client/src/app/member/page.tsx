@@ -49,12 +49,12 @@ const Dashboard = () => {
 
   const getBadgeStyle = (type) => {
     switch (type.toLowerCase()) {
-      case 'borrowed':
-        return 'text-green-600 border-green-600';
+      case 'issued':
+        return 'text-black border-white border-1 bg-green-500';
       case 'reserved':
-        return 'text-yellow-600 border-yellow-600';
+        return 'text-black bg-yellow-400';
       case 'returned':
-        return 'text-blue-600 border-blue-600';
+        return 'text-black bg-red-500';
       default:
         return 'text-gray-600 border-gray-400';
     }
@@ -75,18 +75,12 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-100 flex">
+    <div className="min-h-screen  mx-5 my-8 rounded-lg w-full  flex">
       {/* Main Content */}
       <main className="flex-1 p-6">
-      <div className="text-left">
-            <p className="text-lg font-semibold text-green-600">
-              Welcome, <span className="text-orange-600">{userInfo.name}</span>
-            </p>
-            <p className="text-sm text-orange-800">{userInfo.email}</p>
-          </div>        {/* First Row: Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div className="bg-black/80 rounded-md p-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <Card 
-            className="bg-blue-700 text-white hover:shadow-lg transition-shadow cursor-pointer"
+            className="bg-black/40 text-white hover:shadow-lg transition-shadow cursor-pointer"
             onClick={() => setShowBorrowedBooks(true)}
           >
             <CardHeader>
@@ -98,7 +92,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-blue-700 text-white hover:shadow-lg transition-shadow">
+          <Card className="bg-black/40 text-white hover:shadow-lg transition-shadow">
             <CardHeader>
               <CardTitle className="text-lg">Active Borrows</CardTitle>
             </CardHeader>
@@ -108,7 +102,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-blue-700 text-white hover:shadow-lg transition-shadow">
+          <Card className="bg-black/40 text-white hover:shadow-lg transition-shadow">
             <CardHeader>
               <CardTitle className="text-lg">Total Returns</CardTitle>
             </CardHeader>
@@ -119,7 +113,7 @@ const Dashboard = () => {
           </Card>
 
           <Link href="/member/find-book">
-            <Card className="bg-blue-700 text-white hover:shadow-lg transition-shadow cursor-pointer">
+            <Card className="bg-black/40 text-white hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader>
                 <CardTitle className="text-lg">Total Overdue Returns</CardTitle>
               </CardHeader>
@@ -132,22 +126,22 @@ const Dashboard = () => {
         </div>
 
         {/* Third Row: Recent Activities */}
-        <Card className="bg-white shadow-md rounded-lg">
+        <Card className="bg-orange-400 mt-10 shadow-md rounded-lg">
           <CardHeader>
-            <CardTitle className="text-xl text-gray-700">Recent Activity</CardTitle>
+            <CardTitle className="text-2xl font-bold text-white">Your Recent Activities</CardTitle>
           </CardHeader>
           <CardContent>
             {recentActivities.length > 0 ? (
               recentActivities.map((activity, index) => (
                 <div
                   key={index}
-                  className="flex justify-between items-center border-b pb-2 last:border-b-0 last:pb-0"
+                  className="flex justify-between bg-black/50 items-center border-b pb-6 last:border-b-0 last:pb-0"
                 >
                   <div>
-                    <p className="font-medium text-gray-800">
+                    <p className="font-2xl text-black font-bold">
                       {generateActivityMessage(activity)}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-white">
                       {new Date(activity.createdAt).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
@@ -164,7 +158,7 @@ const Dashboard = () => {
                 </div>
               ))
             ) : (
-              <p className="text-gray-500">No recent activities found.</p>
+              <p className="text-white">No recent activities found.</p>
             )}
           </CardContent>
         </Card>
