@@ -10,7 +10,7 @@ import {
   REGISTER,
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-
+import genreSlice from '../Redux/slices/genreSlice';
 import authSlice from './slices/authSlice';
 import bookSlice from './slices/bookSlice';
 import userSlice from './slices/userSlice';
@@ -30,6 +30,7 @@ const rootReducer = combineReducers({
   books: bookSlice,
   reservations: reservationSlice,
   borrows: borrowSlice,
+  genre:genreSlice,
 });
 
 const persistConfig = {

@@ -17,7 +17,6 @@ import { toast } from 'sonner';
 import { removePendingBorrow } from '@/Redux/slices/borrowSlice';
 
 
-// const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
 const LibrarianDashboard = () => {
     const [selectedBorrow, setSelectedBorrow] = useState(null);
@@ -131,7 +130,7 @@ const LibrarianDashboard = () => {
     return (
         <div className="p-6 space-y-6 w-full">
             {/* Librarian Profile Section */}
-            <Card className="flex flex-col md:flex-row items-center justify-between p-4">
+            <Card className="flex flex-col md:flex-row items-center bg-black/80  justify-between p-4">
                 <div className="flex items-center gap-4">
                     <img
                         src="https://api.dicebear.com/7.x/initials/svg?seed=Librarian"
@@ -161,43 +160,42 @@ const LibrarianDashboard = () => {
             </Card>
 
             {/* Dashboard Summary */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card>
+            <div className="grid bg-black/50 grid-cols-1 md:grid-cols-2 gap-4">
+                <Card className='bg-black/70'>
                     <CardHeader>
-                        <CardTitle>Total Books Issued</CardTitle>
+                        <CardTitle className='text-white'>Total Books Issued</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-3xl font-bold">124</p>
-                        <p className="text-muted-foreground text-sm">Currently borrowed by users</p>
+                        <p className="text-3xl text-yellow-500 font-bold">124</p>
+                        <p className="text-muted-foreground text-sm text-white">Currently borrowed by users</p>
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className='bg-black/70'>
                     <CardHeader>
-                        <CardTitle>Overdue Returns</CardTitle>
+                        <CardTitle className='text-white'>Overdue Returns</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-3xl font-bold text-red-600">8</p>
-                        <p className="text-muted-foreground text-sm">Books not returned on time</p>
+                        <p className="text-3xl font-bold  text-red-600">8</p>
+                        <p className="text-white text-sm">Books not returned on time</p>
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className='bg-black/70'>
                     <CardHeader>
-                        <CardTitle>Active Reservations</CardTitle>
+                        <CardTitle className='text-white'>Active Reservations</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-3xl font-bold">17</p>
-                        <p className="text-muted-foreground text-sm">Waiting for pickup</p>
+                        <p className="text-3xl text-green-500 font-bold">17</p>
+                        <p className="text-muted-foreground  text-white text-sm">Waiting for pickup</p>
                     </CardContent>
                 </Card>
             </div>
-                    {/* <ManageUsersAndRoles /> */}
-                    {/* <ManageAllBooks /> */}
+                   
 
-              <div className="flex gap-2 w-full ">
+              <div className="flex gap-2 w-full  bg-black/70 p-5 ">
                     {/* Book Details Section */}
-                    <Card className='w-1/2'>
+                    <Card className='w-1/2 bg-orange-400 '>
                         <CardHeader>
                         <CardTitle>Borrowing Book Details</CardTitle>
                         </CardHeader>
@@ -239,9 +237,9 @@ const LibrarianDashboard = () => {
                     </Card>
 
                     {/* Borrowing Member Section */}
-                    <Card className='w-1/2'>
+                    <Card className='w-1/2 bg-orange-600 '>
                         <CardHeader>
-                        <CardTitle>Borrowing Member</CardTitle>
+                        <CardTitle >Borrowing Member</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                         <div className="flex flex-col gap-4">
@@ -279,13 +277,13 @@ const LibrarianDashboard = () => {
            </div>
 
             {/* Manage Users / Reservations */}
-           <Card>
+           <Card className='bg-black/50'>
                 <CardHeader>
-                    <CardTitle>Recent Activities</CardTitle>
+                    <CardTitle className='text-white text-3xl'>Recent Activities</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-3 bg-orange-400 rounded-md">
                     {recentActivities.length === 0 ? (
-                    <p className="text-muted-foreground text-sm">No recent activity</p>
+                    <p className="text-white text-2xl">No recent activity</p>
                     ) : (
                     recentActivities.map((activity, index) => (
                         <div
@@ -293,7 +291,7 @@ const LibrarianDashboard = () => {
                         className="flex items-center justify-between border rounded p-3"
                         >
                         <div>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-xl text-white">
                             {activity?.type === 'issued' && (
                                 <>
                                 "{activity?.book?.title}" was issued to {activity?.user?.email}
@@ -305,7 +303,7 @@ const LibrarianDashboard = () => {
                                 </>
                             )}
                             </p>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-white">
                             {new Date(activity?.createdAt).toLocaleString()}
                             </p>
                         </div>
@@ -313,8 +311,8 @@ const LibrarianDashboard = () => {
                             variant="outline"
                             className={
                             activity?.type === 'issued'
-                                ? 'text-green-600'
-                                : 'text-blue-600'
+                                ? 'bg-green-600 text-white'
+                                : 'bg-blue-600 text-white'
                             }
                         >
                             {activity?.type?.charAt(0).toUpperCase() + activity?.type?.slice(1)}

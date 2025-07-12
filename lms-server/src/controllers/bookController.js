@@ -5,13 +5,13 @@ import Book from "../models/book.js";
 export const createBook = async(req, res) => {
 
     try{
-        const {title, author, isbn, category, coverImage, isAvailable, totalCopies} = req.body;
+        const {title, author, isbn, genre, coverImage, isAvailable, totalCopies} = req.body;
 
         const newBook = await Book.create({
             title,
             author,
             isbn,
-            category,
+            genre,
             coverImage,
             totalCopies,
             isAvailable,
@@ -28,7 +28,8 @@ export const createBook = async(req, res) => {
 export const getAllBooks = async(req, res) => {
     try {
 
-        const books  = await Book.find();
+        const books  = await Book.find().populate('genre', 'name');
+;
         return  res.status(200).json(books);
         
     } catch (error) {
@@ -46,8 +47,8 @@ export const getBookById = async(req, res) =>{
     try {
         // const bookId = req.params.id;
 
-        const book = await Book.findById(req.params.id);
-        return res.status(200).json(book);
+        const book = await Book.findById(req.params.id).populate('genre', 'name');     
+         return res.status(200).json(book);
         
     } catch (error) {
 
@@ -61,9 +62,13 @@ export const getBookById = async(req, res) =>{
 export const updateBook = async(req, res) => {
     try {
         
-        const updatedBook = await Book.findByIdAndUpdate(req.params.id, {...req.body}, {new:true});
-        if (!updatedBook) return res.status(404).json({ message: 'Book not found' });
-       console.log('updated book is', updateBook);
+ const updatedBook = await Book.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body },
+      { new: true }
+    ).populate('genre', 'name');
+    if (!updatedBook) return res.status(404).json({ message: 'Book not found' });
+   console.log('updated book is', updateBook);
        
      return res.status(200).json(updatedBook);
     } catch (error) {
@@ -104,7 +109,7 @@ export const searchBook = async(req, res) => {
                 {title : {$regex:query, $options:'i'}},
                 {author : {$regex:query, $options:'i'}}
             ],
-        });
+        }).populate('genre', 'name');;
         res.json(books);
 
     }catch(error){

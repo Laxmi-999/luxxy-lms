@@ -15,16 +15,16 @@ const Sidebar = () => {
         router.push('/login')
     }
   return (
-    <div>
+    <div className=''>
         <div className='flex flex-col bg-black/80 h-screen text-white w-64 shadow-lg'>
             {isLoggedIn && userInfo.role && sidebarItems[userInfo.role].map((item,id)=>{
             return (
-                <Link href={item.path} key={id} className="block p-4 text-gray-700 hover:bg-gray-200">
+                <Link href={item.path} key={id} className="block p-4 text-white hover:bg-gray-200 hover:text-black">
                     {item.label}
                 </Link>
 
         )})}
-        <Button onClick={handleLogout}>Logout</Button>
+        <Button  className = 'bg-orange-700 text-white' onClick={handleLogout}>Logout</Button>
         </div>
           
     </div>

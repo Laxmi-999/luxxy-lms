@@ -8,6 +8,7 @@ import dotenv from  'dotenv';
 import reservationRoute from './routes/reservationRoutes.js';
 import borrowRouter from './routes/borrowRoutes.js';
 import activityRouter from './routes/activityRoutes.js';
+import genreRouter from './routes/genreRoutes.js';
 
 
 dotenv.config();
@@ -46,6 +47,9 @@ app.use('/api/borrow', borrowRouter);
 
 //activity routes
 app.use('/api/activity', activityRouter);
+
+//genreRoutes
+app.use('/api/genre', genreRouter);
 
 
 app.listen(port, () => {

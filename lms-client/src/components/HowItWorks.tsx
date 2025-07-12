@@ -35,10 +35,10 @@ const HowItWorks = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((step, index) => (
-            <div key={index} className="bg-orange-600 p-8 rounded-lg shadow-lg text-center border border-[#D1D5DB]"> {/* White card, Light Gray border */}
-              <step.icon className="h-16 w-16 text-yellow-300 mx-auto mb-6" /> {/* Muted Gold/Brass icon */}
-              <h3 className="text-xl font-semibold text-white mb-3">{step.title}</h3> {/* Darker Headings */}
-              <p className="text-white">{step.description}</p> {/* Dark Gray/Text */}
+            <div key={index} className="bg-[#FFFFFF]/80 p-8 rounded-lg shadow-lg text-center border border-[#D1D5DB]"> 
+              <step.icon className="h-16 w-16 text-orange-500 mx-auto mb-6" />
+              <h3 className="text-xl font-semibold text-[#1F2937] mb-3">{step.title}</h3> 
+              <p className="text-[#1F2937]">{step.description}</p> 
             </div>
           ))}
         </div>

@@ -3,7 +3,8 @@
         {"id":1, "label": "Dashboard", "icon": "dashboard", "path": "/admin/dashboard"},
         {"id":2, "label": "Manage Role", "icon": "users", "path": "/admin/assign-librarian"},
         {"id":3, "label": "Manage All Books", "icon": "Books", "path": "/admin/manage-all-book"},
-        {"id":4, "label": "Manage All Users", "icon": "Users", "path": "/admin/manage-user-role"}
+        {"id":4, "label": "Add Genre", "icon": "Genre", "path": "/admin/genre"},
+        {"id":5, "label": "Manage All Users", "icon": "Users", "path": "/admin/manage-user-role"}
 
 
     ],

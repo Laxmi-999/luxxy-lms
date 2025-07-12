@@ -7,9 +7,11 @@ const bookSchema = new mongoose.Schema({
   },
   author: String,
   isbn: String,
-  category: String,
-  coverImage: String, // URL or local path
-  totalCopies: {
+   genre: { type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Genre' 
+  },
+   coverImage: String, // URL or local path
+   totalCopies: {
     type: Number,
     required: true,
   },
