@@ -1,50 +1,87 @@
-'use client'
+'use client';
 import Link from 'next/link';
-import { BookText, Globe, Lightbulb, Heart, Atom, Landmark } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchGenresAndStore } from '@/Redux/slices/genreSlice';
-import { useEffect } from 'react';
-
-const categories = [
-  { name: "Fiction", icon: BookText, link: "/books?category=fiction", bgColor: "bg-orange-800" },
-  { name: "Non-Fiction", icon: Lightbulb, link: "/books?category=non-fiction", bgColor: "bg-orange-700" },
-  { name: "Science Fiction", icon: Atom, link: "/books?category=science-fiction", bgColor: "bg-orange-500" },
-  { name: "Fantasy", icon: Globe, link: "/books?category=fantasy", bgColor: "bg-orange-500" },
-  { name: "Romance", icon: Heart, link: "/books?category=romance", bgColor: "bg-orange-700" },
-  { name: "History", icon: Landmark, link: "/books?category=history", bgColor: "bg-orange-800" },
-];
+import { useEffect, useState } from 'react';
+import { setGenre } from '@/Redux/slices/genreSlice';
+import axiosInstance from '@/lib/axiosInstance';
+import { toast } from 'sonner';
 
 const GenreSection = () => {
   const dispatch = useDispatch();
   const genres = useSelector((state: any) => state.genre.genres);
-  console.log('genres are', genres);
-  
+  const [error, setError] = useState<string | null>(null);
 
-  // useEffect(() => {
-  //   dispatch(fetchGenresAndStore(dispatch));
-  // }, [dispatch]);
-  
-  
+  useEffect(() => {
+    const fetchGenre = async () => {
+      try {
+        const { data } = await axiosInstance.get('/genre');
+        // Format API data to include links and background color
+        const formattedGenres = data.map((genre: any) => ({
+          name: genre.name,
+          image: genre.image,
+          link: genre.link || `/books?category=${genre.name.toLowerCase()}`,
+          bgColor: `bg-orange-${Math.floor(Math.random() * 4 + 5)}00`, // Dynamic orange shades (500-800)
+        }));
+        dispatch(setGenre(formattedGenres));
+      } catch (err) {
+        setError('Failed to fetch genres');
+        toast.error('Failed to fetch genres', { position: 'top-center' });
+      }
+    };
+
+    fetchGenre();
+  }, [dispatch]);
+
   return (
-    <section className="py-20 bg-black/70 mt-10 mb-20">
-      <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-extrabold text-center text-white mb-6">Explore Our Vast Collection</h2>
-        <p className="text-xl text-center text-gray-200 mb-12 max-w-2xl mx-auto">
-          Dive into diverse worlds and discover your next favorite read from our carefully curated categories.
+    <section className="py-24 bg-gradient-to-b from-black/80 to-black/60 mt-12 mb-24">
+      <div className="container mx-auto px-6">
+        <h2 className="text-5xl font-extrabold text-center text-white mb-8 tracking-tight">
+          Discover Your Next Adventure
+        </h2>
+        <p className="text-xl text-center text-gray-300 mb-16 max-w-3xl mx-auto font-light">
+          Explore our handpicked genres and find the perfect book to spark your imagination.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-          {categories.map((category) => (
-            <Link href={category.link} key={category.name} className="block">
-              <div className={`${category.bgColor} p-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center border border-yellow-400`}>
-                <category.icon className="h-12 w-12 text-yellow-300 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-white mb-2">{category.name}</h3>
-                <span className="text-gray-200 text-sm">Browse Books</span>
-              </div>
-            </Link>
-          ))}
-        </div>
+        {error ? (
+          <p className="text-red-400 text-center text-lg">Error: {error}</p>
+        ) : (
+          <div className="flex flex-row gap-8 overflow-x-auto pb-4 scrollbar-hide">
+            {genres && genres.length > 0 ? (
+              genres.map((genre: any) => (
+                <Link href={genre.link} key={genre.name} className="block group flex-shrink-0">
+                  <div
+                    className={`w-48 h-64 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform group-hover:-translate-y-2 text-center border border-yellow-500/50 ${genre.bgColor} bg-opacity-90 flex flex-col justify-center items-center`}
+                  >
+                    <img
+                      src={genre.image}
+                      alt={genre.name}
+                      className="h-20 w-20 object-cover rounded-full mx-auto mb-6 transition-transform duration-300 group-hover:scale-110"
+                    />
+                    <h3 className="text-xl font-bold text-white mb-3">{genre.name}</h3>
+                    <span className="text-gray-200 text-sm font-medium group-hover:text-yellow-300 transition-colors">
+                      Browse Books
+                    </span>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <p className="text-gray-300 text-center w-full text-lg">
+                No genres available at the moment.
+              </p>
+            )}
+          </div>
+        )}
       </div>
+
+      <style jsx>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </section>
   );
 };

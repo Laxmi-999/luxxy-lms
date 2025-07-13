@@ -18,7 +18,7 @@ import reservationSlice from './slices/reservationSlice';
 import borrowSlice from './slices/borrowSlice';
 
 
-let logger;
+let logger: any;
 if (process.env.NODE_ENV === 'development') {
   const { createLogger } = require('redux-logger'); // Correct import for createLogger
   logger = createLogger();
@@ -57,6 +57,8 @@ export const store = configureStore({
     return middlewares;
   },
 });
+
+export type RootState = ReturnType<typeof store.getState>;
 
 const persistor = persistStore(store);
 export default persistor;

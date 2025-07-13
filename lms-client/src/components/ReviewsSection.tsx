@@ -1,33 +1,51 @@
+'use client';
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import axiosInstance from "@/lib/axiosInstance";
+import { useEffect, useState } from "react";
 
 const ReviewsSection = () => {
-  const reviews = [
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
-      rating: 5,
-      text: "LibraryHub has completely transformed how I discover and manage my reading list. The interface is intuitive and the book recommendations are spot-on!",
-      role: "Book Enthusiast"
-    },
-    {
-      id: 2,
-      name: "Michael Chen",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-      rating: 5,
-      text: "As a librarian, I appreciate the robust management features. The system makes cataloging and tracking books effortless. Highly recommended!",
-      role: "Professional Librarian"
-    },
-    {
-      id: 3,
-      name: "Emily Rodriguez",
-      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-      rating: 5,
-      text: "The user experience is fantastic! I love how easy it is to search for books and manage my reading progress. This platform is a game-changer.",
-      role: "Student"
-    }
-  ];
+  const [reviews, setReviews] = useState([]);
+  // const reviews = [
+  //   {
+  //     id: 1,
+  //     name: "Sarah Johnson",
+  //     avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
+  //     rating: 5,
+  //     text: "LibraryHub has completely transformed how I discover and manage my reading list. The interface is intuitive and the book recommendations are spot-on!",
+  //     role: "Book Enthusiast"
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Michael Chen",
+  //     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+  //     rating: 5,
+  //     text: "As a librarian, I appreciate the robust management features. The system makes cataloging and tracking books effortless. Highly recommended!",
+  //     role: "Professional Librarian"
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Emily Rodriguez",
+  //     avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+  //     rating: 5,
+  //     text: "The user experience is fantastic! I love how easy it is to search for books and manage my reading progress. This platform is a game-changer.",
+  //     role: "Student"
+  //   }
+  // ];
+
+
+  const fetchReviews = async() => {
+    const {data} = await axiosInstance.get('/reviews');
+    setReviews(data);
+   console.log('reviews are', data);
+   
+
+  }
+
+  useEffect(() => {
+    fetchReviews();
+  }, [])
+
 
   const renderStars = (rating: number) => {
     return (
@@ -63,7 +81,7 @@ const ReviewsSection = () => {
               <CardContent className="p-8">
                 <div className="flex items-center mb-6">
                   <Avatar className="h-14 w-14 mr-4 ring-2 ring-[#D69E2E]">
-                    <AvatarImage src={review.avatar} alt={review.name} />
+                   <AvatarImage src={`http://localhost:8000${review.image}`} alt={review.name} />
                     <AvatarFallback>{review.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                   </Avatar>
                   <div>

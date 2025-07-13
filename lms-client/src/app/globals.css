@@ -43,7 +43,18 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* Luxxy LMS Custom Color Palette */
 :root {
+  --luxxy-sidebar-bg: #22334C;
+  --luxxy-sidebar-hover: #294366;
+  --luxxy-sidebar-text: #FFFFFF;
+  --luxxy-sidebar-icon: #A3B6D6;
+  --luxxy-main-bg: #F7FAFC;
+  --luxxy-card-bg: #FFFFFF;
+  --luxxy-card-shadow: 0 2px 8px 0 rgba(34, 51, 76, 0.08);
+  --luxxy-primary: #22C55E;
+  --luxxy-secondary: #3B82F6;
+  --luxxy-text: #1E293B;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);

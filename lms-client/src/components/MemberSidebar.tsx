@@ -14,6 +14,12 @@ const Sidebar = () => {
     router.push('/member/find-book');
   };
 
+
+  const handleReviewClick = () => {
+   console.log('review clicked');
+   
+    router.push('/member/review');
+  }
   return (
     <section className="w-64 text-white bg-black/80 p-4 space-y-4">
       <div className="text-2xl font-bold">Library</div>
@@ -28,7 +34,15 @@ const Sidebar = () => {
         <button className="w-full text-left p-2 rounded hover:bg-gray-600">
           <span className="mr-2">💰</span> Fines
         </button>
-        <button className="w-full text-left p-2 rounded hover:bg-gray-600">
+         <button
+          onClick={handleReviewClick}
+
+         className="w-full text-left p-2 rounded hover:bg-gray-600">
+          <span className="mr-2">🌟</span> Add Reveiw
+        </button>
+        <button 
+        
+         className="w-full text-left p-2 rounded hover:bg-gray-600">
           <span className="mr-2">👤</span> Account
         </button>
       </div>

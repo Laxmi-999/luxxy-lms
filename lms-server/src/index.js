@@ -9,7 +9,7 @@ import reservationRoute from './routes/reservationRoutes.js';
 import borrowRouter from './routes/borrowRoutes.js';
 import activityRouter from './routes/activityRoutes.js';
 import genreRouter from './routes/genreRoutes.js';
-
+import reviewRouter from './routes/reviewRoutes.js';
 
 dotenv.config();
 const port = process.env.PORT
@@ -50,6 +50,11 @@ app.use('/api/activity', activityRouter);
 
 //genreRoutes
 app.use('/api/genre', genreRouter);
+
+//reviewRoutes
+app.use('/api/reviews', reviewRouter);
+app.use('/uploads', express.static('uploads'));
+
 
 
 app.listen(port, () => {
