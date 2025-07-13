@@ -12,6 +12,15 @@ const genreSlice = createSlice({
     },
   },
 });
+// export const fetchGenresAndStore = async (dispatch) => {
+//   try {
+//     const { data } = await axiosInstance.get('/genre');
+//     dispatch(setGenres(data));
+//   } catch (error) {
+//     console.error('Failed to fetch genres:', error);
+//   }
+// };
+
 
 export const { setGenre } = genreSlice.actions;
 export default genreSlice.reducer;

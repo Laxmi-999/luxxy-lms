@@ -1,5 +1,9 @@
+'use client'
 import Link from 'next/link';
 import { BookText, Globe, Lightbulb, Heart, Atom, Landmark } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchGenresAndStore } from '@/Redux/slices/genreSlice';
+import { useEffect } from 'react';
 
 const categories = [
   { name: "Fiction", icon: BookText, link: "/books?category=fiction", bgColor: "bg-orange-800" },
@@ -11,6 +15,16 @@ const categories = [
 ];
 
 const GenreSection = () => {
+  const dispatch = useDispatch();
+  const genres = useSelector((state: any) => state.genre.genres);
+  console.log('genres are', genres);
+  
+
+  // useEffect(() => {
+  //   dispatch(fetchGenresAndStore(dispatch));
+  // }, [dispatch]);
+  
+  
   return (
     <section className="py-20 bg-black/70 mt-10 mb-20">
       <div className="container mx-auto px-4">
