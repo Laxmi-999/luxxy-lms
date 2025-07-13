@@ -94,7 +94,7 @@ I am  developing LibraryConnect in distinct phases to ensure a robust and featur
     * ✅ Book Issue/Return forms.
     * ✅ View Users and Manage Reservations interfaces.
 * **Backend**:
-     *✅ Endpoints for **Librarian Authentication** and access control.
+    *✅ Endpoints for **Librarian Authentication** and access control.
     * ✅ API endpoints for **Add/Edit/Delete Books**.
     * ✅ API endpoints for **Issue/Return Books**.
     * ✅ API endpoints for **View Users** and **Manage Reservations**.
