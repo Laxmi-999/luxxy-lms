@@ -90,14 +90,14 @@ I am  developing LibraryConnect in distinct phases to ensure a robust and featur
 
 * **Frontend**:
     * ✅ Librarian Dashboard interface.
-    * ⬜ Add/Edit/Delete Book forms and interfaces.
-    * ⬜ Book Issue/Return forms.
-    * ⬜ View Users and Manage Reservations interfaces.
+    * ✅ Add/Edit/Delete Book forms and interfaces.
+    * ✅ Book Issue/Return forms.
+    * ✅ View Users and Manage Reservations interfaces.
 * **Backend**:
     *✅ Endpoints for **Librarian Authentication** and access control.
     * ✅ API endpoints for **Add/Edit/Delete Books**.
-    * ⬜ API endpoints for **Issue/Return Books**.
-    * ⬜ API endpoints for **View Users** and **Manage Reservations**.
+    * ✅ API endpoints for **Issue/Return Books**.
+    * ✅ API endpoints for **View Users** and **Manage Reservations**.
 
 ### Phase 3: Member's Gateway & Personalized Library Experience (Future Development)
 
@@ -105,14 +105,14 @@ I am  developing LibraryConnect in distinct phases to ensure a robust and featur
 
 * **Frontend**:
     * ✅ Member Dashboard with personalized borrowing history.
-    * ⬜ Search and View Books interface with filtering options.
-    * ⬜ Request/Reserve Books functionality.
-    * ⬜ Mark Books as Returned functionality.
+    * ✅ Search and View Books interface with filtering options.
+    * ✅ Request/Reserve Books functionality.
+    * ✅ Mark Books as Returned functionality.
 * **Backend**:
     * ✅ API endpoints for **View/Search Available Books**.
-    * ⬜ API endpoints for **Request/Reserve Books**.
-    * ⬜ API endpoints for **View Borrowing History**.
-    * ⬜ API endpoints for **Mark Books as Returned**.
+    * ✅API endpoints for **Request/Reserve Books**.
+    * ✅ API endpoints for **View Borrowing History**.
+    * ✅ API endpoints for **Mark Books as Returned**.
 
 ### Phase 4: Advanced Features & Reporting (Future Development)
 
