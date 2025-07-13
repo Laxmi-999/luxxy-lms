@@ -112,7 +112,7 @@ I am  developing LibraryConnect in distinct phases to ensure a robust and featur
     * ✅ API endpoints for **View/Search Available Books**.
     * ✅API endpoints for **Request/Reserve Books**.
     * ✅ API endpoints for **View Borrowing History**.
-    * ⬜ API endpoints for **Mark Books as Returned**.
+    * ✅ API endpoints for **Mark Books as Returned**.
 
 ### Phase 4: Advanced Features & Reporting (Future Development)
 
