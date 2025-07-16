@@ -23,6 +23,25 @@ borrowRouter.post('/request', protect, isMember,  async (req, res) => {
       return res.status(404).json({ message: 'Book not found' });
     }
 
+
+    //checking if the user have already borrow the same book and have not returned yet   
+    const existingBorrow = await Borrow.findOne({
+      user: userId,
+      book: bookId,
+      status: { $in: ['pending', 'approved'] } // Checking for active borrow statuses
+    });
+
+     if (existingBorrow) {
+      let message = '';
+      if (existingBorrow.status === 'pending') {
+        message = 'You already have a pending borrow request for this book.';
+      } else if (existingBorrow.status === 'approved') {
+        message = 'You have already borrowed this book and have not returned it yet.';
+      } 
+      return res.status(400).json({ message });
+    }
+
+    
     if (book.availableCopies <= 0) {
       return res.status(400).json({ message: 'Book not available for borrowing' });
     }

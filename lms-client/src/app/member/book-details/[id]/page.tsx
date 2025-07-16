@@ -84,7 +84,9 @@ const BookDetails = () => {
 const handleBorrowClick = (bookId) => {
      dispatch(createBorrowRequest(bookId))
     .unwrap()
-    .then(() => toast.success('Borrow request sent successfully!'))
+    .then(() => toast.success('Borrow request sent successfully!',{
+      position:'top-center'
+    }))
     .catch((err) => toast.error(err));
 };
 
