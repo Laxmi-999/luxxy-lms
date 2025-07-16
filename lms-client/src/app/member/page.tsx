@@ -14,6 +14,7 @@ import { getUserBorrows } from '@/Redux/slices/borrowSlice';
 import BorrowedBooks from '@/components/BorrowedBooks';
 import axiosInstance from '@/lib/axiosInstance';
 import Sidebar from './Sidebar';
+import MyBorrows from '@/components/myBorrows';
 
 const Dashboard = () => {
   const { books } = useSelector((state) => state.books);
@@ -22,6 +23,7 @@ const Dashboard = () => {
   const { userBorrows, loading, error } = useSelector((state) => state.borrows);
   const dispatch = useDispatch();
   const [showBorrowedBooks, setShowBorrowedBooks] = useState(false);
+  const [showMyBorrows, setShowMyBorrows] = useState(false)
   const [recentActivities, setRecentActivities] = useState([]);
 
   console.log('recent activities are', recentActivities);
@@ -81,7 +83,8 @@ const Dashboard = () => {
         <div className="bg-black/80 rounded-md p-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <Card 
             className="bg-black/40 text-white hover:shadow-lg transition-shadow cursor-pointer"
-            onClick={() => setShowBorrowedBooks(true)}
+            onClick={() => setShowMyBorrows(true)}
+
           >
             <CardHeader>
               <CardTitle className="text-lg">Total Borrowed Books</CardTitle>
@@ -92,7 +95,10 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-black/40 text-white hover:shadow-lg transition-shadow">
+          <Card 
+          className="bg-black/40 text-white cursor-pointer hover:shadow-lg transition-shadow"
+          onClick={() => setShowBorrowedBooks(true)}
+           >
             <CardHeader>
               <CardTitle className="text-lg">Active Borrows</CardTitle>
             </CardHeader>
@@ -126,22 +132,22 @@ const Dashboard = () => {
         </div>
 
         {/* Third Row: Recent Activities */}
-        <Card className="bg-orange-400 mt-10 shadow-md rounded-lg">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-white">Your Recent Activities</CardTitle>
+       <Card className="mt-10 p-0 w-full shadow-md rounded-lg">
+          <CardHeader className="w-full p-0 m-0">
+            <CardTitle className="text-2xl w-full bg-orange-400 font-bold text-black text-center p-4">Your Recent Activities</CardTitle>
           </CardHeader>
           <CardContent>
             {recentActivities.length > 0 ? (
               recentActivities.map((activity, index) => (
                 <div
                   key={index}
-                  className="flex justify-between bg-black/50 items-center border-b pb-6 last:border-b-0 last:pb-0"
+                  className="flex justify-between m-0 bg-white items-center border-b pb-6 last:border-b-0 last:pb-0"
                 >
                   <div>
                     <p className="font-2xl text-black font-bold">
                       {generateActivityMessage(activity)}
                     </p>
-                    <p className="text-sm text-white">
+                    <p className="text-sm text-black">
                       {new Date(activity.createdAt).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
@@ -161,10 +167,14 @@ const Dashboard = () => {
               <p className="text-white">No recent activities found.</p>
             )}
           </CardContent>
-        </Card>
+      </Card>
 
         {showBorrowedBooks && (
           <BorrowedBooks onClose={() => setShowBorrowedBooks(false)} />
+        )}
+
+         {showMyBorrows && (
+          <MyBorrows onClose={() => setShowMyBorrows(false)} />
         )}
       </main>
     </div>

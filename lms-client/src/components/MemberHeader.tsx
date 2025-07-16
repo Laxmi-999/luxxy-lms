@@ -14,7 +14,7 @@ const MemberHeader = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    router.push('/login');
+    router.push('/');
   };
 
   return (

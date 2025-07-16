@@ -287,5 +287,25 @@ borrowRouter.put('/confirm-return/:borrowId', protect, isLibrarian, async (req, 
   }
 });
 
+borrowRouter.get('/my-borrows', protect, isMember, async (req, res) => {
+  try {
+    const userId = req.user._id; 
+
+    const myBorrows = await Borrow.find({ user: userId })
+                                  .populate('book')
+                                  .populate('user')
+                                  .sort({ createdAt: -1 }); // Sort by creation date, most recent first
+
+    if (!myBorrows || myBorrows.length === 0) {
+      return res.status(404).json({ message: 'No borrow records found for this user.' });
+    }
+
+    res.status(200).json({ borrows: myBorrows });
+
+  } catch (error) {
+    console.error('Error fetching user borrow history:', error);
+    res.status(500).json({ message: 'Failed to fetch borrow history.' });
+  }
+});
 
 export default borrowRouter;
