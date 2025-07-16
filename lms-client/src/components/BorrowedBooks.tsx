@@ -12,19 +12,22 @@ const BorrowedBooks = ({ onClose }) => {
    const {books} = useSelector((state) => state.books) 
   const { userBorrows, loading, error } = useSelector((state) => state.borrows);
   const dispatch = useDispatch();
- console.log('borrowed books are', userBorrows);
- console.log('books are', books);
+//  console.log('borrowed books are', userBorrows);
+//  console.log('books are', books);
  
  
 const activeBorrows = userBorrows.filter((b) => b.status === 'approved');
 console.log('active borrows are', activeBorrows);
  
 
+
   const handleReturnClick = async(borrowId) => {
     try {
+
+      console.log('borrow id is', borrowId);
         
     const {data} = await axiosInstance.put('/borrow/return/' + borrowId)
-    toast.success('Book Returned successfully');
+    toast.success('Book Return request sent successfully', data);
      dispatch(getUserBorrows());
 
     } catch (error) {
@@ -33,12 +36,14 @@ console.log('active borrows are', activeBorrows);
     }
   }
 
-   const bookTitle = (bookId) => {
-    const book = books.find((book) => book._id === bookId)
-    console.log('book title is', book?.title);
-    
+   const bookTitle = (bookOrId) => {
+    if (typeof bookOrId === 'object' && bookOrId !== null && bookOrId.title) {
+      return bookOrId.title;
+    }
+    const book = books.find((book) => book._id === bookOrId);
     return book ? book.title : 'unknown title';
    }
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -64,7 +69,7 @@ console.log('active borrows are', activeBorrows);
                 >
                   <div>
                     <p className="font-medium text-gray-800">
-                      {bookTitle(borrow.book)}
+                      {borrow.book?.title || bookTitle(borrow.book)}
                     </p>
                     <p className="text-sm text-gray-500">
                       Borrowed on: {new Date(borrow.borrowDate).toLocaleDateString()}

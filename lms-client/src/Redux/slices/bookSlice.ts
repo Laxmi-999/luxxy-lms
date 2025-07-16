@@ -1,4 +1,3 @@
-
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../lib/axiosInstance';
 import axios from 'axios';
@@ -37,14 +36,19 @@ export const searchBooks = createAsyncThunk('books/searchBooks', async (query, t
 
 
 // Add new book (admin or librarian only)
-export const addBook = createAsyncThunk('books/addBook', async (bookData, thunkAPI) => {
-  try {
-    const res = await axiosInstance.post('/book/add-book', bookData);
-    return res.data;
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to add book');
+export const addBook = createAsyncThunk<Book, Omit<Book, '_id'>, { rejectValue: string }>(
+  'books/addBook',
+  async (bookData, thunkAPI) => {
+    try {
+      const res = await axiosInstance.post('/book/add-book', bookData);
+      console.log('added book is', res.data);
+      
+      return res.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to add book');
+    }
   }
-});
+);
 
 
 // Update book
@@ -94,15 +98,36 @@ export const getSingleBook = createAsyncThunk('books/getSingleBook', async(id, t
 
 // ========================= Book Slice ==============================
 
+export interface Book {
+  _id?: string;
+  title: string;
+  author: string;
+  isbn: string;
+  genre: string;
+  coverImage?: string;
+  totalCopies: number;
+  availableCopies: number;
+}
+
+interface BookState {
+  books: Book[];
+  selectedBook: Book | null;
+  loading: boolean;
+  error: string | null;
+  searchResults: Book[];
+}
+
+const initialState: BookState = {
+  books: [],
+  selectedBook: null,
+  loading: false,
+  error: null,
+  searchResults: [],
+};
+
 const bookSlice = createSlice({
   name: 'books',
-  initialState: {
-   books: [],
-   selectedBook:null,
-    loading: false,
-    error: null,
-    searchResults: [],
-  },
+  initialState: initialState,
   reducers: {
     clearSearch: (state) => {
       state.searchResults = [];

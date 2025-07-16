@@ -25,6 +25,8 @@ const LibrarianDashboard = () => {
    const [recentActivities, setRecentActivities] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState('');
+   const [selectedDueDate, setSelectedDueDate] = useState('');
+   const [selectedBorrowDate, setSelectedBorrowDate] = useState(''); // New state for borrow date
 
     const searchParams = useSearchParams();
     const dispatch = useDispatch();
@@ -99,7 +101,14 @@ const LibrarianDashboard = () => {
 
  const handleIssueBookClick = async(borrowId) => {
   try {
-    const { data } = await axiosInstance.put(`/borrow/approve/${borrowId}`);
+    // Use selectedDueDate and selectedBorrowDate if set
+    const dueDateToSend = selectedDueDate ? new Date(selectedDueDate) : undefined;
+    const borrowDateToSend = selectedBorrowDate ? new Date(selectedBorrowDate) : undefined;
+
+    const { data } = await axiosInstance.put(`/borrow/approve/${borrowId}`, {
+      dueDate: dueDateToSend,
+      borrowDate: borrowDateToSend,
+    });
 
     const message = `${bookDetails.title} book is issued to ${userDetails.name} user`;
 
@@ -111,6 +120,8 @@ const LibrarianDashboard = () => {
     setSelectedBorrow(null);
     setBookDetails(null);
     setUserDetails(null);
+    setSelectedDueDate(''); // Clear selected due date after issuing
+    setSelectedBorrowDate(''); // Clear selected borrow date after issuing
 
     // Clear URL
     const newParams = new URLSearchParams(window.location.search);
@@ -216,20 +227,31 @@ const LibrarianDashboard = () => {
                             className="w-full border rounded px-4 py-2"
                             />
                             <div className="flex flex-col md:flex-row gap-4">
-                            <input
+                            {/* Borrow Date Picker or Display */}
+                            {selectedBorrow?.status === 'pending' ? (
+                                <input
+                                type="date"
+                                value={selectedBorrowDate}
+                                onChange={e => setSelectedBorrowDate(e.target.value)}
+                                placeholder="Borrow Date"
+                                className="w-full border rounded px-4 py-2"
+                                />
+                            ) : (
+                                <input
                                 type="text"
-                                value={formatDate(selectedBorrow?.borrowDate)}
+                                value={selectedBorrow?.status === 'approved' ? formatDate(selectedBorrow?.borrowDate) : ''}
                                 placeholder="Borrow Date"
                                 className="w-full border rounded px-4 py-2"
                                 readOnly
-                            />
+                                />
+                            )}
+                            {/* Due Date Picker */}
                             <input
-                                type="text"
-
-                                value={formatDate(selectedBorrow?.dueDate)}
+                                type="date"
+                                value={selectedDueDate || (selectedBorrow?.dueDate ? new Date(selectedBorrow.dueDate).toISOString().split('T')[0] : '')}
+                                onChange={e => setSelectedDueDate(e.target.value)}
                                 placeholder="Due Date"
                                 className="w-full border rounded px-4 py-2"
-                                readOnly
                             />
                             </div>
                         </div>

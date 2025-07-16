@@ -18,8 +18,13 @@ export const createBook = async(req, res) => {
             availableCopies : totalCopies
 
         });
+
+        console.log('added book is', newBook);
+        
         res.status(201).json(newBook);
     }catch(error){
+        console.log('error while adding book', error);
+        
         return res.status(500).json({message: 'error while adding book'});
     }
 }

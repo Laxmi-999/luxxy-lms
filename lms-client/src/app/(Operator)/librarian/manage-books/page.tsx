@@ -17,7 +17,8 @@ import { Label } from '@/components/ui/label';
 import { useDispatch, useSelector } from 'react-redux';
 import { addBook, deleteBook, fetchAllBooks, updateBook } from '@/Redux/slices/bookSlice';
 import UpdateBookForm from '@/components/Forms/UpdateBookForm';
-
+import axiosInstance from '@/lib/axiosInstance';
+import { toast } from 'sonner';
 
 
 const ManageAllBooks = () => {
@@ -29,9 +30,19 @@ const ManageAllBooks = () => {
     const [selectedBook, setSelectedBook] = useState(null);
     const [isAddBookDialogOpen, setIsAddBookDialogOpen] = useState(false);
     const [isUpdateBookDialogOpen, setIsUpdateBookDialogOpen] = useState(false);
+    const [genres, setGenres] = useState([]);
+
+
+    const fetchAllGenres = async () => {
+        const data = await axiosInstance.get('/genre');
+        console.log('genres are', data);
+        setGenres(data.data)
+
+    }
    
     useEffect(() => {
         dispatch(fetchAllBooks());
+        fetchAllGenres();
     }, [dispatch])
    
 
@@ -43,7 +54,7 @@ const ManageAllBooks = () => {
         title:'',
         author:'',
         isbn:'',
-        category:'',
+        genre:'',
         coverImage:'',
         totalCopies:'',
         availableCopies:'',
@@ -58,18 +69,36 @@ const ManageAllBooks = () => {
         }));
     };
 
+ 
+
      const handleAddNewBookSubmit = (e) => {
             e.preventDefault();
             console.log('Registering new book:', newBook);
 
-            dispatch(addBook(newBook));    
-            setNewBook({
-                    ...newBook,
-            totalCopies: Number(newBook.totalCopies),
-            availableCopies: Number(newBook.availableCopies)
-                
+            dispatch(addBook({
+                ...newBook,
+                totalCopies: Number(newBook.totalCopies),
+                availableCopies: Number(newBook.availableCopies),
+              }))
+              
+            .unwrap()
+            .then(() => {
+                toast.success('Book added successfully');
+                console.log('data sent are', newBook);
+                setIsAddBookDialogOpen(false);
+                setNewBook({
+                    title: '',
+                    author: '',
+                    isbn: '',
+                    genre: '',
+                    coverImage: '',
+                    totalCopies: '',
+                    availableCopies: ''
+                });
+            })
+            .catch((err) => {
+                toast.error('Failed to add book: ' + err);
             });
-            setIsAddBookDialogOpen(false);
         };
 
     const handleEditClick = (book) => {
@@ -136,7 +165,13 @@ const ManageAllBooks = () => {
                     <p className="text-muted-foreground">No books found.</p>
                 )}
                 {/* DialogTrigger for the "Add New Book" button */}
-                    <Dialog open={isAddBookDialogOpen} onOpenChange={setIsAddBookDialogOpen}>
+                    <Dialog
+                        open={isAddBookDialogOpen}
+                        onOpenChange={(open) => {
+                            setIsAddBookDialogOpen(open);
+                            if (open) fetchAllGenres();
+                        }}
+                    >
                         <DialogTrigger asChild>
                             <Button className="flex items-center gap-2 mt-3">
                                 <PlusCircle className="w-4 h-4" />
@@ -195,17 +230,24 @@ const ManageAllBooks = () => {
                                 </div>
                                 {/* Category Input */}
                                 <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="category" className="text-right">
-                                        Category
+                                    <Label htmlFor="genre" className="text-right">
+                                        Genre
                                     </Label>
-                                    <Input
-                                        id="category"
-                                        name="category"
-                                        value={newBook.category}
+                                    <select
+                                        id="genre"
+                                        name="genre"
+                                        value={newBook.genre}
                                         onChange={handleNewBookChange}
-                                        className="col-span-3"
+                                        className="col-span-3 border rounded px-2 py-1"
                                         required
-                                    />
+                                    >
+                                        <option value="">Select a genre</option>
+                                        {genres.map((genre) => (
+                                            <option key={genre._id} value={genre._id}>
+                                                {genre.name}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                                 {/* Cover Image URL Input */}
                                 <div className="grid grid-cols-4 items-center gap-4">
