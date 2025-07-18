@@ -5,7 +5,7 @@ const activitySchema = new mongoose.Schema(
     {
     type: {
       type: String,
-      enum: ['issued', 'returned', 'reserved'],
+      enum: ['issued', 'returned', 'reserved', 'overdue-voice-note'],
       required: true,
     },
     book: {

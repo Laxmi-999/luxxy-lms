@@ -13,6 +13,7 @@ import KeyFeatures from '@/components/KeyFeatures';
 import HowItWorks from '@/components/HowItWorks';
 import GenreSection from '@/components/GenreSection';
 import CallToAction from '@/components/CTA';
+import NotificationBell from '@/components/notificationBell';
 
 const Page = () => {
   const dispatch = useAppDispatch();
