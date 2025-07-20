@@ -1,6 +1,6 @@
 
 import express from 'express';
-import Borrow from '../models/Borrow.js';
+import Borrow from '../models/borrow.js';
 import Book from '../models/book.js';
 import { isAdmin, protect } from '../Middleware/authMiddleware.js';
  
