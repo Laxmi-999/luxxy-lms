@@ -94,7 +94,7 @@ I am  developing LibraryConnect in distinct phases to ensure a robust and featur
     * ✅ Book Issue/Return forms.
     * ✅ View Users and Manage Reservations interfaces.
 * **Backend**:
-    *✅ Endpoints for **Librarian Authentication** and access control.
+    * ✅ Endpoints for **Librarian Authentication** and access control.
     * ✅ API endpoints for **Add/Edit/Delete Books**.
     * ✅ API endpoints for **Issue/Return Books**.
     * ✅ API endpoints for **View Users** and **Manage Reservations**.
@@ -142,45 +142,51 @@ To get a local copy up and running, follow these simple steps.
 
 1.  **Clone the repository**:
 
-    ```bash
+    
+bash
     git clone <your-repository-url>
     cd library-connect
-    ```
+
 
 2.  **Backend Setup**:
 
-    ```bash
+    
+bash
     cd backend
     npm install
-    ```
 
-    Create a `.env` file in the `backend` directory and add your MongoDB connection string and JWT secret:
 
-    ```env
+    Create a .env file in the backend directory and add your MongoDB connection string and JWT secret:
+
+    
+env
     MONGO_URI="your_mongodb_connection_string"
     JWT_SECRET="a_strong_random_secret_key"
-    ```
+
 
     Run the backend server:
 
-    ```bash
+    
+bash
     npm start
-    ```
+
 
 3.  **Frontend Setup**:
 
-    ```bash
+    
+bash
     cd frontend
     npm install
-    ```
+
 
     Run the frontend development server:
 
-    ```bash
+    
+bash
     npm run dev
-    ```
 
-    The frontend should now be accessible at `http://localhost:3000`.
+
+    The frontend should now be accessible at http://localhost:3000.
 
 ---
 
