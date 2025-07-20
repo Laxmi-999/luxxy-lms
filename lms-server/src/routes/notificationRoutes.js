@@ -1,7 +1,6 @@
 import express from 'express';
 import { protect } from '../Middleware/authMiddleware.js';
-import Notification from '../models/notification.js';
-
+import Notification from '../models/Notification.js';
 
 const notificationRouter = express.Router();
 
