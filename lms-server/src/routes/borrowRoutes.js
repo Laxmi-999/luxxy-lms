@@ -5,7 +5,7 @@ import { isLibrarian, protect } from '../Middleware/authMiddleware.js';
 import { isMember } from '../Middleware/authMiddleware.js';
 import Activity from '../models/activity.js';
 import { calculateFine } from '../utils/fineCalculation.js'
-import Borrow from '../models/Borrow.js';
+import Borrow from '../models/borrow.js';
 
 
 
