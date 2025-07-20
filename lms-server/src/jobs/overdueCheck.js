@@ -72,7 +72,9 @@ async function generateVoiceNote(text, userId) {
   }
 }
 
-cron.schedule('0 2 1 * *', async () => { // TEMPORARY: Runs every minute for testing
+cron.schedule('0 2 1 * *', async () => { // TEMPORARY: Runs once in a month for  production, 
+  // cron.schedule('0 2 1 * *', async () => { // TEMPORARY: Runs every minutes for testing, 
+
   console.log('--- Running overdue book check job ---');
   const today = new Date();
   today.setHours(0, 0, 0, 0);

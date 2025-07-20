@@ -14,6 +14,7 @@ import path from 'path'; // Import path
 import { fileURLToPath } from 'url'; // Import fileURLToPath
 import './jobs/overdueCheck.js';
 import notificationRouter from './routes/notificationRoutes.js';
+import reportRouter from './routes/reportRoutes.js';
 
 dotenv.config();
 const port = process.env.PORT || 8000; // Provide a default port for safety
@@ -74,6 +75,9 @@ app.use('/api/reviews', reviewRouter);
 
 // Notification routes
 app.use('/api/notifications', notificationRouter);
+
+//report routes
+app.use('/api/reports', reportRouter);
 
 // Start the server
 app.listen(port, () => {

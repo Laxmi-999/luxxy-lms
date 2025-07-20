@@ -51,7 +51,7 @@ const PendingRequests = () => {
         
      if(data){
       toast.success('Return approved successfully')
-     dispatch(getPendingReturns());
+      dispatch(getPendingReturns());
 
      }
 
