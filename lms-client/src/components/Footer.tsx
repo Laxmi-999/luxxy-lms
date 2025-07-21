@@ -2,7 +2,7 @@ import { BookOpen, Mail } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="bg-orange-500  text-white]">
+    <footer className="bg-black/80  text-white]">
       <div className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-4 gap-12">
           <div className="col-span-1 md:col-span-2">

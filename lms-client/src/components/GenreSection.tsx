@@ -15,12 +15,10 @@ const GenreSection = () => {
     const fetchGenre = async () => {
       try {
         const { data } = await axiosInstance.get('/genre');
-        // Format API data to include links and background color
         const formattedGenres = data.map((genre: any) => ({
           name: genre.name,
           image: genre.image,
           link: genre.link || `/books?category=${genre.name.toLowerCase()}`,
-          bgColor: `bg-orange-${Math.floor(Math.random() * 4 + 5)}00`, // Dynamic orange shades (500-800)
         }));
         dispatch(setGenre(formattedGenres));
       } catch (err) {
@@ -28,51 +26,53 @@ const GenreSection = () => {
         toast.error('Failed to fetch genres', { position: 'top-center' });
       }
     };
-
     fetchGenre();
   }, [dispatch]);
 
   return (
-    <section className="py-24 bg-gradient-to-b from-black/80 to-black/60 mt-12 mb-24">
+    <section className="py-24 bg-gray-50">
       <div className="container mx-auto px-6">
-        <h2 className="text-5xl font-extrabold text-center text-white mb-8 tracking-tight">
-          Discover Your Next Adventure
-        </h2>
-        <p className="text-xl text-center text-gray-300 mb-16 max-w-3xl mx-auto font-light">
-          Explore our handpicked genres and find the perfect book to spark your imagination.
-        </p>
-
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-serif font-bold text-gray-800 mb-4">
+            Discover Your Next Adventure
+          </h2>
+          <div className="w-24 h-1 bg-gray-200 mx-auto mb-6"></div>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Explore our handpicked genres and find the perfect book to spark your imagination.
+          </p>
+        </div>
         {error ? (
-          <p className="text-red-400 text-center text-lg">Error: {error}</p>
+          <p className="text-red-500 text-center text-lg">Error: {error}</p>
         ) : (
-          <div className="flex flex-row gap-8 overflow-x-auto pb-4 scrollbar-hide">
+          <div className="flex flex-row gap-8 overflow-x-auto pb-6 scrollbar-hide">
             {genres && genres.length > 0 ? (
               genres.map((genre: any) => (
                 <Link href={genre.link} key={genre.name} className="block group flex-shrink-0">
-                  <div
-                    className={`w-48 h-64 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform group-hover:-translate-y-2 text-center border border-yellow-500/50 ${genre.bgColor} bg-opacity-90 flex flex-col justify-center items-center`}
-                  >
-                    <img
-                      src={genre.image}
-                      alt={genre.name}
-                      className="h-20 w-20 object-cover rounded-full mx-auto mb-6 transition-transform duration-300 group-hover:scale-110"
-                    />
-                    <h3 className="text-xl font-bold text-white mb-3">{genre.name}</h3>
-                    <span className="text-gray-200 text-sm font-medium group-hover:text-yellow-300 transition-colors">
-                      Browse Books
-                    </span>
+                  <div className="w-56 h-72 bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-t-4 border-gray-200">
+                    <div className="h-44 overflow-hidden flex items-center justify-center bg-gray-100">
+                      <img
+                        src={genre.image || 'https://via.placeholder.com/300x200/CCCCCC/888888?text=Genre'}
+                        alt={genre.name}
+                        className="w-24 h-24 object-cover rounded-full shadow group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                    <div className="p-4 text-center">
+                      <h3 className="text-xl font-semibold text-gray-800 mb-2 font-serif">{genre.name}</h3>
+                      <span className="text-sm font-medium text-gray-500 transition-colors group-hover:text-gray-700">
+                        Browse Collection
+                      </span>
+                    </div>
                   </div>
                 </Link>
               ))
             ) : (
-              <p className="text-gray-300 text-center w-full text-lg">
+              <p className="text-gray-500 text-center w-full text-lg">
                 No genres available at the moment.
               </p>
             )}
           </div>
         )}
       </div>
-
       <style jsx>{`
         .scrollbar-hide::-webkit-scrollbar {
           display: none;

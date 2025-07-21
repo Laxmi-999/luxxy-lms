@@ -1,7 +1,5 @@
 
 'use client'
-
-import React, { useEffect } from 'react';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import BookSlider from '@/components/BookSlider';
@@ -14,6 +12,32 @@ import HowItWorks from '@/components/HowItWorks';
 import GenreSection from '@/components/GenreSection';
 import CallToAction from '@/components/CTA';
 import NotificationBell from '@/components/notificationBell';
+import { useEffect, useRef, useState } from 'react';
+
+export function useInView(threshold = 0.15) {
+  const ref = useRef();
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const observer = new window.IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [threshold]);
+
+  return [ref, inView];
+}
+
+function AnimatedSection({ children }) {
+  const [ref, inView] = useInView();
+  return (
+    <section ref={ref} className={`section-fade${inView ? ' in-view' : ''}`}>
+      {children}
+    </section>
+  );
+}
 
 const Page = () => {
   const dispatch = useAppDispatch();
@@ -34,13 +58,27 @@ const Page = () => {
       }}
     >   
       <Header />
-      <HeroSection />
-      <BookSlider />
-      <KeyFeatures />
-      <HowItWorks />
-      <GenreSection />
-      <ReviewsSection />
-      <CallToAction />
+      <AnimatedSection>
+        <HeroSection />
+      </AnimatedSection>
+      <AnimatedSection>
+        <BookSlider />
+      </AnimatedSection>
+      <AnimatedSection>
+        <KeyFeatures />
+      </AnimatedSection>
+      <AnimatedSection>
+        <HowItWorks />
+      </AnimatedSection>
+      <AnimatedSection>
+        <GenreSection />
+      </AnimatedSection>
+      <AnimatedSection>
+        <ReviewsSection />
+      </AnimatedSection>
+      <AnimatedSection>
+        <CallToAction />
+      </AnimatedSection>
       <Footer />
     </div>
   );

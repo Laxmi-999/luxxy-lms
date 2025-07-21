@@ -25,19 +25,35 @@ const features = [
 
 const KeyFeatures = () => {
   return (
-    <section className="py-20 bg-black/50 mt-5 mb-20 ">
+    <section className="py-24 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-extrabold text-center text-white mb-6">Why Choose LibraryHub?</h2>
-        <p className="text-xl text-center text-gray-200 mb-12 max-w-2xl mx-auto">
-          Experience the future of reading with features designed to enhance your literary journey.
-        </p>
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-serif font-bold text-gray-800 mb-4">
+            Why Choose LibraryHub?
+          </h2>
+          <div className="w-24 h-1 bg-gray-200 mx-auto mb-6"></div>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Experience the future of reading with features designed to enhance your literary journey.
+          </p>
+        </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
-            <div key={index} className="bg-orange-500 p-8 rounded-lg shadow-md text-center border border-yellow-400 hover:bg-orange-600 hover:shadow-xl transition-all duration-300">
-              <feature.icon className="h-16 w-16 text-yellow-300 mx-auto mb-6" />
-              <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
-              <p className="text-gray-200">{feature.description}</p>
+            <div 
+              key={index} 
+              className="bg-white p-8 rounded-lg shadow-md text-center 
+                border-t-4 border-gray-200 hover:shadow-xl 
+                transition-all duration-300 group"
+            >
+              <div className="mb-6 transform group-hover:-translate-y-1 transition-transform duration-300">
+                <feature.icon className="h-16 w-16 text-gray-400 mx-auto" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                {feature.title}
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                {feature.description}
+              </p>
             </div>
           ))}
         </div>

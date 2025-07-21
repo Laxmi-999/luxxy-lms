@@ -26,19 +26,35 @@ const steps = [
 
 const HowItWorks = () => {
   return (
-    <section className="py-20 bg-black/80 mt-20 mb-20 "> {/* Deep Library Blue background */}
+    <section className="py-24 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-extrabold text-center text-[#F8F9FA] mb-6">How LibraryHub Works</h2> {/* Off-White/Light Gray */}
-        <p className="text-xl text-center text-[#D1D5DB] mb-12 max-w-2xl mx-auto"> {/* Light Gray */}
-          Getting started with your digital reading journey is simple and seamless.
-        </p>
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-serif font-bold text-gray-800 mb-4">
+            How LibraryHub Works
+          </h2>
+          <div className="w-24 h-1 bg-gray-200 mx-auto mb-6"></div>
+          <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+            Getting started with your digital reading journey is simple and seamless.
+          </p>
+        </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((step, index) => (
-            <div key={index} className="bg-[#FFFFFF]/80 p-8 rounded-lg shadow-lg text-center border border-[#D1D5DB]"> 
-              <step.icon className="h-16 w-16 text-orange-500 mx-auto mb-6" />
-              <h3 className="text-xl font-semibold text-[#1F2937] mb-3">{step.title}</h3> 
-              <p className="text-[#1F2937]">{step.description}</p> 
+            <div 
+              key={index} 
+              className="bg-white p-8 rounded-lg shadow-md text-center 
+                       border-t-4 border-gray-200 hover:shadow-xl 
+                       transition-all duration-300 group"
+            > 
+              <div className="mb-6 transform group-hover:-translate-y-1 transition-transform duration-300">
+                <step.icon className="h-16 w-16 text-gray-400 mx-auto" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-3">
+                {step.title}
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                {step.description}
+              </p>
             </div>
           ))}
         </div>

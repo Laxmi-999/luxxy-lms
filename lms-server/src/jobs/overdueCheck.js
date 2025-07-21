@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import Borrow from '../models/Borrow.js';
+import Borrow from '../models/borrow.js';
 import Notification from '../models/Notification.js';
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
 import fs from 'fs';
