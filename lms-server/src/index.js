@@ -4,7 +4,7 @@ import authRoutes from './routes/authRoutes.js'
 import cors from 'cors';
 import bookRoute from './routes/bookRoutes.js';
 import userRoute from './routes/userRoutes.js';
-import dotenv from  'dotenv';
+import dotenv from 'dotenv';
 import reservationRoute from './routes/reservationRoutes.js';
 import borrowRouter from './routes/borrowRoutes.js';
 import activityRouter from './routes/activityRoutes.js';
@@ -15,6 +15,7 @@ import { fileURLToPath } from 'url'; // Import fileURLToPath
 import './jobs/overdueCheck.js';
 import notificationRouter from './routes/notificationRoutes.js';
 import reportRouter from './routes/reportRoutes.js';
+import { EsewaInitiatePayment, paymentStatus } from './routes/transactions.js';
 
 dotenv.config();
 const port = process.env.PORT || 8000; // Provide a default port for safety
@@ -47,9 +48,11 @@ const publicPath = path.join(__dirname, '../public');
 // so that Express checks for static files first.
 app.use(express.static(publicPath));
 
+
 // Also, ensure your 'uploads' static serving is correctly placed and path is valid
 // Assuming 'uploads' is also in the server root, parallel to 'public' and 'src'
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 
 
 // --- API Routes ---
@@ -83,6 +86,10 @@ app.use('/api/notifications', notificationRouter);
 //report routes
 app.use('/api/reports', reportRouter);
 
+
+//esewa payment routes
+app.post("/api/esewa/initiate-payment", EsewaInitiatePayment);
+app.post("/api/esewa/payment-status", paymentStatus);
 // Start the server
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

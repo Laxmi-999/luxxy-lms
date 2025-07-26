@@ -87,6 +87,92 @@ borrowRouter.get('/request', protect, isMember, async (req, res) => {
   }
 });
 
+borrowRouter.get('/overdue', protect, isMember, async (req, res) => {
+  try {
+    
+    const overdueBorrows = await Borrow.find({
+      user: req.user._id, 
+      status: { $nin: ['returned'] }, // Exclude returned borrow
+      dueDate: { $lt: new Date() } // dueDate is less than today (i.e., in the past)
+    })
+      .populate('book', 'title author') // Populate book details
+      .lean(); // Return plain JavaScript objects for easier manipulation
+
+    if (!overdueBorrows || overdueBorrows.length === 0) {
+      return res.status(200).json([]); 
+    }
+
+    const updatedOverdueBorrows = [];
+    for (let borrow of overdueBorrows) {
+      // Calculate the current fine for the overdue borrow
+      const currentCalculatedFine = calculateFine(borrow.dueDate);
+
+      // If the calculated fine is different from the stored fine, update it in DB
+      if (borrow.fine !== currentCalculatedFine) {
+        await Borrow.updateOne(
+          { _id: borrow._id },
+          { $set: { fine: currentCalculatedFine } }
+        );
+        // Update the in-memory object to reflect the new fine for the response
+        borrow.fine = currentCalculatedFine;
+      }
+      updatedOverdueBorrows.push(borrow);
+    }
+
+    // Return the overdue borrows with their fines calculated and updated in the DB
+    return res.status(200).json(updatedOverdueBorrows);
+
+  } catch (err) {
+    console.error('Error fetching overdue borrows and calculating fines:', err);
+    return res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+borrowRouter.post('/update-overdue', async (req, res) => { // You might want to add 'protect' middleware here
+  try {
+    // We expect userId from the frontend to update fines for a specific user
+    const { userId } = req.body;
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID is required to update fines.' });
+    }
+
+    // Find borrows for the specific user that are currently active and not yet returned or fine_paid
+    const activeBorrows = await Borrow.find({
+      user: userId, // Filter by the specific user
+      status: { $nin: ['returned', 'fine_paid'] },
+    }).lean(); // Use .lean() for efficiency when modifying and saving
+
+    if (!activeBorrows || activeBorrows.length === 0) {
+      return res.status(200).json({ message: 'No active borrows to update fines for this user.' });
+    }
+
+    const updates = activeBorrows.map(async (borrow) => {
+      if (!borrow.returnDate) { // Only calculate and update fine if the book is not yet returned
+        const currentCalculatedFine = calculateFine(borrow.dueDate);
+
+        // If the calculated fine is different from the stored fine, update it in DB
+        if (borrow.fine !== currentCalculatedFine) { // Only update if fine has changed
+          await Borrow.updateOne(
+            { _id: borrow._id },
+            { $set: { fine: currentCalculatedFine } }
+          );
+          return { borrowId: borrow._id, oldFine: borrow.fine, newFine: currentCalculatedFine, updated: true };
+        }
+      }
+      return { borrowId: borrow._id, oldFine: borrow.fine, newFine: borrow.fine, updated: false };
+    });
+
+    await Promise.all(updates); // Wait for all individual updates to complete
+
+    console.log(`Overdue fines check and update completed for user ${userId}.`);
+    return res.status(200).json({ message: 'Overdue fines checked and updated successfully.' });
+
+  } catch (err) {
+    console.error('Error updating overdue fines:', err);
+    return res.status(500).json({ message: 'Server error during fine update', error: err.message });
+  }
+});
+
+
 
 // GET borrow requests filtered by status (only status allowed as query)
 borrowRouter.get('/requests', protect, isLibrarian, async (req, res) => {

@@ -1,3 +1,4 @@
+// app/member/fines/page.tsx
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -6,38 +7,64 @@ import { RootState } from '@/Redux/store';
 import { useAppDispatch } from '@/Redux/hooks';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react'; 
-import axios from 'axios'; 
+import { Loader2 } from 'lucide-react';
+import axios from 'axios'; // Or your configured axiosInstance if you use it globally
+import axiosInstance from '@/lib/axiosInstance';
 
 const FinesPage = () => {
   const dispatch = useAppDispatch();
   const { userBorrows, loading, error } = useSelector((state: RootState) => state.borrows);
-  
-  const currentUserId = useSelector((state: RootState) => state.auth.userInfo?._id); // Example: Get user ID from auth slice
+  const currentUserId = useSelector((state: RootState) => state.auth.userInfo?._id); // Adjust path to your user ID
 
-  // State for payment processing and messages
   const [isPaying, setIsPaying] = useState(false);
   const [paymentMessage, setPaymentMessage] = useState('');
+  const [isUpdatingFines, setIsUpdatingFines] = useState(false); // State for fine update loading
 
-  const activeBorrows = userBorrows.filter((borrow: any) => borrow.status === 'approved');
-  const pastBorrows = userBorrows.filter((borrow: any) => borrow.status === 'returned');
+  // Filter borrows based on status for display
+  const activeBorrows = userBorrows.filter((borrow) => borrow.status === 'approved' || borrow.status === 'overdue');
+  const pastBorrows = userBorrows.filter((borrow) => borrow.status === 'returned' || borrow.status === 'fine_paid');
 
+  // Calculate total fine from active borrows displayed
   const totalFine = activeBorrows.reduce((sum, borrow) => sum + (borrow.fine || 0), 0);
 
   useEffect(() => {
-    dispatch(getUserBorrows());
+    const fetchAndCalculateFines = async () => {
+      if (!currentUserId) {
+        // If user not logged in, just fetch borrows (they might be empty or show old data)
+        dispatch(getUserBorrows());
+        return;
+      }
 
-    //  Check for payment status in URL parameters after redirection from eSewa ---
+      setIsUpdatingFines(true); // Indicate that fine update is in progress
+      try {
+        // Step 1: Call backend to update overdue fines in the database
+        // This ensures the fine values are current in DB before fetching them
+        // Pass userId if your backend's /api/fines/update-overdue route is user-specific
+        await axiosInstance.post("http://localhost:8000/api/borrow/update-overdue", { userId: currentUserId });
+        console.log("Backend fines updated successfully.");
+      } catch (fineUpdateError) {
+        console.error("Error updating fines on backend:", fineUpdateError);
+        // Optionally set an error message for the user here
+        setPaymentMessage(`Failed to update fines: ${axios.isAxiosError(fineUpdateError) ? fineUpdateError.response?.data?.message : fineUpdateError.message}`);
+      } finally {
+        setIsUpdatingFines(false); // End loading for fine update
+        // Step 2: Dispatch action to get the borrows (which now have updated fines from DB)
+        dispatch(getUserBorrows());
+      }
+    };
+
+    fetchAndCalculateFines(); // Call the async function
+
+    // Handle failure redirect from eSewa (if backend's fu points to /fines?status=failed)
     const urlParams = new URLSearchParams(window.location.search);
     const status = urlParams.get('status');
     const message = urlParams.get('message');
     if (status === 'failed') {
       setPaymentMessage(message || 'Payment failed. Please try again.');
+      // Clean up URL parameters to prevent message re-display on refresh
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [dispatch]);
-
-  
+  }, [dispatch, currentUserId]); // Depend on dispatch and currentUserId
 
   const handlePayment = async (e) => {
     e.preventDefault();
@@ -51,36 +78,32 @@ const FinesPage = () => {
         return;
     }
 
-    setIsPaying(true);
-    setPaymentMessage(''); // Clear previous messages
+    setIsPaying(true); // Indicate payment initiation is in progress
+    setPaymentMessage(''); // Clear any previous messages
 
     try {
-      const response = await axios.post(
-    
-        "http://localhost:5000/api/esewa/initiate-payment", 
+      // Call your backend to initiate payment using the esewajs package
+      // Your backend will return a redirect URL provided by esewajs
+      const response = await axiosInstance.post(
+        "http://localhost:8000/api/esewa/initiate-payment", // <--- Confirm this URL matches your backend route
         {
-          amount: totalFine, 
-          userId: currentUserId, 
-          borrowIds: activeBorrows.map(borrow => borrow._id), 
-          }
+          amount: totalFine,
+          userId: currentUserId,
+          borrowIds: activeBorrows.map(borrow => borrow._id),
+        }
       );
 
-      // The backend (using esewajs) should return a URL to redirect to.
-      // The esewajs documentation example shows `reqPayment.request.res.responseUrl`
-      // which implies the library itself performs the redirection.
-      // However, for a React app, it's more common for the backend to return the URL,
-      // and the frontend then performs the redirection.
-      // Assuming your backend sends back { url: "..." } as per the esewajs example:
+      // The esewajs backend should return a 'url' field for redirection
       if (response.data && response.data.url) {
-        window.location.href = response.data.url; // Redirect to eSewa
+        window.location.href = response.data.url; // Redirect the user's browser to eSewa
       } else {
         throw new Error("Backend did not provide a valid eSewa redirection URL.");
       }
 
     } catch (error) {
-      console.error("Error initiating payment:", error.response ? error.response.data : error.message);
-      setPaymentMessage(`Error initiating payment: ${error.response?.data?.message || error.message}`);
-      setIsPaying(false); 
+      console.error("Error initiating payment:", axios.isAxiosError(error) ? error.response?.data : error.message);
+      setPaymentMessage(`Error initiating payment: ${axios.isAxiosError(error) ? error.response?.data?.message || error.message : error.message}`);
+      setIsPaying(false); // Reset payment state on error
     }
   };
 
@@ -91,8 +114,8 @@ const FinesPage = () => {
           <CardTitle className="text-3xl font-extrabold text-orange-600">Your Borrowed Books & Fines</CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          {loading ? (
-            <p className="text-center text-gray-600">Loading...</p>
+          {(loading || isUpdatingFines) ? ( // Show loading if either data fetch or fine update is in progress
+            <p className="text-center text-gray-600">Loading fines...</p>
           ) : error ? (
             <p className="text-red-500 text-center">{error}</p>
           ) : userBorrows.length === 0 ? (
@@ -140,7 +163,7 @@ const FinesPage = () => {
                     <p className="text-xl font-bold text-orange-800 mb-4 sm:mb-0">Total Outstanding Fine: R.s {totalFine.toFixed(2)}</p>
                     <Button
                       onClick={handlePayment}
-                      disabled={isPaying || totalFine <= 0 || !currentUserId} // Disable if no user
+                      disabled={isPaying || totalFine <= 0 || !currentUserId || loading || isUpdatingFines} // Disable during loading states
                       className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 flex items-center justify-center"
                     >
                       {isPaying ? (
