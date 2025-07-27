@@ -15,7 +15,6 @@ import { fileURLToPath } from 'url'; // Import fileURLToPath
 import './jobs/overdueCheck.js';
 import notificationRouter from './routes/notificationRoutes.js';
 import reportRouter from './routes/reportRoutes.js';
-import { EsewaInitiatePayment, paymentStatus } from './routes/transactions.js';
 
 dotenv.config();
 const port = process.env.PORT || 8000; // Provide a default port for safety
@@ -87,9 +86,7 @@ app.use('/api/notifications', notificationRouter);
 app.use('/api/reports', reportRouter);
 
 
-//esewa payment routes
-app.post("/api/esewa/initiate-payment", EsewaInitiatePayment);
-app.post("/api/esewa/payment-status", paymentStatus);
+
 // Start the server
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

@@ -33,14 +33,15 @@ export const fetchAllUsers = createAsyncThunk('user/fetchAllUsers', async (_, th
   }
 });
 
-
 //admin and librarian
 // to update user
 export const updateUser = createAsyncThunk('user/updateUser', 
 
-  async ({ userId, userData}, thunkAPI) => {
+  async ({ id, userData}, thunkAPI) => {
+    console.log('user id is', id);
+
   try {
-    const res = await axiosInstance.put(`/user/update-user/${userId}`, userData );
+    const res = await axiosInstance.put(`/user/update-user/${id}`, userData );
     return res.data;
   } catch (err) {
     console.log('error while updating user is ', err);

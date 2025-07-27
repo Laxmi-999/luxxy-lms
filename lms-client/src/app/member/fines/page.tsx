@@ -82,8 +82,8 @@ const FinesPage = () => {
     setPaymentMessage(''); // Clear any previous messages
 
     try {
-      // Call your backend to initiate payment using the esewajs package
-      // Your backend will return a redirect URL provided by esewajs
+      // Call your backend to initiate payment (which now uses direct integration)
+      // Your backend will return a redirect URL and parameters for eSewa
       const response = await axiosInstance.post(
         "http://localhost:8000/api/esewa/initiate-payment", // <--- Confirm this URL matches your backend route
         {
@@ -93,11 +93,31 @@ const FinesPage = () => {
         }
       );
 
-      // The esewajs backend should return a 'url' field for redirection
-      if (response.data && response.data.url) {
-        window.location.href = response.data.url; // Redirect the user's browser to eSewa
+      // The backend should return esewaUrl and esewaParams for dynamic form submission
+      if (response.data && response.data.esewaUrl && response.data.esewaParams) {
+        const { esewaUrl, esewaParams } = response.data;
+
+        // Dynamically create and submit a form to redirect to eSewa
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = esewaUrl;
+
+        for (const key in esewaParams) {
+          if (esewaParams.hasOwnProperty(key)) {
+            const hiddenField = document.createElement('input');
+            hiddenField.type = 'hidden';
+            hiddenField.name = key;
+            hiddenField.value = esewaParams[key];
+            form.appendChild(hiddenField);
+          }
+        }
+
+        document.body.appendChild(form);
+        form.submit(); // This redirects the user
+        document.body.removeChild(form); // Clean up the form element
+
       } else {
-        throw new Error("Backend did not provide a valid eSewa redirection URL.");
+        throw new Error("Backend did not provide valid eSewa redirection data.");
       }
 
     } catch (error) {

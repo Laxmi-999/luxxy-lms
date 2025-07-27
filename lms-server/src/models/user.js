@@ -20,12 +20,19 @@ const userSchema = new mongoose.Schema({
     enum: ["admin", "librarian", "member"],
     default: "member",
   },
+  status: { // New field for status
+    type: String,
+    enum: ["idle", "assigned"],
+    default: "idle", // Default status for all users, can be overridden
+    required: function() {
+      return this.role === 'librarian'; // Make status required only for librarians
+    }
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
 });
 
-const User =  mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
 export default User;
-

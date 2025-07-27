@@ -35,7 +35,7 @@ export const updateUsere = async (req, res) => {
   try {
     const userId = req.params.id;
     const  userData  = req.body;
-
+ 
     console.log('userId', userId , 'formDat', userData);
     
     if (!userId || !userData) {
@@ -54,8 +54,7 @@ export const updateUsere = async (req, res) => {
       return res.status(404).json({ message: 'User not found.' });
     }
 
-    res.json({message:'User details updated successfully'}, user);
-
+    res.status(200).json(user); 
   } catch (error) {
     console.error("Error updating user:", error); 
     res.status(500).json({ message: 'Failed to update user.' });
@@ -91,23 +90,32 @@ export const addLibrarian = async (req, res) => {
   try {
     const { name, email, password } = req.body;
     console.log('librarian details are', name, email, password);
-    
 
     const userExists = await User.findOne({ email });
     if (userExists) return res.status(400).json({ message: 'User already exists' });
-        
-   const hashedPassword =  await bcrypt.hash(password, 10);
-    const newUser = await User.create({ name, email, password:hashedPassword, role: 'librarian' });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role: 'librarian',
+      status: 'idle' // Set the status explicitly for librarians
+    });
+
     const userWithoutPassword = { ...newUser._doc };
     delete userWithoutPassword.password;
     console.log('librarian is ', newUser);
-    
 
     res.status(201).json(userWithoutPassword);
   } catch (error) {
+    console.error('Error adding librarian:', error); // Log the actual error for debugging
     res.status(500).json({ message: 'Failed to add librarian' });
   }
 };
+
+
 
 //delete user
 export const deleteUser = async(req, res) => {
