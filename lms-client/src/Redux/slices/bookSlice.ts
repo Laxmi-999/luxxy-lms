@@ -9,9 +9,9 @@ const baseUrl = 'http://localhost:8000/api';
 // ========================= Async Thunks ==============================
 
 // Get all books
-export const fetchAllBooks = createAsyncThunk('books/fetchAllBooks', async (_, thunkAPI) => {
+export const fetchAllBooks = createAsyncThunk('books/fetchAllBooks', async ({page, limit}, thunkAPI) => {
   try {
-    const res = await axios.get(`${baseUrl}/book/get-all-books`);
+    const res = await axios.get(`${baseUrl}/book/get-all-books?page=${page}&limit=${limit}`);
      console.log('books are', res);
       return res.data;
     

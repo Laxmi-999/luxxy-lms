@@ -33,9 +33,27 @@ export const createBook = async(req, res) => {
 export const getAllBooks = async(req, res) => {
     try {
 
-        const books  = await Book.find().populate('genre', 'name');
-;
-        return  res.status(200).json(books);
+       const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 6;
+      //calculating for skip
+      const skip = (page -1) * limit;
+     
+        const books  = await Book.find()
+        .populate('genre', 'name')
+        .skip(skip)
+        .limit(limit);
+
+
+        // sending total num of books and  total pages to the frontend 
+         const totalBooks = await Book.countDocuments();
+        //  const totalPages = Math.ceil(totalBooks/limit);
+         const totalPages = 100;
+
+        return  res.status(200).json({
+            books,
+            totalBooks,
+            totalPages
+        });
         
     } catch (error) {
 
