@@ -30,38 +30,45 @@ export const createBook = async(req, res) => {
 }
 
 // to get all books
-export const getAllBooks = async(req, res) => {
+export const getAllBooks = async (req, res) => {
     try {
+        const { page, limit } = req.query;
 
-       const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 6;
-      //calculating for skip
-      const skip = (page -1) * limit;
-     
-        const books  = await Book.find()
-        .populate('genre', 'name')
-        .skip(skip)
-        .limit(limit);
+        // Check if page or limit is provided in query
+        if (page || limit) {
+            const pageNum = parseInt(page) || 1;
+            const limitNum = parseInt(limit) || 6;
+            const skip = (pageNum - 1) * limitNum;
 
+            const books = await Book.find()
+                .populate('genre', 'name')
+                .skip(skip)
+                .limit(limitNum);
 
-        // sending total num of books and  total pages to the frontend 
-         const totalBooks = await Book.countDocuments();
-         const totalPages = Math.ceil(totalBooks/limit);
-        //  const totalPages = 100;
+            const totalBooks = await Book.countDocuments();
+            const totalPages = Math.ceil(totalBooks / limitNum);
 
-        return  res.status(200).json({
-            books,
-            totalBooks,
-            totalPages
-        });
-        
+            return res.status(200).json({
+                books,
+                totalBooks,
+                totalPages
+            });
+        } else {
+            // Return all books if no page or limit is provided
+            const books = await Book.find().populate('genre', 'name');
+            const totalBooks = books.length;
+            const totalPages = 1;
+
+            return res.status(200).json({
+                books,
+                totalBooks,
+                totalPages
+            });
+        }
     } catch (error) {
-
-        
-        return res.status(500).json({message: 'error while getting all books'})
-        
+        return res.status(500).json({ message: 'Error while getting all books' });
     }
-}
+};
 
 
 // get single book by id
