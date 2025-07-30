@@ -1,65 +1,109 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import axios from 'axios'; // Import axios for API calls
-// Assuming these components are available from your project's UI library
+import axios from 'axios';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-
-// IMPORTANT: Ensure process.env.NEXT_PUBLIC_API_URL is correctly set in your .env file
-// Example: NEXT_PUBLIC_API_URL=http://localhost:8000/api
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import axiosInstance from '@/lib/axiosInstance';
 
 const FindBook = () => {
-  // Local state to manage books, loading, error, and pagination
   const [books, setBooks] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalBooks, setTotalBooks] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  const [page, setPage] = useState(1); // Current page for API request
-  const limit = 6; // Books per page
   const [searchTerm, setSearchTerm] = useState('');
+  const limit = 6;
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentPage = parseInt(searchParams.get('page') || 1);
 
-  // Function to fetch books directly from the API
   const fetchBooksDirectly = useCallback(async () => {
     setLoading(true);
-    setError(null); // Clear previous errors
+    setError(null); 
     try {
-      // console.log(`FindBook: Fetching books directly from: ${baseUrl}/book/get-all-books?page=${page}&limit=${limit}`);
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/book/get-all-books?page=${page}&limit=${limit}`);
-      console.log('FindBook: API Response Data:', response.data);
-
-      // Update local state with data from API response
+      const response = await axiosInstance.get(
+        `/book/get-all-books?page=${currentPage}&limit=${limit}`
+      );
+      
       setBooks(response.data.books || []);
-      setCurrentPage(response.data.currentPage || 1);
       setTotalPages(response.data.totalPages || 1);
       setTotalBooks(response.data.totalBooks || 0);
 
     } catch (err) {
-      console.error('FindBook: Error fetching books directly:', err.response?.data?.message || err.message);
+      console.error('FindBook: Error fetching books:', err.response?.data?.message || err.message);
       setError(err.response?.data?.message || 'Failed to fetch books');
-      setBooks([]); // Clear books on error
+      setBooks([]);
       setTotalBooks(0);
       setTotalPages(1);
-      setCurrentPage(1);
     } finally {
       setLoading(false);
     }
-  }, [page, limit]); // Re-run when 'page' or 'limit' changes
+  }, [currentPage]); 
 
-  // Effect to call the fetch function on component mount and when 'page' changes
   useEffect(() => {
     fetchBooksDirectly();
   }, [fetchBooksDirectly]);
 
-  // Filter books based on search term (still client-side filtering on current page)
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages && newPage !== currentPage) {
+      // Update the URL with the new page parameter
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('page', newPage.toString());
+      router.push(`?${params.toString()}`, { scroll: false });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxVisiblePages = 5;
+    
+    // Always show first page
+    pageNumbers.push(1);
+
+    // Calculate range around current page
+    let startPage = Math.max(2, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages - 1, currentPage + Math.floor(maxVisiblePages / 2));
+
+    // Adjust if near start
+    if (currentPage <= Math.floor(maxVisiblePages / 2) + 1) {
+      endPage = Math.min(maxVisiblePages + 1, totalPages - 1);
+    }
+    
+    // Adjust if near end
+    if (currentPage >= totalPages - Math.floor(maxVisiblePages / 2)) {
+      startPage = Math.max(2, totalPages - maxVisiblePages);
+    }
+
+    // Add first ellipsis if needed
+    if (startPage > 2) {
+      pageNumbers.push('...');
+    }
+
+    // Add middle pages
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    // Add second ellipsis if needed
+    if (endPage < totalPages - 1) {
+      pageNumbers.push('...');
+    }
+
+    // Always show last page if there is one
+    if (totalPages > 1) {
+      pageNumbers.push(totalPages);
+    }
+
+    return pageNumbers;
+  };
+
   const filteredBooks = Array.isArray(books)
     ? books.filter(
         (book) =>
@@ -68,96 +112,7 @@ const FindBook = () => {
       )
     : [];
 
-  const handleBookClick = (bookId) => {
-    router.push(`/member/book-details/${bookId}`);
-  };
-
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= totalPages && newPage !== page) {
-      setPage(newPage); // This state update will trigger fetchBooksDirectly via useEffect
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  /**
-   * Generates an array of page numbers to display in the pagination.
-   * Implements the logic: 1, ..., [current - N, current, current + N], ..., totalPages
-   * with adjustments for pages near the start/end.
-   */
-  const getPageNumbers = () => {
-    const pageNumbers = [];
-    const adjacentPages = 2; // Number of pages to show directly around the current page (e.g., for page 50, show 48, 49, 51, 52)
-    const boundaryPages = 1; // Number of fixed pages at the start/end (e.g., page 1 and totalPages)
-
-    // Always add the first page if it exists
-    if (totalPages > 0) {
-      pageNumbers.push(1);
-    }
-
-    // Calculate the start and end of the "central" block of pages around currentPage
-    let startBlock = Math.max(2, currentPage - adjacentPages);
-    let endBlock = Math.min(totalPages - 1, currentPage + adjacentPages);
-
-    // Adjust the central block if it's too close to the beginning
-    // This ensures a consistent number of pages when near the start, e.g., 1, 2, 3, 4, 5, ...
-    if (currentPage - 1 <= adjacentPages + boundaryPages && totalPages > (adjacentPages * 2 + boundaryPages * 2 + 1)) {
-        endBlock = Math.min(totalPages - 1, 1 + adjacentPages * 2 + boundaryPages);
-        startBlock = 2; // Ensure it starts from 2
-    }
-    // Adjust the central block if it's too close to the end
-    // This ensures a consistent number of pages when near the end, e.g., ..., 96, 97, 98, 99, 100
-    if (totalPages - currentPage <= adjacentPages + boundaryPages && totalPages > (adjacentPages * 2 + boundaryPages * 2 + 1)) {
-        startBlock = Math.max(2, totalPages - (adjacentPages * 2 + boundaryPages));
-        endBlock = totalPages - 1; // Ensure it ends before totalPages
-    }
-
-
-    // Add ellipsis if there's a gap after the first page
-    if (startBlock > 2) {
-      pageNumbers.push('...');
-    }
-
-    // Add pages within the calculated central block
-    for (let i = startBlock; i <= endBlock; i++) {
-      // Avoid duplicating page 1 or totalPages if they fall within the block
-      if (i > 1 && i < totalPages) {
-        pageNumbers.push(i);
-      } else if (i === 1 && totalPages <= (adjacentPages * 2 + boundaryPages * 2 + 1)) {
-        // If total pages are few, and 1 is in the block, add it if not already there
-        if (!pageNumbers.includes(1)) pageNumbers.push(1);
-      } else if (i === totalPages && totalPages <= (adjacentPages * 2 + boundaryPages * 2 + 1)) {
-        // If total pages are few, and totalPages is in the block, add it if not already there
-        if (!pageNumbers.includes(totalPages)) pageNumbers.push(totalPages);
-      }
-    }
-
-    // Add ellipsis if there's a gap before the last page
-    if (endBlock < totalPages - 1) {
-      pageNumbers.push('...');
-    }
-
-    // Always add the last page if it exists and is not already included
-    if (totalPages > 1 && !pageNumbers.includes(totalPages)) {
-      pageNumbers.push(totalPages);
-    }
-
-    // Remove any consecutive '...' to clean up the array
-    const uniquePageNumbers = [];
-    for (let i = 0; i < pageNumbers.length; i++) {
-      if (pageNumbers[i] === '...' && uniquePageNumbers[uniquePageNumbers.length - 1] === '...') {
-        continue;
-      }
-      uniquePageNumbers.push(pageNumbers[i]);
-    }
-
-    return uniquePageNumbers;
-  };
-
-  const pageNumbers = getPageNumbers();
-
-  // --- Conditional Rendering Logic ---
   if (error) {
-    console.error("FindBook Component: Rendered with error:", error);
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <p className="text-xl text-red-500">Error: {error}</p>
@@ -166,7 +121,6 @@ const FindBook = () => {
   }
 
   if (loading && books.length === 0 && !searchTerm) {
-    console.log("FindBook Component: Showing initial loading state.");
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <p className="text-xl text-gray-700">Loading books...</p>
@@ -203,7 +157,7 @@ const FindBook = () => {
                 {filteredBooks.map((book) => (
                   <Card
                     key={book._id}
-                    onClick={() => handleBookClick(book._id)}
+                    onClick={() => router.push(`/member/book-details/${book._id}`)}
                     className="overflow-hidden shadow-md hover:shadow-lg transition duration-300 rounded-xl cursor-pointer border border-gray-200"
                   >
                     <div className="h-[220px] bg-gray-100 flex justify-center items-center">
@@ -216,7 +170,6 @@ const FindBook = () => {
                     <CardContent className="p-4">
                       <h2 className="text-lg font-semibold text-gray-800 line-clamp-1">{book.title}</h2>
                       <p className="text-sm text-gray-500">{book.author || 'Unknown Author'}</p>
-
                       <div className="mt-3">
                         {book.availableCopies > 0 ? (
                           <span className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full">
@@ -237,22 +190,24 @@ const FindBook = () => {
               {totalPages > 1 && (
                 <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-10 shadow-md rounded-lg">
                   <div className="flex flex-1 justify-between sm:hidden">
-                    {/* Mobile Previous Button */}
-                    <Button
-                      onClick={() => handlePageChange(page - 1)}
-                      disabled={page === 1 || loading}
-                      className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 hover:text-white"
+                    <Link 
+                      href={`?page=${currentPage - 1}`}
+                      scroll={false}
+                      className={`relative inline-flex items-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium ${
+                        currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-orange-50'
+                      }`}
                     >
                       Previous
-                    </Button>
-                    {/* Mobile Next Button */}
-                    <Button
-                      onClick={() => handlePageChange(page + 1)}
-                      disabled={page === totalPages || loading}
-                      className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 hover:text-white"
+                    </Link>
+                    <Link 
+                      href={`?page=${currentPage + 1}`}
+                      scroll={false}
+                      className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium ${
+                        currentPage === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-orange-50'
+                      }`}
                     >
                       Next
-                    </Button>
+                    </Link>
                   </div>
                   <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                     <div>
@@ -264,17 +219,18 @@ const FindBook = () => {
                     </div>
                     <div>
                       <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-                        {/* Previous Button */}
-                        <Button
-                          onClick={() => handlePageChange(page - 1)}
-                          disabled={page === 1 || loading}
-                          className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-orange-50 hover:text-white focus:z-20 focus:outline-offset-0"
+                        <Link
+                          href={`?page=${currentPage - 1}`}
+                          scroll={false}
+                          className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-700 ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0 ${
+                            currentPage === 1 ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-orange-50'
+                          }`}
                         >
                           <span className="sr-only">Previous</span>
                           <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
-                        </Button>
-                        {/* Page Numbers */}
-                        {pageNumbers.map((p, index) => (
+                        </Link>
+                        
+                        {getPageNumbers().map((p, index) => (
                           p === '...' ? (
                             <span
                               key={`ellipsis-${index}`}
@@ -283,30 +239,31 @@ const FindBook = () => {
                               ...
                             </span>
                           ) : (
-                            <Button
+                            <Link
                               key={p}
-                              onClick={() => handlePageChange(p)}
-                              aria-current={p === currentPage ? 'page' : undefined}
-                              className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold transition-colors duration-200 ${
+                              href={`?page=${p}`}
+                              scroll={false}
+                              className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
                                 p === currentPage
-                                  ? 'bg-orange-600 text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2'
-                                  : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-orange-50 hover:text-white focus:outline-offset-0'
+                                  ? 'bg-orange-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600'
+                                  : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-orange-50 focus:outline-offset-0'
                               }`}
-                              disabled={loading}
                             >
                               {p}
-                            </Button>
+                            </Link>
                           )
                         ))}
-                        {/* Next Button */}
-                        <Button
-                          onClick={() => handlePageChange(page + 1)}
-                          disabled={page === totalPages || loading}
-                          className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-orange-50 hover:text-white focus:z-20 focus:outline-offset-0"
+                        
+                        <Link
+                          href={`?page=${currentPage + 1}`}
+                          scroll={false}
+                          className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-700 ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0 ${
+                            currentPage === totalPages ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-orange-50'
+                          }`}
                         >
                           <span className="sr-only">Next</span>
                           <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
-                        </Button>
+                        </Link>
                       </nav>
                     </div>
                   </div>

@@ -46,8 +46,8 @@ export const getAllBooks = async(req, res) => {
 
         // sending total num of books and  total pages to the frontend 
          const totalBooks = await Book.countDocuments();
-        //  const totalPages = Math.ceil(totalBooks/limit);
-         const totalPages = 100;
+         const totalPages = Math.ceil(totalBooks/limit);
+        //  const totalPages = 100;
 
         return  res.status(200).json({
             books,

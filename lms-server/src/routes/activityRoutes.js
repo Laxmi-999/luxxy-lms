@@ -41,22 +41,40 @@ activityRouter.post('/', protect, async (req, res) => {
 
 //getting activities
 activityRouter.get('/', protect, async (req, res) => {
+  const limit = parseInt(req.query.limit) || 6;
+  const page = parseInt(req.query.page) || 1;
+  const skip = (page - 1) * limit;
+
   try {
     let activities;
+    let totalActivities;
 
     if (req.user.role === 'librarian') {
-      activities = await Activity.find().sort({ createdAt: -1 }).limit(10);
+      activities = await Activity.find().sort({ createdAt: -1 })
+      .skip(skip).
+      limit(limit);
+      totalActivities = await Activity.countDocuments();
     } else {
       activities = await Activity.find({ 'user._id': req.user._id })
         .sort({ createdAt: -1 })
-        .limit(10);
+        .skip(skip)
+        .limit(limit);
+      totalActivities = await Activity.countDocuments({ 'user._id': req.user._id });
     }
 
     if (!activities || activities.length === 0) {
       return res.status(404).json({ message: 'No recent activities found' });
     }
 
-    res.status(200).json(activities);
+    const totalPages = Math.ceil(totalActivities / limit);
+    
+    res.status(200).json({
+      activities,
+      totalActivities,
+      totalPages,
+      currentPage: page,
+      limit
+    });
   } catch (error) {
     console.error('Error fetching activities:', error);
     res.status(500).json({ message: 'Failed to fetch activities' });
