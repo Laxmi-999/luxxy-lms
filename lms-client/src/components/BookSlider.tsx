@@ -6,6 +6,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchAllBooks } from "@/Redux/slices/bookSlice";
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import axios from 'axios';
+import axiosInstance from '@/lib/axiosInstance';
 
 const NextArrow = (props) => {
   const { className, style, onClick } = props;
@@ -34,12 +36,23 @@ const PrevArrow = (props) => {
 };
 
 const BookSlider = () => {
-  const { books } = useSelector((state) => state.books);
   const dispatch = useDispatch();
+  const [books, setBooks] = useState([]);
+  
+   
+
+    const fetchBooks = async() => {
+      const {data} = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/book/get-all-books`)
+      setBooks(data.books)     
+ 
+  } 
 
   useEffect(() => {
-    dispatch(fetchAllBooks());
+      fetchBooks();
   }, [dispatch]);
+
+
+
 
   const settings = {
     dots: false,

@@ -11,7 +11,6 @@ import { useRouter } from 'next/navigation';
 
 // IMPORTANT: Ensure process.env.NEXT_PUBLIC_API_URL is correctly set in your .env file
 // Example: NEXT_PUBLIC_API_URL=http://localhost:8000/api
-const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 const FindBook = () => {
   // Local state to manage books, loading, error, and pagination
@@ -33,8 +32,8 @@ const FindBook = () => {
     setLoading(true);
     setError(null); // Clear previous errors
     try {
-      console.log(`FindBook: Fetching books directly from: ${baseUrl}/book/get-all-books?page=${page}&limit=${limit}`);
-      const response = await axios.get(`${baseUrl}/book/get-all-books?page=${page}&limit=${limit}`);
+      // console.log(`FindBook: Fetching books directly from: ${baseUrl}/book/get-all-books?page=${page}&limit=${limit}`);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/book/get-all-books?page=${page}&limit=${limit}`);
       console.log('FindBook: API Response Data:', response.data);
 
       // Update local state with data from API response
