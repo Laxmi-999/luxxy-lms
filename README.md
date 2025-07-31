@@ -248,6 +248,13 @@ If you have any questions, feel free to reach out!
  <td><img src="./screenshots/memberDashboard.png" width="400"/></td>
 </tr>
 
+<tr>
+<td><b>Find Book</b></td>
+</tr>
+<tr>
+<td><img src="./screenshots/findBook.png" width="400"/></td>
+</tr>
+
 
 </table>
 
