@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { toast } from 'sonner';
+import { ReactTyped } from 'react-typed';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -36,35 +37,47 @@ const Header = () => {
   };
 
   return (
-    <header className="w-full flex justify-between bg-orange-500 h-25 backdrop-blur-md border-b border-gray-300 sticky top-0 z-50 shadow-lg">
-       
-        <div className="flex ml-5 items-center"> 
-          <img src='/assests/logo.png' alt="LibraryHub Logo" className="h-20   w-auto object-contain" /> 
-        </div>
+    <header className="w-full flex justify-between items-center bg-orange-500 h-25 backdrop-blur-md border-b border-gray-300 sticky top-0 z-50 shadow-lg">
+      <div className="flex ml-5 items-center"> 
+        <img src='/assests/logo.png' alt="LibraryHub Logo" className="h-20 w-auto object-contain" /> 
+      </div>
 
-        <h1 className="text-xl pt-2 font-extrabold text-white tracking-wide hidden md:block">Welcome to your digital library</h1>
+      <div className="flex-1 text-center">
+        <ReactTyped
+          strings={[
+            'Explore Endless Books',
+            'Discover New Stories',
+            'Your Reading Adventure Awaits',
+            'Connect with Knowledge'
+          ]}
+          typeSpeed={80}
+          backSpeed={50}
+          loop
+          className="text-2xl md:text-3xl font-bold text-white tracking-wide drop-shadow-lg font-serif"
+        />
+      </div>
 
-        <div className="flex items-center space-x-4 right-5">
-          <Button
-            onClick={() => handleSignInClick()}
-            asChild
-            variant="outline"
-            className="border-yellow-300 text-black  hover:bg-yellow-500 hover:text-black hover:border-yellow-600 transition-all duration-300 font-semibold rounded-full px-6 py-2"
-          >
-            <span>Sign In</span>
+      <div className="flex items-center space-x-4 mr-5">
+        <Button
+          onClick={() => handleSignInClick()}
+          asChild
+          variant="outline"
+          className="border-yellow-300 text-black hover:bg-yellow-500 hover:text-black hover:border-yellow-600 transition-all duration-300 font-semibold rounded-full px-6 py-2"
+        >
+          <span>Sign In</span>
+        </Button>
+        <Link href='/register'>
+          <Button className="bg-yellow-500 text-black font-semibold rounded-full px-6 py-2 shadow-md hover:bg-yellow-600 hover:shadow-lg transition-all duration-300">
+            Register
           </Button>
-          <Link href='/register'>
-            <Button className="bg-yellow-500 text-black font-semibold rounded-full px-6 py-2 shadow-md hover:bg-yellow-600 hover:shadow-lg transition-all duration-300">
-              Register
-            </Button>
-          </Link>
-          <button
-            className="md:hidden text-white"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <Menu className="h-8 w-8" />
-          </button>
-        </div>
+        </Link>
+        <button
+          className="md:hidden text-white"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        >
+          <Menu className="h-8 w-8" />
+        </button>
+      </div>
 
       {isMenuOpen && (
         <div className="md:hidden bg-gray-200/90 border-t border-gray-300">

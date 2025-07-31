@@ -58,9 +58,7 @@ const Page = () => {
       }}
     >   
       <Header />
-      <AnimatedSection>
         <HeroSection />
-      </AnimatedSection>
       <AnimatedSection>
         <BookSlider />
       </AnimatedSection>

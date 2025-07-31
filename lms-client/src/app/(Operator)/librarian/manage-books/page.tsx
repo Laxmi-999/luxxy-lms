@@ -1,4 +1,3 @@
-
 'use client';
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -33,7 +32,7 @@ const ManageAllBooks = () => {
         totalBooks: 0,
         totalPages: 1,
         currentPage: 1,
-        limit: 7,
+        limit: 6, // Reduced to fit more compactly
     });
 
     const fetchAllGenres = async () => {
@@ -140,10 +139,10 @@ const ManageAllBooks = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6 w-full">
-            <Card className="w-full bg-white shadow-lg rounded-xl border border-gray-200 hover:shadow-xl transition-all duration-200 relative">
-                <CardHeader className="flex flex-row items-center justify-between p-6 bg-white rounded-t-xl">
-                    <CardTitle className="text-lg font-semibold text-gray-800">Manage All Books</CardTitle>
+        <div className="min-h-screen bg-gray-50 p-4 w-full">
+            <Card className="w-full bg-white shadow-lg rounded-xl border border-gray-200 max-h-[calc(100vh-2rem)] relative flex flex-col">
+                <CardHeader className="flex flex-row items-center justify-between p-4 bg-white rounded-t-xl">
+                    <CardTitle className="text-base font-semibold text-gray-800">Manage All Books</CardTitle>
                     <Dialog
                         open={isAddBookDialogOpen}
                         onOpenChange={(open) => {
@@ -152,21 +151,21 @@ const ManageAllBooks = () => {
                         }}
                     >
                         <DialogTrigger asChild>
-                            <Button className="flex items-center gap-2 bg-orange-500 text-white hover:bg-orange-600 transition-all duration-200">
-                                <PlusCircle className="w-4 h-4" />
+                            <Button className="flex items-center gap-1 bg-orange-500 text-white hover:bg-orange-600 transition-all duration-200 text-xs py-1 px-2">
+                                <PlusCircle className="w-3 h-3" />
                                 Add New Book
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-md bg-white border border-gray-200 rounded-xl">
                             <DialogHeader>
-                                <DialogTitle className="text-lg font-semibold text-gray-800">Add New Book</DialogTitle>
-                                <DialogDescription className="text-sm text-gray-500">
+                                <DialogTitle className="text-base font-semibold text-gray-800">Add New Book</DialogTitle>
+                                <DialogDescription className="text-xs text-gray-500">
                                     Enter the details for the new book.
                                 </DialogDescription>
                             </DialogHeader>
-                            <form onSubmit={handleAddNewBookSubmit} className="grid gap-6 py-4">
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="title" className="text-right text-sm font-medium text-gray-800">
+                            <form onSubmit={handleAddNewBookSubmit} className="grid gap-4 py-2">
+                                <div className="grid grid-cols-4 items-center gap-2">
+                                    <Label htmlFor="title" className="text-right text-xs font-medium text-gray-800">
                                         Title
                                     </Label>
                                     <Input
@@ -174,12 +173,12 @@ const ManageAllBooks = () => {
                                         name="title"
                                         value={newBook.title}
                                         onChange={handleNewBookChange}
-                                        className="col-span-3 border-gray-200 focus:ring-orange-500 focus:border-orange-500 text-sm text-gray-800"
+                                        className="col-span-3 border-gray-200 focus:ring-orange-500 focus:border-orange-500 text-xs"
                                         required
                                     />
                                 </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="author" className="text-right text-sm font-medium text-gray-800">
+                                <div className="grid grid-cols-4 items-center gap-2">
+                                    <Label htmlFor="author" className="text-right text-xs font-medium text-gray-800">
                                         Author
                                     </Label>
                                     <Input
@@ -187,12 +186,12 @@ const ManageAllBooks = () => {
                                         name="author"
                                         value={newBook.author}
                                         onChange={handleNewBookChange}
-                                        className="col-span-3 border-gray-200 focus:ring-orange-500 focus:border-orange-500 text-sm text-gray-800"
+                                        className="col-span-3 border-gray-200 focus:ring-orange-500 focus:border-orange-500 text-xs"
                                         required
                                     />
                                 </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="isbn" className="text-right text-sm font-medium text-gray-800">
+                                <div className="grid grid-cols-4 items-center gap-2">
+                                    <Label htmlFor="isbn" className="text-right text-xs font-medium text-gray-800">
                                         ISBN
                                     </Label>
                                     <Input
@@ -200,12 +199,12 @@ const ManageAllBooks = () => {
                                         name="isbn"
                                         value={newBook.isbn}
                                         onChange={handleNewBookChange}
-                                        className="col-span-3 border-gray-200 focus:ring-orange-500 focus:border-orange-500 text-sm text-gray-800"
+                                        className="col-span-3 border-gray-200 focus:ring-orange-500 focus:border-orange-500 text-xs"
                                         required
                                     />
                                 </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="genre" className="text-right text-sm font-medium text-gray-800">
+                                <div className="grid grid-cols-4 items-center gap-2">
+                                    <Label htmlFor="genre" className="text-right text-xs font-medium text-gray-800">
                                         Genre
                                     </Label>
                                     <select
@@ -213,7 +212,7 @@ const ManageAllBooks = () => {
                                         name="genre"
                                         value={newBook.genre}
                                         onChange={handleNewBookChange}
-                                        className="col-span-3 border border-gray-200 rounded px-2 py-1 text-sm text-gray-800 focus:ring-orange-500 focus:border-orange-500"
+                                        className="col-span-3 border border-gray-200 rounded px-1 py-0.5 text-xs focus:ring-orange-500 focus:border-orange-500"
                                         required
                                     >
                                         <option value="" className="text-gray-500">Select a genre</option>
@@ -224,8 +223,8 @@ const ManageAllBooks = () => {
                                         ))}
                                     </select>
                                 </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="coverImage" className="text-right text-sm font-medium text-gray-800">
+                                <div className="grid grid-cols-4 items-center gap-2">
+                                    <Label htmlFor="coverImage" className="text-right text-xs font-medium text-gray-800">
                                         Cover Image URL
                                     </Label>
                                     <Input
@@ -233,12 +232,12 @@ const ManageAllBooks = () => {
                                         name="coverImage"
                                         value={newBook.coverImage}
                                         onChange={handleNewBookChange}
-                                        className="col-span-3 border-gray-200 focus:ring-orange-500 focus:border-orange-500 text-sm text-gray-800"
+                                        className="col-span-3 border-gray-200 focus:ring-orange-500 focus:border-orange-500 text-xs"
                                         type="url"
                                     />
                                 </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="totalCopies" className="text-right text-sm font-medium text-gray-800">
+                                <div className="grid grid-cols-4 items-center gap-2">
+                                    <Label htmlFor="totalCopies" className="text-right text-xs font-medium text-gray-800">
                                         Total Copies
                                     </Label>
                                     <Input
@@ -246,13 +245,13 @@ const ManageAllBooks = () => {
                                         name="totalCopies"
                                         value={newBook.totalCopies}
                                         onChange={handleNewBookChange}
-                                        className="col-span-3 border-gray-200 focus:ring-orange-500 focus:border-orange-500 text-sm text-gray-800"
+                                        className="col-span-3 border-gray-200 focus:ring-orange-500 focus:border-orange-500 text-xs"
                                         type="number"
                                         required
                                     />
                                 </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="availableCopies" className="text-right text-sm font-medium text-gray-800">
+                                <div className="grid grid-cols-4 items-center gap-2">
+                                    <Label htmlFor="availableCopies" className="text-right text-xs font-medium text-gray-800">
                                         Available Copies
                                     </Label>
                                     <Input
@@ -260,23 +259,23 @@ const ManageAllBooks = () => {
                                         name="availableCopies"
                                         value={newBook.availableCopies}
                                         onChange={handleNewBookChange}
-                                        className="col-span-3 border-gray-200 focus:ring-orange-500 focus:border-orange-500 text-sm text-gray-800"
+                                        className="col-span-3 border-gray-200 focus:ring-orange-500 focus:border-orange-500 text-xs"
                                         type="number"
                                         required
                                     />
                                 </div>
-                                <DialogFooter className="flex justify-end gap-2">
+                                <DialogFooter className="flex justify-end gap-1">
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        className="border-orange-500 text-orange-500 hover:bg-orange-50 transition-all duration-200"
+                                        className="border-orange-500 text-orange-500 hover:bg-orange-50 text-xs py-0.5 px-2"
                                         onClick={() => setIsAddBookDialogOpen(false)}
                                     >
                                         Cancel
                                     </Button>
                                     <Button
                                         type="submit"
-                                        className="bg-orange-500 text-white hover:bg-orange-600 transition-all duration-200"
+                                        className="bg-orange-500 text-white hover:bg-orange-600 text-xs py-0.5 px-2"
                                     >
                                         Add New Book
                                     </Button>
@@ -285,54 +284,54 @@ const ManageAllBooks = () => {
                         </DialogContent>
                     </Dialog>
                 </CardHeader>
-                <CardContent className="p-6  space-y-4 h-[700px]">
+                <CardContent className="p-4 space-y-2 flex-1 overflow-y-auto">
                     {booksData.books && booksData.books.length > 0 ? (
-                        <div className="space-y-3 animate-fade-in">
+                        <div className="space-y-2">
                             {booksData.books.map((book) => (
                                 <div
                                     key={book._id}
-                                    className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg p-4 hover:bg-orange-50 transition-all duration-200"
+                                    className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg p-2 hover:bg-orange-50 transition-all duration-200"
                                 >
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                        <div className="flex items-center gap-2">
-                                            <BookOpen className="w-4 h-4 text-orange-500" />
-                                            <p className="font-medium text-gray-800 text-sm">{book.title}</p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                        <div className="flex items-center gap-1">
+                                            <BookOpen className="w-3 h-3 text-orange-500" />
+                                            <p className="font-medium text-gray-800 text-xs">{book.title}</p>
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <User className="w-4 h-4 text-orange-500" />
-                                            <p className="text-sm text-gray-500">By {book.author}</p>
+                                        <div className="flex items-center gap-1">
+                                            <User className="w-3 h-3 text-orange-500" />
+                                            <p className="text-xs text-gray-500">By {book.author}</p>
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <Tag className="w-4 h-4 text-orange-500" />
-                                            <p className="text-sm text-gray-500">{book.genre?.name || 'Unknown'}</p>
+                                        <div className="flex items-center gap-1">
+                                            <Tag className="w-3 h-3 text-orange-500" />
+                                            <p className="text-xs text-gray-500">{book.genre?.name || 'Unknown'}</p>
                                         </div>
                                     </div>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-1">
                                         <Button
                                             size="sm"
                                             variant="outline"
-                                            className="border-orange-500 text-orange-500 hover:bg-orange-50 transition-all duration-200"
+                                            className="border-orange-500 text-orange-500 hover:bg-orange-50 text-xs py-0.5 px-1"
                                             onClick={() => handleEditClick(book)}
                                         >
-                                            <FileEdit className="w-4 h-4" />
+                                            <FileEdit className="w-3 h-3" />
                                         </Button>
                                         <Button
                                             size="sm"
-                                            className="bg-orange-500 text-white hover:bg-orange-600 transition-all duration-200"
+                                            className="bg-orange-500 text-white hover:bg-orange-600 text-xs py-0.5 px-1"
                                             onClick={() => handleDeleteBookClick(book._id)}
                                         >
-                                            <Trash2 className="w-4 h-4" />
+                                            <Trash2 className="w-3 h-3" />
                                         </Button>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <p className="text-gray-500 text-sm text-center">No books found.</p>
+                        <p className="text-gray-500 text-xs text-center">No books found.</p>
                     )}
                 </CardContent>
                 {booksData.totalPages > 1 && (
-                    <div className="absolute bottom-0 bg-gray-50 w-full left-0 border-t border-gray-200 p-4 shadow-sm">
+                    <div className="p-2 border-t border-gray-200">
                         <Pagination
                             currentPage={booksData.currentPage}
                             totalPages={booksData.totalPages}
