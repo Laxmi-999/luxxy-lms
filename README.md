@@ -241,16 +241,13 @@ If you have any questions, feel free to reach out!
 
 <tr>
 <td><b>Footer</b></td>
+<td><b>Member Dashboard</b></td>
 </tr>
 <tr>
 <td><img src="./screenshots/footer.png" width="400"/></td>
+ <td><img src="./screenshots/memberDashboard.png" width="400"/></td>
 </tr>
 
-<tr>
-<td><b>Footer</b></td>
-</tr>
-<tr>
-<td><img src="./screenshots/memberDashboard.png" width="400"/></td>
-</tr>
+
 </table>
 
