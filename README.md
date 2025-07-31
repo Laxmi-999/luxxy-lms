@@ -197,3 +197,53 @@ If you have any questions, feel free to reach out!
 * **Name**: [Laxmi Regmi]
 * **Email**: [regmilaxmi325@gmail.com]
 * **GitHub**: [https://github.com/Laxmi-999/luxxy-lms]
+
+  ## 📸 Screenshots
+
+> Below are some key screens from LibraryConnect.  
+
+<table>
+<tr>
+<td><b>Homepage</b></td>
+<td><b>Slider</b></td>
+</tr>
+<tr>
+<td><img src="./screenshots/homepage.png" width="400"/></td>
+<td><img src="./screenshots/slider.png" width="400"/></td>
+</tr>
+
+<tr>
+<td><b>Admin Dashboard</b></td>
+<td><b>Librarian Dashboard</b></td>
+</tr>
+<tr>
+<td><img src="./screenshots/adminDashboard.png" width="400"/></td>
+<td><img src="./screenshots/librarianDashboard.png" width="400"/></td>
+</tr>
+
+<tr>
+<td><b>Manage Books</b></td>
+<td><b>Pending Requests</b></td>
+</tr>
+<tr>
+<td><img src="./screenshots/manageBooks.png" width="400"/></td>
+<td><img src="./screenshots/pendingRequest.png" width="400"/></td>
+</tr>
+
+<tr>
+<td><b>Genre Section</b></td>
+<td><b>Review Section</b></td>
+</tr>
+<tr>
+<td><img src="./screenshots/genre.png" width="400"/></td>
+<td><img src="./screenshots/review.png" width="400"/></td>
+</tr>
+
+<tr>
+<td><b>Footer</b></td>
+</tr>
+<tr>
+<td><img src="./screenshots/footer.png" width="400"/></td>
+</tr>
+</table>
+
