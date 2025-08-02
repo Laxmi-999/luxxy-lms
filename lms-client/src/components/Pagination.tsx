@@ -99,7 +99,7 @@ export const Pagination: React.FC<PaginationProps> = ({
       </div>
 
       {/* Desktop pagination */}
-      <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+      <div className="hidden sm:flex  sm:flex-1 sm:items-center sm:justify-between">
         <div>
           <p className="text-sm text-muted-foreground">
             Showing <span className="font-medium text-foreground">{startItem}</span> to{' '}

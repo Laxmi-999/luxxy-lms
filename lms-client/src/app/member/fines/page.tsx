@@ -1,5 +1,6 @@
 // app/member/fines/page.tsx
 'use client';
+
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getUserBorrows } from '@/Redux/slices/borrowSlice';
@@ -9,7 +10,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import axios from 'axios'; // Or your configured axiosInstance if you use it globally
-import axiosInstance from '@/lib/axiosInstance';
+import axiosInstance from '@/lib/axiosInstance'; // Assuming this is your configured axios instance
 
 const FinesPage = () => {
   const dispatch = useAppDispatch();
@@ -39,12 +40,10 @@ const FinesPage = () => {
       try {
         // Step 1: Call backend to update overdue fines in the database
         // This ensures the fine values are current in DB before fetching them
-        // Pass userId if your backend's /api/fines/update-overdue route is user-specific
         await axiosInstance.post("http://localhost:8000/api/borrow/update-overdue", { userId: currentUserId });
         console.log("Backend fines updated successfully.");
       } catch (fineUpdateError) {
         console.error("Error updating fines on backend:", fineUpdateError);
-        // Optionally set an error message for the user here
         setPaymentMessage(`Failed to update fines: ${axios.isAxiosError(fineUpdateError) ? fineUpdateError.response?.data?.message : fineUpdateError.message}`);
       } finally {
         setIsUpdatingFines(false); // End loading for fine update
@@ -55,13 +54,21 @@ const FinesPage = () => {
 
     fetchAndCalculateFines(); // Call the async function
 
-    // Handle failure redirect from eSewa (if backend's fu points to /fines?status=failed)
+    // Handle redirect from eSewa (if backend's su/fu points to /member/fines/success or /member/fines/failure)
+    // This useEffect will also catch redirects if you decide to send them back to the main fines page
+    // instead of dedicated success/failure pages.
     const urlParams = new URLSearchParams(window.location.search);
     const status = urlParams.get('status');
     const message = urlParams.get('message');
+
     if (status === 'failed') {
       setPaymentMessage(message || 'Payment failed. Please try again.');
       // Clean up URL parameters to prevent message re-display on refresh
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (status === 'success') {
+      setPaymentMessage(message || 'Payment successful! Your fines have been cleared.');
+      // Re-fetch borrows to reflect the updated fine status after a successful payment
+      dispatch(getUserBorrows());
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, [dispatch, currentUserId]); // Depend on dispatch and currentUserId
@@ -74,18 +81,17 @@ const FinesPage = () => {
       return;
     }
     if (!currentUserId) {
-        setPaymentMessage('User not authenticated. Please log in to pay fines.');
-        return;
+      setPaymentMessage('User not authenticated. Please log in to pay fines.');
+      return;
     }
 
     setIsPaying(true); // Indicate payment initiation is in progress
     setPaymentMessage(''); // Clear any previous messages
 
     try {
-      // Call your backend to initiate payment (which now uses direct integration)
-      // Your backend will return a redirect URL and parameters for eSewa
+      // Call your backend to initiate payment
       const response = await axiosInstance.post(
-        "http://localhost:8000/api/esewa/initiate-payment", // <--- Confirm this URL matches your backend route
+        "http://localhost:8000/api/esewa/initiate-payment", // Confirm this URL matches your backend route
         {
           amount: totalFine,
           userId: currentUserId,
@@ -101,6 +107,7 @@ const FinesPage = () => {
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = esewaUrl;
+        form.target = '_self'; // Explicitly target the current window/tab for the redirect
 
         for (const key in esewaParams) {
           if (esewaParams.hasOwnProperty(key)) {
@@ -114,7 +121,9 @@ const FinesPage = () => {
 
         document.body.appendChild(form);
         form.submit(); // This redirects the user
-        document.body.removeChild(form); // Clean up the form element
+        // The page will unload on successful redirect, so no need to remove form immediately
+        // If redirect fails, you might want to remove it in a catch block or after a timeout
+        // document.body.removeChild(form); // Optional: Clean up the form element if not redirecting
 
       } else {
         throw new Error("Backend did not provide valid eSewa redirection data.");

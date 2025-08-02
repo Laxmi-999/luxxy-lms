@@ -15,6 +15,7 @@ import { fileURLToPath } from 'url'; // Import fileURLToPath
 import './jobs/overdueCheck.js';
 import notificationRouter from './routes/notificationRoutes.js';
 import reportRouter from './routes/reportRoutes.js';
+import esewaRouter from './routes/transaction.js';
 
 dotenv.config();
 const port = process.env.PORT || 8000; // Provide a default port for safety
@@ -84,6 +85,9 @@ app.use('/api/notifications', notificationRouter);
 
 //report routes
 app.use('/api/reports', reportRouter);
+
+//payment routes
+app.use('/api/esewa', esewaRouter);
 
 
 

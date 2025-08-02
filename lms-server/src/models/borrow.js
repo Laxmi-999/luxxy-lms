@@ -16,6 +16,7 @@ const borrowSchema = new mongoose.Schema({
   issuedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // librarian issuing
   fine: { type: Number, default: 0 },
   dueDate: { type: Date },
+  finePaidDate: { type: Date },
 }, { timestamps: true });
 
 const Borrow = mongoose.models.Borrow || mongoose.model('Borrow', borrowSchema);
