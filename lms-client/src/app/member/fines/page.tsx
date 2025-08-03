@@ -1,6 +1,5 @@
 // app/member/fines/page.tsx
 'use client';
-
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getUserBorrows } from '@/Redux/slices/borrowSlice';
@@ -9,69 +8,54 @@ import { useAppDispatch } from '@/Redux/hooks';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
-import axios from 'axios'; // Or your configured axiosInstance if you use it globally
-import axiosInstance from '@/lib/axiosInstance'; // Assuming this is your configured axios instance
+import axiosInstance from '@/lib/axiosInstance'; // Still used for fine updates, not eSewa payment
+import CryptoJS from 'crypto-js'; // For client-side signature generation
 
 const FinesPage = () => {
   const dispatch = useAppDispatch();
   const { userBorrows, loading, error } = useSelector((state: RootState) => state.borrows);
-  const currentUserId = useSelector((state: RootState) => state.auth.userInfo?._id); // Adjust path to your user ID
+  const currentUserId = useSelector((state: RootState) => state.auth.userInfo?._id);
 
   const [isPaying, setIsPaying] = useState(false);
   const [paymentMessage, setPaymentMessage] = useState('');
-  const [isUpdatingFines, setIsUpdatingFines] = useState(false); // State for fine update loading
+  const [isUpdatingFines, setIsUpdatingFines] = useState(false);
 
-  // Filter borrows based on status for display
   const activeBorrows = userBorrows.filter((borrow) => borrow.status === 'approved' || borrow.status === 'overdue');
   const pastBorrows = userBorrows.filter((borrow) => borrow.status === 'returned' || borrow.status === 'fine_paid');
 
-  // Calculate total fine from active borrows displayed
   const totalFine = activeBorrows.reduce((sum, borrow) => sum + (borrow.fine || 0), 0);
 
   useEffect(() => {
     const fetchAndCalculateFines = async () => {
       if (!currentUserId) {
-        // If user not logged in, just fetch borrows (they might be empty or show old data)
         dispatch(getUserBorrows());
         return;
       }
 
-      setIsUpdatingFines(true); // Indicate that fine update is in progress
+      setIsUpdatingFines(true);
       try {
-        // Step 1: Call backend to update overdue fines in the database
-        // This ensures the fine values are current in DB before fetching them
+        // This call to backend is for updating fines in your DB, not eSewa payment
         await axiosInstance.post("http://localhost:8000/api/borrow/update-overdue", { userId: currentUserId });
         console.log("Backend fines updated successfully.");
       } catch (fineUpdateError) {
         console.error("Error updating fines on backend:", fineUpdateError);
-        setPaymentMessage(`Failed to update fines: ${axios.isAxiosError(fineUpdateError) ? fineUpdateError.response?.data?.message : fineUpdateError.message}`);
+        setPaymentMessage(`Failed to update fines: ${fineUpdateError.response?.data?.message || fineUpdateError.message}`);
       } finally {
-        setIsUpdatingFines(false); // End loading for fine update
-        // Step 2: Dispatch action to get the borrows (which now have updated fines from DB)
+        setIsUpdatingFines(false);
         dispatch(getUserBorrows());
       }
     };
 
-    fetchAndCalculateFines(); // Call the async function
+    fetchAndCalculateFines();
 
-    // Handle redirect from eSewa (if backend's su/fu points to /member/fines/success or /member/fines/failure)
-    // This useEffect will also catch redirects if you decide to send them back to the main fines page
-    // instead of dedicated success/failure pages.
     const urlParams = new URLSearchParams(window.location.search);
     const status = urlParams.get('status');
     const message = urlParams.get('message');
-
     if (status === 'failed') {
       setPaymentMessage(message || 'Payment failed. Please try again.');
-      // Clean up URL parameters to prevent message re-display on refresh
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } else if (status === 'success') {
-      setPaymentMessage(message || 'Payment successful! Your fines have been cleared.');
-      // Re-fetch borrows to reflect the updated fine status after a successful payment
-      dispatch(getUserBorrows());
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [dispatch, currentUserId]); // Depend on dispatch and currentUserId
+  }, [dispatch, currentUserId]);
 
   const handlePayment = async (e) => {
     e.preventDefault();
@@ -81,58 +65,95 @@ const FinesPage = () => {
       return;
     }
     if (!currentUserId) {
-      setPaymentMessage('User not authenticated. Please log in to pay fines.');
-      return;
+        setPaymentMessage('User not authenticated. Please log in to pay fines.');
+        return;
     }
 
-    setIsPaying(true); // Indicate payment initiation is in progress
-    setPaymentMessage(''); // Clear any previous messages
+    setIsPaying(true);
+    setPaymentMessage('');
 
     try {
-      // Call your backend to initiate payment
-      const response = await axiosInstance.post(
-        "http://localhost:8000/api/esewa/initiate-payment", // Confirm this URL matches your backend route
-        {
-          amount: totalFine,
-          userId: currentUserId,
-          borrowIds: activeBorrows.map(borrow => borrow._id),
+      // --- Client-side eSewa Payment Initiation (FOR TESTING ONLY) ---
+      // ⚠️ WARNING: DO NOT USE IN PRODUCTION - SECRET KEY EXPOSED
+      const ESEWA_MERCHANT_CODE = 'EPAYTEST';
+      const ESEWA_SECRET_KEY = '8gBm/:&EnhH.1/q'; // <--- Your eSewa Test Secret Key
+
+      // --- MISMATCH FIX 1: Action URL as per guide ---
+      const ESEWA_PAYMENT_URL = 'https://rc-epay.esewa.com.np/api/epay/main/v2/form';
+
+      // --- MISMATCH FIX 2: transactionUuid generation as per guide ---
+      const currentTime = new Date();
+      const transactionUuid = currentTime.toISOString().slice(2, 10).replace(/-/g, '') + '-' +
+                              currentTime.getHours() + currentTime.getMinutes() + currentTime.getSeconds();
+      console.log("Generated transactionUuid (Product ID):", transactionUuid);
+
+
+      // Define your success and failure redirect URLs
+      const successUrl = 'https://google.com'; // Replace with your actual success page URL
+      const failureUrl = 'https://facebook.com'; // Replace with your actual failure page URL
+
+      // Prepare eSewa parameters object
+      // --- MISMATCH FIX 4: Parameter names for signature as per guide ---
+      const esewaParams = {
+        amt: totalFine.toFixed(2),           // Amount of product
+        txAmt: '0',                          // Tax amount
+        psc: '0',                            // Product service charge
+        pdc: '0',                            // Product delivery charge
+        tAmt: totalFine.toFixed(2),          // Total payment amount (amt + txAmt + psc + pdc)
+        transaction_uuid: transactionUuid,   // Mapped from txNfId to match guide's signature field name
+        product_code: ESEWA_MERCHANT_CODE,   // Mapped from scd to match guide's signature field name
+        su: successUrl,                      // Success URL
+        fu: failureUrl,                      // Failure URL
+      };
+
+      // --- MISMATCH FIX 3: Generate signature client-side using CryptoJS as per guide ---
+      // The string for signature generation MUST exactly match the guide's snippet.
+      // `total_amount=${total_amount},transaction_uuid=${transaction_uuid},product_code=${product_code}`
+      const dataToSign = `total_amount=${esewaParams.tAmt},transaction_uuid=${esewaParams.transaction_uuid},product_code=${esewaParams.product_code}`;
+      const hash = CryptoJS.HmacSHA256(dataToSign, ESEWA_SECRET_KEY);
+      const signature = CryptoJS.enc.Base64.stringify(hash);
+
+      // Add signature and signed_field_names to the parameters
+      esewaParams.signature = signature;
+      // --- MISMATCH FIX 5: signed_field_names as per guide ---
+      esewaParams.signed_field_names = "total_amount,transaction_uuid,product_code";
+
+      console.log("DEBUG: ESEWA_SECRET_KEY (masked for security):", ESEWA_SECRET_KEY.substring(0, 4) + '...');
+      console.log("DEBUG: Data string for signature generation (dataToSign):", dataToSign);
+      console.log("DEBUG: Generated signature:", signature);
+      console.log("DEBUG: signed_field_names parameter:", esewaParams.signed_field_names);
+      console.log("DEBUG: Final eSewa Parameters for HTML Form Submission:", esewaParams);
+
+
+      // Dynamically create a hidden form and submit it to eSewa
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = ESEWA_PAYMENT_URL;
+
+      // --- MISMATCH FIX 6: Define the order of fields as per guide's implied order ---
+      const orderedKeys = [
+        'amt', 'txAmt', 'psc', 'pdc', 'tAmt', 'transaction_uuid', 'product_code', 'su', 'fu', 'signature', 'signed_field_names'
+      ];
+
+      // Append hidden fields to the form in the specified order
+      orderedKeys.forEach(key => {
+        if (esewaParams.hasOwnProperty(key)) {
+          const hiddenField = document.createElement('input');
+          hiddenField.type = 'hidden';
+          hiddenField.name = key;
+          hiddenField.value = esewaParams[key];
+          form.appendChild(hiddenField);
         }
-      );
+      });
 
-      // The backend should return esewaUrl and esewaParams for dynamic form submission
-      if (response.data && response.data.esewaUrl && response.data.esewaParams) {
-        const { esewaUrl, esewaParams } = response.data;
-
-        // Dynamically create and submit a form to redirect to eSewa
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = esewaUrl;
-        form.target = '_self'; // Explicitly target the current window/tab for the redirect
-
-        for (const key in esewaParams) {
-          if (esewaParams.hasOwnProperty(key)) {
-            const hiddenField = document.createElement('input');
-            hiddenField.type = 'hidden';
-            hiddenField.name = key;
-            hiddenField.value = esewaParams[key];
-            form.appendChild(hiddenField);
-          }
-        }
-
-        document.body.appendChild(form);
-        form.submit(); // This redirects the user
-        // The page will unload on successful redirect, so no need to remove form immediately
-        // If redirect fails, you might want to remove it in a catch block or after a timeout
-        // document.body.removeChild(form); // Optional: Clean up the form element if not redirecting
-
-      } else {
-        throw new Error("Backend did not provide valid eSewa redirection data.");
-      }
+      document.body.appendChild(form); // Temporarily append the form to the document body
+      form.submit(); // Submit the form to redirect the user to eSewa
+      document.body.removeChild(form); // Clean up the form element after submission
 
     } catch (error) {
-      console.error("Error initiating payment:", axios.isAxiosError(error) ? error.response?.data : error.message);
-      setPaymentMessage(`Error initiating payment: ${axios.isAxiosError(error) ? error.response?.data?.message || error.message : error.message}`);
-      setIsPaying(false); // Reset payment state on error
+      console.error("Error initiating payment (client-side):", error);
+      setPaymentMessage(`Error initiating payment: ${error.message}`);
+      setIsPaying(false);
     }
   };
 
@@ -143,7 +164,7 @@ const FinesPage = () => {
           <CardTitle className="text-3xl font-extrabold text-orange-600">Your Borrowed Books & Fines</CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          {(loading || isUpdatingFines) ? ( // Show loading if either data fetch or fine update is in progress
+          {(loading || isUpdatingFines) ? (
             <p className="text-center text-gray-600">Loading fines...</p>
           ) : error ? (
             <p className="text-red-500 text-center">{error}</p>
@@ -192,7 +213,7 @@ const FinesPage = () => {
                     <p className="text-xl font-bold text-orange-800 mb-4 sm:mb-0">Total Outstanding Fine: R.s {totalFine.toFixed(2)}</p>
                     <Button
                       onClick={handlePayment}
-                      disabled={isPaying || totalFine <= 0 || !currentUserId || loading || isUpdatingFines} // Disable during loading states
+                      disabled={isPaying || totalFine <= 0 || !currentUserId || loading || isUpdatingFines}
                       className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 flex items-center justify-center"
                     >
                       {isPaying ? (
