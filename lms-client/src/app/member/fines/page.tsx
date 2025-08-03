@@ -1,4 +1,3 @@
-// app/member/fines/page.tsx
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -8,8 +7,8 @@ import { useAppDispatch } from '@/Redux/hooks';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
-import axiosInstance from '@/lib/axiosInstance'; // Still used for fine updates, not eSewa payment
-import CryptoJS from 'crypto-js'; // For client-side signature generation
+import axiosInstance from '@/lib/axiosInstance';
+import CryptoJS from 'crypto-js';
 
 const FinesPage = () => {
   const dispatch = useAppDispatch();
@@ -34,7 +33,6 @@ const FinesPage = () => {
 
       setIsUpdatingFines(true);
       try {
-        // This call to backend is for updating fines in your DB, not eSewa payment
         await axiosInstance.post("http://localhost:8000/api/borrow/update-overdue", { userId: currentUserId });
         console.log("Backend fines updated successfully.");
       } catch (fineUpdateError) {
@@ -65,8 +63,8 @@ const FinesPage = () => {
       return;
     }
     if (!currentUserId) {
-        setPaymentMessage('User not authenticated. Please log in to pay fines.');
-        return;
+      setPaymentMessage('User not authenticated. Please log in to pay fines.');
+      return;
     }
 
     setIsPaying(true);
@@ -74,69 +72,70 @@ const FinesPage = () => {
 
     try {
       // --- Client-side eSewa Payment Initiation (FOR TESTING ONLY) ---
-      // ⚠️ WARNING: DO NOT USE IN PRODUCTION - SECRET KEY EXPOSED
       const ESEWA_MERCHANT_CODE = 'EPAYTEST';
-      const ESEWA_SECRET_KEY = '8gBm/:&EnhH.1/q'; // <--- Your eSewa Test Secret Key
-
-      // --- MISMATCH FIX 1: Action URL as per guide ---
+      const ESEWA_SECRET_KEY = '8gBm/:&EnhH.1/q';
       const ESEWA_PAYMENT_URL = 'https://rc-epay.esewa.com.np/api/epay/main/v2/form';
 
-      // --- MISMATCH FIX 2: transactionUuid generation as per guide ---
+      // Generate transaction_uuid as per documentation
       const currentTime = new Date();
-      const transactionUuid = currentTime.toISOString().slice(2, 10).replace(/-/g, '') + '-' +
-                              currentTime.getHours() + currentTime.getMinutes() + currentTime.getSeconds();
-      console.log("Generated transactionUuid (Product ID):", transactionUuid);
+      const transactionUuid =
+        currentTime.toISOString().slice(2, 10).replace(/-/g, '') +
+        '-' +
+        currentTime.getHours() +
+        currentTime.getMinutes() +
+        currentTime.getSeconds();
+      console.log('Generated transaction_uuid:', transactionUuid);
 
+      // Use absolute URLs for success and failure redirects
+      const successUrl = 'http://localhost:3000/member/fines/success'; // Replace with your actual domain
+      const failureUrl = 'http://localhost:3000/member/fines/failure'; // Replace with your actual domain
 
-      // Define your success and failure redirect URLs
-      const successUrl = 'https://google.com'; // Replace with your actual success page URL
-      const failureUrl = 'https://facebook.com'; // Replace with your actual failure page URL
-
-      // Prepare eSewa parameters object
-      // --- MISMATCH FIX 4: Parameter names for signature as per guide ---
+      // Prepare eSewa parameters with correct field names
       const esewaParams = {
-        amt: totalFine.toFixed(2),           // Amount of product
-        txAmt: '0',                          // Tax amount
-        psc: '0',                            // Product service charge
-        pdc: '0',                            // Product delivery charge
-        tAmt: totalFine.toFixed(2),          // Total payment amount (amt + txAmt + psc + pdc)
-        transaction_uuid: transactionUuid,   // Mapped from txNfId to match guide's signature field name
-        product_code: ESEWA_MERCHANT_CODE,   // Mapped from scd to match guide's signature field name
-        su: successUrl,                      // Success URL
-        fu: failureUrl,                      // Failure URL
+        amount: totalFine.toString(),
+        tax_amount: '0',
+        product_service_charge: '0',
+        product_delivery_charge: '0',
+        total_amount: totalFine.toString(),
+        transaction_uuid: transactionUuid,
+        product_code: ESEWA_MERCHANT_CODE,
+        success_url: successUrl,
+        failure_url: failureUrl,
+        signed_field_names: 'total_amount,transaction_uuid,product_code',
       };
 
-      // --- MISMATCH FIX 3: Generate signature client-side using CryptoJS as per guide ---
-      // The string for signature generation MUST exactly match the guide's snippet.
-      // `total_amount=${total_amount},transaction_uuid=${transaction_uuid},product_code=${product_code}`
-      const dataToSign = `total_amount=${esewaParams.tAmt},transaction_uuid=${esewaParams.transaction_uuid},product_code=${esewaParams.product_code}`;
+      // Generate signature using correct field names
+      const dataToSign = `total_amount=${esewaParams.total_amount},transaction_uuid=${esewaParams.transaction_uuid},product_code=${esewaParams.product_code}`;
       const hash = CryptoJS.HmacSHA256(dataToSign, ESEWA_SECRET_KEY);
       const signature = CryptoJS.enc.Base64.stringify(hash);
-
-      // Add signature and signed_field_names to the parameters
       esewaParams.signature = signature;
-      // --- MISMATCH FIX 5: signed_field_names as per guide ---
-      esewaParams.signed_field_names = "total_amount,transaction_uuid,product_code";
 
-      console.log("DEBUG: ESEWA_SECRET_KEY (masked for security):", ESEWA_SECRET_KEY.substring(0, 4) + '...');
-      console.log("DEBUG: Data string for signature generation (dataToSign):", dataToSign);
-      console.log("DEBUG: Generated signature:", signature);
-      console.log("DEBUG: signed_field_names parameter:", esewaParams.signed_field_names);
-      console.log("DEBUG: Final eSewa Parameters for HTML Form Submission:", esewaParams);
+      console.log('DEBUG: Data string for signature:', dataToSign);
+      console.log('DEBUG: Generated signature:', signature);
+      console.log('DEBUG: eSewa Parameters:', esewaParams);
 
-
-      // Dynamically create a hidden form and submit it to eSewa
+      // Create form with correct field order
       const form = document.createElement('form');
       form.method = 'POST';
       form.action = ESEWA_PAYMENT_URL;
 
-      // --- MISMATCH FIX 6: Define the order of fields as per guide's implied order ---
+      // Define field order as per documentation
       const orderedKeys = [
-        'amt', 'txAmt', 'psc', 'pdc', 'tAmt', 'transaction_uuid', 'product_code', 'su', 'fu', 'signature', 'signed_field_names'
+        'amount',
+        'tax_amount',
+        'product_service_charge',
+        'product_delivery_charge',
+        'total_amount',
+        'transaction_uuid',
+        'product_code',
+        'success_url',
+        'failure_url',
+        'signed_field_names',
+        'signature',
       ];
 
-      // Append hidden fields to the form in the specified order
-      orderedKeys.forEach(key => {
+      // Append hidden fields to the form
+      orderedKeys.forEach((key) => {
         if (esewaParams.hasOwnProperty(key)) {
           const hiddenField = document.createElement('input');
           hiddenField.type = 'hidden';
@@ -146,12 +145,11 @@ const FinesPage = () => {
         }
       });
 
-      document.body.appendChild(form); // Temporarily append the form to the document body
-      form.submit(); // Submit the form to redirect the user to eSewa
-      document.body.removeChild(form); // Clean up the form element after submission
-
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
     } catch (error) {
-      console.error("Error initiating payment (client-side):", error);
+      console.error('Error initiating payment:', error);
       setPaymentMessage(`Error initiating payment: ${error.message}`);
       setIsPaying(false);
     }
