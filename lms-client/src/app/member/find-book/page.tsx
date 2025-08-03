@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -21,20 +20,19 @@ const FindBook = () => {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const currentPage = parseInt(searchParams.get('page') || 1);
+  const currentPage = parseInt(searchParams.get('page') || '1', 10);
 
   const fetchBooksDirectly = useCallback(async () => {
     setLoading(true);
-    setError(null); 
+    setError(null);
     try {
       const response = await axiosInstance.get(
         `/book/get-all-books?page=${currentPage}&limit=${limit}`
       );
-      
+      console.log('API response:', response.data); // Debug API response
       setBooks(response.data.books || []);
       setTotalPages(response.data.totalPages || 1);
       setTotalBooks(response.data.totalBooks || 0);
-
     } catch (err) {
       console.error('FindBook: Error fetching books:', err.response?.data?.message || err.message);
       setError(err.response?.data?.message || 'Failed to fetch books');
@@ -44,7 +42,7 @@ const FindBook = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage]); 
+  }, [currentPage]);
 
   useEffect(() => {
     fetchBooksDirectly();
@@ -52,7 +50,6 @@ const FindBook = () => {
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages && newPage !== currentPage) {
-      // Update the URL with the new page parameter
       const params = new URLSearchParams(searchParams.toString());
       params.set('page', newPage.toString());
       router.push(`?${params.toString()}`, { scroll: false });
@@ -63,40 +60,32 @@ const FindBook = () => {
   const getPageNumbers = () => {
     const pageNumbers = [];
     const maxVisiblePages = 5;
-    
-    // Always show first page
+
     pageNumbers.push(1);
 
-    // Calculate range around current page
     let startPage = Math.max(2, currentPage - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(totalPages - 1, currentPage + Math.floor(maxVisiblePages / 2));
 
-    // Adjust if near start
     if (currentPage <= Math.floor(maxVisiblePages / 2) + 1) {
       endPage = Math.min(maxVisiblePages + 1, totalPages - 1);
     }
-    
-    // Adjust if near end
+
     if (currentPage >= totalPages - Math.floor(maxVisiblePages / 2)) {
       startPage = Math.max(2, totalPages - maxVisiblePages);
     }
 
-    // Add first ellipsis if needed
     if (startPage > 2) {
       pageNumbers.push('...');
     }
 
-    // Add middle pages
     for (let i = startPage; i <= endPage; i++) {
       pageNumbers.push(i);
     }
 
-    // Add second ellipsis if needed
     if (endPage < totalPages - 1) {
       pageNumbers.push('...');
     }
 
-    // Always show last page if there is one
     if (totalPages > 1) {
       pageNumbers.push(totalPages);
     }
@@ -108,7 +97,10 @@ const FindBook = () => {
     ? books.filter(
         (book) =>
           book.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          book.author?.toLowerCase().includes(searchTerm.toLowerCase())
+          (typeof book.author === 'string'
+            ? book.author.toLowerCase()
+            : book.author?.name?.toLowerCase() || ''
+          ).includes(searchTerm.toLowerCase())
       )
     : [];
 
@@ -154,22 +146,24 @@ const FindBook = () => {
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-                {filteredBooks.map((book) => (
+                {filteredBooks?.map((book) => (
                   <Card
-                    key={book._id}
+                    key={book?._id}
                     onClick={() => router.push(`/member/book-details/${book._id}`)}
                     className="overflow-hidden shadow-md hover:shadow-lg transition duration-300 rounded-xl cursor-pointer border border-gray-200"
                   >
                     <div className="h-[220px] bg-gray-100 flex justify-center items-center">
                       <img
                         src={book.coverImage || 'https://via.placeholder.co/150x200?text=Book+Cover'}
-                        alt={book.title}
+                        alt={book.title || 'Book cover'}
                         className="h-full w-full object-contain"
                       />
                     </div>
                     <CardContent className="p-4">
-                      <h2 className="text-lg font-semibold text-gray-800 line-clamp-1">{book.title}</h2>
-                      <p className="text-sm text-gray-500">{book.author || 'Unknown Author'}</p>
+                      <h2 className="text-lg font-semibold text-gray-800 line-clamp-1">{book.title || 'Untitled'}</h2>
+                      <p className="text-sm text-gray-500">
+                        {typeof book.author === 'string' ? book.author : book.author?.name || 'Unknown Author'}
+                      </p>
                       <div className="mt-3">
                         {book.availableCopies > 0 ? (
                           <span className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full">
@@ -190,7 +184,7 @@ const FindBook = () => {
               {totalPages > 1 && (
                 <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-10 shadow-md rounded-lg">
                   <div className="flex flex-1 justify-between sm:hidden">
-                    <Link 
+                    <Link
                       href={`?page=${currentPage - 1}`}
                       scroll={false}
                       className={`relative inline-flex items-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium ${
@@ -199,7 +193,7 @@ const FindBook = () => {
                     >
                       Previous
                     </Link>
-                    <Link 
+                    <Link
                       href={`?page=${currentPage + 1}`}
                       scroll={false}
                       className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium ${
@@ -229,7 +223,6 @@ const FindBook = () => {
                           <span className="sr-only">Previous</span>
                           <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
                         </Link>
-                        
                         {getPageNumbers().map((p, index) => (
                           p === '...' ? (
                             <span
@@ -253,7 +246,6 @@ const FindBook = () => {
                             </Link>
                           )
                         ))}
-                        
                         <Link
                           href={`?page=${currentPage + 1}`}
                           scroll={false}
