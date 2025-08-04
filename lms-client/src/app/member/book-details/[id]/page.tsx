@@ -9,9 +9,10 @@ import { createBorrowRequest, getUserBorrows } from '@/Redux/slices/borrowSlice'
 import { createReservation, getUserReservations } from '@/Redux/slices/reservationSlice';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
+import {socket} from '@/lib/socket';
 
 const BookDetails = () => {
   const { selectedBook } = useSelector((state) => state.books);
@@ -20,6 +21,7 @@ const BookDetails = () => {
   const { borrows } = useSelector((state) => state.borrows);
   const dispatch = useDispatch();
   const { id } = useParams();
+  const [newNotification, setNewNotification] = useState([]);
 
   useEffect(() => {
     if (id) {
@@ -28,6 +30,15 @@ const BookDetails = () => {
       dispatch(getUserBorrows());
     }
   }, [dispatch, id]);
+
+
+    useEffect(()=>{
+    socket.on('connection')
+    socket.on('notificationId', (notificationId) => {
+      setNewNotification(true)
+    })
+
+  },[])
 
   // Debug logs
   console.log('selectedBook:', selectedBook);
@@ -72,6 +83,7 @@ const BookDetails = () => {
           duration: 3000,
         })
       );
+       socket.emit('notification', bookId);
   };
 
   const handleReservationClick = (bookId) => {
@@ -217,7 +229,7 @@ const BookDetails = () => {
             <div className="space-y-4">
               {selectedBook.reviews.map((review, index) => (
                 <div key={index} className="border-l-4 border-blue-500 pl-4">
-                  <p className="text-gray-600">{review.comment || 'No comment'}</p>
+                  <p className="text-gray-600">{review.comment || 'No comment'}{newNotification}</p>
                   <p className="text-sm text-gray-500 mt-1">
                     - {typeof review.user === 'string' ? review.user : review.user?.name || 'Anonymous'}
                   </p>
