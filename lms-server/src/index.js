@@ -18,6 +18,7 @@ import reportRouter from './routes/reportRoutes.js';
 
 import { createServer } from "http";
 import { Server } from "socket.io";
+import { timeStamp } from 'console';
 
 dotenv.config();
 const port = process.env.PORT || 8000; // Provide a default port for safety
@@ -30,15 +31,29 @@ const io = new Server(httpServer, { cors: { origin: "*" } });
 
 io.on("connection", (socket) => {
 
-  //listen from the client or recived from the client
-  socket.on('notification', (notificationId) => {
-    console.log(`received notification from the client, ${notificationId}`);
-
-
-    //emit to the client or send to the client
-    io.emit('notificationId', (notificationId))
+  // //listen from the client or recived from the client
+  // socket.on('notification', (notificationId) => {
+  //   console.log(`received notification from the client, ${notificationId}`);
+  //   //emit to the client or send to the client
+  //   io.emit('notificationId', (notificationId))
     
-  })
+  // })
+    console.log(`User connected: ${socket.id}`);
+    socket.on('newRequest',(requestData) => {
+    console.log('New Request Received', requestData);
+
+
+    //sending back to all the client who are connect 
+    io.emit('requestNotification', {
+      message:`A new request ${requestData.type} has been submitted`,
+      timeStamp: new Date().toISOString()
+    })
+    
+  });
+   socket.on('disconnect', () => {
+    console.log(`User disconnected: ${socket.id}`);
+  });
+
 });
 
 

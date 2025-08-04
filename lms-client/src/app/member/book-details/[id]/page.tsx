@@ -32,13 +32,13 @@ const BookDetails = () => {
   }, [dispatch, id]);
 
 
-    useEffect(()=>{
-    socket.on('connection')
-    socket.on('notificationId', (notificationId) => {
-      setNewNotification(true)
-    })
+  //   useEffect(()=>{
+  //   socket.on('connection')
+  //   socket.on('notificationId', (notificationId) => {
+  //     setNewNotification(true)
+  //   })
 
-  },[])
+  // },[])
 
   // Debug logs
   console.log('selectedBook:', selectedBook);
@@ -77,13 +77,18 @@ const BookDetails = () => {
           duration: 3000,
         })
       )
+      socket.emit('newRequest', {
+        type:'borrow',
+        userId : userInfo?._id,
+        bookId:bookId,
+      })
       .catch((err) =>
         toast.error(err?.message || 'Failed to send borrow request', {
           position: 'top-center',
           duration: 3000,
         })
       );
-       socket.emit('notification', bookId);
+      //  socket.emit('notification', bookId);
   };
 
   const handleReservationClick = (bookId) => {
@@ -95,6 +100,12 @@ const BookDetails = () => {
           duration: 3000,
         })
       )
+      socket.emit('newRequest', {
+        type:'reservation',
+         userId : userInfo?._id,
+        bookId:bookId,
+
+      })
       .catch((err) =>
         toast.error(err?.message || 'Failed to send reservation request', {
           position: 'top-center',

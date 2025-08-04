@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -8,19 +8,32 @@ import { LogOut, LayoutDashboard, Users, BookOpen, Tag } from 'lucide-react';
 import { logout } from '@/Redux/slices/authSlice';
 import sidebarItems from '@/config/sidebarItems.json';
 import { RootState } from '@/Redux/store';
+import { socket } from '@/lib/socket';
 
 const Sidebar = () => {
   const { userInfo, isLoggedIn } = useSelector((state: RootState) => state.auth);
   const safeUserInfo = (userInfo && typeof userInfo === 'object') ? userInfo : {};
   const dispatch = useDispatch();
   const pathname = usePathname();
+  const [pendingRequests, setPendingRequests] = useState(0);
+
+  useEffect(() => {
+    if (safeUserInfo.role === 'librarian') {
+      socket.on('requestNotification', (data) => {
+        console.log('New request notification received:', data);
+        setPendingRequests(prevCount => prevCount + 1);
+      });
+    }
+    return () => {
+      socket.off('requestNotification');
+    };
+  }, [safeUserInfo.role]);
 
   const handleLogout = () => {
     dispatch(logout());
     window.location.href = '/login';
   };
 
-  // Map icon names to lucide-react components
   const iconMap = {
     Dashboard: LayoutDashboard,
     Users: Users,
@@ -35,6 +48,8 @@ const Sidebar = () => {
         {isLoggedIn && safeUserInfo.role && sidebarItems[safeUserInfo.role]?.map((item) => {
           const IconComponent = iconMap[item.icon] || BookOpen;
           const isActive = pathname === item.path;
+          const showBadge = item.label === 'Pending Requests' && pendingRequests > 0;
+
           return (
             <Link
               href={item.path}
@@ -44,9 +59,19 @@ const Sidebar = () => {
                   ? 'bg-orange-500 text-white'
                   : 'hover:bg-orange-500/10 hover:text-orange-400 hover:scale-105'
               }`}
+              onClick={() => {
+                if (item.label === 'Pending Requests') {
+                  setPendingRequests(0);
+                }
+              }}
             >
               <IconComponent className={`w-4 h-4 ${isActive ? 'text-white' : 'text-orange-400'}`} />
               <span className="text-sm font-medium">{item.label}</span>
+              {showBadge && (
+                <span className="ml-2 bg-red-500 text-white rounded-full px-2 py-0.5 text-xs">
+                  {pendingRequests}
+                </span>
+              )}
             </Link>
           );
         })}
