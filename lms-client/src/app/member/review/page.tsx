@@ -5,15 +5,13 @@ import { useSelector } from 'react-redux';
 import axiosInstance from '@/lib/axiosInstance';
 
 const AddReviewForm = () => {
-
   const [imagePreview, setImagePreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState(null);
-  const {userInfo} = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state) => state.auth);
 
-
-    const [formData, setFormData] = useState({
-    name: '',
+  const [formData, setFormData] = useState({
+    name: userInfo?.name || '',
     image: null,
     rating: 5,
     text: '',
@@ -56,7 +54,13 @@ const AddReviewForm = () => {
     try {
       await axiosInstance.post('/reviews', data);
       setMessage({ type: 'success', text: 'Review added successfully!' });
-      setFormData({ name: '', image: null, rating: 5, text: '', role: '' });
+      setFormData({
+        name: userInfo?.name || '',
+        image: null,
+        rating: 5,
+        text: '',
+        role: userInfo?.role || '',
+      });
       setImagePreview(null);
     } catch (err) {
       setMessage({ type: 'error', text: 'Failed to add review' });
@@ -74,8 +78,9 @@ const AddReviewForm = () => {
         }
         .star-rating label {
           cursor: pointer;
-          font-size: 1.5rem;
-          color: #d1d5db;
+          font-size: 1.75rem;
+          color: #e5e7eb;
+          transition: color 0.2s ease;
         }
         .star-rating input:checked ~ label,
         .star-rating label:hover,
@@ -84,42 +89,81 @@ const AddReviewForm = () => {
         }
         .image-preview {
           max-width: 100%;
+          max-height: 200px;
           height: auto;
-          border-radius: 0.5rem;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          border-radius: 0.75rem;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          object-fit: cover;
+        }
+        .form-container {
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-container:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        .input-field {
+          transition: all 0.3s ease;
+        }
+        .input-field:focus {
+          box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+        }
+        .submit-button {
+          position: relative;
+          overflow: hidden;
+        }
+        .submit-button::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent
+          );
+          transition: 0.5s;
+        }
+        .submit-button:hover::after {
+          left: 100%;
         }
       `}</style>
-      <div className="w-7xl mx-auto bg-black/80 p-3 rounded-2xl shadow-2xl space-y-6 h-200 mt-5 transform transition-all ">
-        <h2 className="text-2xl font-bold text-center text-white">Add Your Review</h2>
+      <div className="w-7xl  mx-auto bg-gradient-to-br from-gray-50 to-white p-8 rounded-2xl shadow-xl form-container my-10">
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Share Your Experience</h2>
         {message && (
           <div
-            className={`p-4 rounded-lg ${
-              message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+            className={`p-4 rounded-lg mb-6 ${
+              message.type === 'success'
+                ? 'bg-green-100 text-green-800'
+                : 'bg-red-100 text-red-800'
             }`}
           >
             {message.text}
           </div>
         )}
-        <form onSubmit={handleSubmit} className="space-y-6 " encType="multipart/form-data">
+        <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
           <div>
-            <label className="block text-sm font-medium text-white mb-1" htmlFor="name">
-              Name
+            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="name">
+              Your Name
             </label>
             <input
               id="name"
               name="name"
               type="text"
-               value={formData.name}
-               onChange={handleChange}
+              value={formData.name}
+              onChange={handleChange}
               required
-              className="w-full p-3 text-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              readOnly
+              className="w-full p-3 text-gray-800 border border-gray-200 rounded-lg input-field bg-gray-100 cursor-not-allowed"
               placeholder="Enter your name"
             />
           </div>
-
           <div>
-            <label className="block text-sm font-medium text-white mb-1" htmlFor="image">
-              Image
+            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="image">
+              Upload Your Image
             </label>
             <input
               id="image"
@@ -128,16 +172,15 @@ const AddReviewForm = () => {
               accept="image/*"
               onChange={handleChange}
               required
-              className="w-full p-3 border  text-white border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              className="w-full p-3 border border-gray-200 rounded-lg text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-orange-100 file:text-orange-600 hover:file:bg-orange-200 input-field"
             />
             {imagePreview && (
               <img src={imagePreview} alt="Preview" className="mt-4 image-preview" />
             )}
           </div>
-
           <div>
-            <label className="block text-sm font-medium text-white mb-1">Rating</label>
-            <div className="star-rating flex space-x-1">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Your Rating</label>
+            <div className="star-rating flex space-x-2 justify-center">
               {[5, 4, 3, 2, 1].map((star) => (
                 <React.Fragment key={star}>
                   <input
@@ -156,10 +199,9 @@ const AddReviewForm = () => {
               ))}
             </div>
           </div>
-
           <div>
-            <label className="block text-sm font-medium text-white mb-1" htmlFor="text">
-              Review Text
+            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="text">
+              Your Review
             </label>
             <textarea
               id="text"
@@ -167,15 +209,14 @@ const AddReviewForm = () => {
               value={formData.text}
               onChange={handleChange}
               required
-              rows="4"
-              className="w-full p-3 text-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              rows="5"
+              className="w-full p-3 text-gray-800 border border-gray-200 rounded-lg input-field focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white/50"
               placeholder="Share your experience"
             />
           </div>
-
           <div>
-            <label className="block text-sm font-medium text-white mb-1" htmlFor="role">
-              Role
+            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="role">
+              Your Role
             </label>
             <input
               id="role"
@@ -184,16 +225,15 @@ const AddReviewForm = () => {
               value={formData.role}
               readOnly
               required
-              className="w-full p-3 border border-gray-300 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              className="w-full p-3 border border-gray-200 text-gray-800 rounded-lg input-field bg-gray-100 cursor-not-allowed"
               placeholder="E.g., Developer, Designer"
             />
           </div>
-
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-3 rounded-lg font-semibold text-white transition-all ${
-              isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+            className={`w-full py-3 rounded-lg font-semibold text-white submit-button transition-all ${
+              isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600'
             }`}
           >
             {isLoading ? 'Submitting...' : 'Submit Review'}
