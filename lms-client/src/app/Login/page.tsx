@@ -72,7 +72,13 @@ const Login = () => {
           <div className="mx-auto grid max-w-5xl grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <aside className="order-1 md:order-1">
               <div className="relative overflow-hidden rounded-2xl bg-orange-500 text-white shadow-lg">
+                 <img
+                        src="/assests/libraryHub.png"
+                        alt="Library Reading Area"
+                        className="inset-0 w-100 h-50 "
+                      />
                 <div className="absolute -top-1/2 -right-1/2 h-[300px] w-[300px] rounded-full bg-white/10 blur-2xl" aria-hidden="true" />
+               
                 <div className="relative p-8 md:p-10">
                   <BookOpen className="size-12 mb-4" aria-hidden="true" />
                   <h2 className="text-2xl font-semibold">Dive into your library</h2>
