@@ -162,9 +162,9 @@ const DashboardPage = () => {
           }
         }
       `}</style>
-      <div className="w-full my-1 rounded-lg flex">
+      <div className="w-full  h-screen rounded-lg flex">
         {/* Main Content */}
-        <main className="flex-1 p-1 lg:flex lg:space-x-2">
+        <main className="flex-1 lg:flex lg:space-x-2">
           <div className="bg-gray-50 rounded-lg p-1 lg:flex lg:space-x-2 w-full wrapper">
             <div className="bg-gradient-to-br from-gray-50 to-orange-100 rounded-lg p-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 lg:w-1/2 border-b border-gray-200">
               {[

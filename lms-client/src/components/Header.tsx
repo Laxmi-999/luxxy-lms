@@ -1,245 +1,102 @@
 'use client';
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useSelector } from 'react-redux';
-import axiosInstance from '@/lib/axiosInstance';
+import { Button } from "@/components/ui/button";
+import { BookOpen, Menu } from "lucide-react";
+import { useState } from "react";
+import Link from "next/link";
+import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import { toast } from 'sonner';
+import { ReactTyped } from 'react-typed';
 
-const AddReviewForm = () => {
-  const [imagePreview, setImagePreview] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState(null);
-  const { userInfo } = useSelector((state) => state.auth);
+const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isLoggedIn, userInfo } = useSelector((state) => state.auth);
+  const router = useRouter();
 
-  const [formData, setFormData] = useState({
-    name: '',
-    image: null,
-    rating: 5,
-    text: '',
-    role: userInfo?.role || '',
-  });
-
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === 'image') {
-      const file = files[0];
-      setFormData((prev) => ({ ...prev, image: file }));
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => setImagePreview(reader.result);
-        reader.readAsDataURL(file);
-      } else {
-        setImagePreview(null);
+  const handleSignInClick = () => {
+    if (isLoggedIn) {
+      if (userInfo.role === 'admin') {
+        toast.success('You are already logged In', {
+          position: "top-center"
+        });
+        router.push('/admin/dashboard');
+      } else if (userInfo.role === 'librarian') {
+        toast.success('You are already logged In', {
+          position: "top-center"
+        });         
+        router.push('/librarian/dashboard');
+      } else if (userInfo.role === 'member') {
+        toast.success('You are already logged In', {
+          position: "top-center"
+        });         
+        router.push('/member');
       }
     } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  const handleRatingChange = (rating) => {
-    setFormData((prev) => ({ ...prev, rating }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setMessage(null);
-
-    const data = new FormData();
-    data.append('name', formData.name);
-    data.append('image', formData.image);
-    data.append('rating', formData.rating);
-    data.append('text', formData.text);
-    data.append('role', formData.role);
-
-    try {
-      await axiosInstance.post('/reviews', data);
-      setMessage({ type: 'success', text: 'Review added successfully!' });
-      setFormData({ name: '', image: null, rating: 5, text: '', role: '' });
-      setImagePreview(null);
-    } catch (err) {
-      setMessage({ type: 'error', text: 'Failed to add review' });
-      console.error(err);
-    } finally {
-      setIsLoading(false);
+      router.push('/login');
     }
   };
 
   return (
-    <>
-      <style jsx>{`
-        .star-rating input[type='radio'] {
-          display: none;
-        }
-        .star-rating label {
-          cursor: pointer;
-          font-size: 1.75rem;
-          color: #e5e7eb;
-          transition: color 0.2s ease;
-        }
-        .star-rating input:checked ~ label,
-        .star-rating label:hover,
-        .star-rating label:hover ~ label {
-          color: #f59e0b;
-        }
-        .image-preview {
-          max-width: 100%;
-          max-height: 200px;
-          height: auto;
-          border-radius: 0.75rem;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-          object-fit: cover;
-        }
-        .form-container {
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .form-container:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-        }
-        .input-field {
-          transition: all 0.3s ease;
-        }
-        .input-field:focus {
-          box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
-        }
-        .submit-button {
-          position: relative;
-          overflow: hidden;
-        }
-        .submit-button::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 255, 255, 0.2),
-            transparent
-          );
-          transition: 0.5s;
-        }
-        .submit-button:hover::after {
-          left: 100%;
-        }
-      `}</style>
-      <div className="max-w-2xl mx-auto bg-gradient-to-br from-gray-50 to-white p-8 rounded-2xl shadow-xl form-container my-10">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Share Your Experience</h2>
-        {message && (
-          <div
-            className={`p-4 rounded-lg mb-6 ${
-              message.type === 'success'
-                ? 'bg-green-100 text-green-800'
-                : 'bg-red-100 text-red-800'
-            }`}
-          >
-            {message.text}
-          </div>
-        )}
-        <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="name">
-              Your Name
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full p-3 text-gray-800 border border-gray-200 rounded-lg input-field focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white/50"
-              placeholder="Enter your name"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="image">
-              Upload Image
-            </label>
-            <input
-              id="image"
-              name="image"
-              type="file"
-              accept="image/*"
-              onChange={handleChange}
-              required
-              className="w-full p-3 border border-gray-200 rounded-lg text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-orange-100 file:text-orange-600 hover:file:bg-orange-200 input-field"
-            />
-            {imagePreview && (
-              <img src={imagePreview} alt="Preview" className="mt-4 image-preview" />
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Your Rating</label>
-            <div className="star-rating flex space-x-2 justify-center">
-              {[5, 4, 3, 2, 1].map((star) => (
-                <React.Fragment key={star}>
-                  <input
-                    type="radio"
-                    id={`star-${star}`}
-                    name="rating"
-                    value={star}
-                    checked={formData.rating === star}
-                    onChange={() => handleRatingChange(star)}
-                    required
-                  />
-                  <label htmlFor={`star-${star}`} className="transition-colors">
-                    ★
-                  </label>
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="text">
-              Your Review
-            </label>
-            <textarea
-              id="text"
-              name="text"
-              value={formData.text}
-              onChange={handleChange}
-              required
-              rows="5"
-              className="w-full p-3 text-gray-800 border border-gray-200 rounded-lg input-field focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white/50"
-              placeholder="Share your experience"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="role">
-              Your Role
-            </label>
-            <input
-              id="role"
-              name="role"
-              type="text"
-              value={formData.role}
-              readOnly
-              required
-              className="w-full p-3 border border-gray-200 text-gray-800 rounded-lg input-field bg-gray-100 cursor-not-allowed"
-              placeholder="E.g., Developer, Designer"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={`w-full py-3 rounded-lg font-semibold text-white submit-button transition-all ${
-              isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600'
-            }`}
-          >
-            {isLoading ? 'Submitting...' : 'Submit Review'}
-          </button>
-        </form>
+    <header className="w-full flex justify-between items-center bg-orange-500 h-25 backdrop-blur-md border-b border-gray-300 sticky top-0 z-50 shadow-lg">
+      <div className="flex ml-5 items-center"> 
+        <img src='/assests/logo.png' alt="LibraryHub Logo" className="h-20 w-auto object-contain" /> 
       </div>
-    </>
+
+      <div className="flex-1 text-center">
+        <ReactTyped
+          strings={[
+            'Explore Endless Books',
+            'Discover New Stories',
+            'Your Reading Adventure Awaits',
+            'Connect with Knowledge'
+          ]}
+          typeSpeed={80}
+          backSpeed={50}
+          loop
+          className="text-2xl md:text-3xl font-bold text-white tracking-wide drop-shadow-lg font-serif"
+        />
+      </div>
+
+      <div className="flex items-center space-x-4 mr-5">
+        <Button
+          onClick={() => handleSignInClick()}
+          asChild
+          variant="outline"
+          className="border-yellow-300 text-black hover:bg-yellow-500 hover:text-black hover:border-yellow-600 transition-all duration-300 font-semibold rounded-full px-6 py-2"
+        >
+          <span>Sign In</span>
+        </Button>
+        <Link href='/register'>
+          <Button className="bg-yellow-500 text-black font-semibold rounded-full px-6 py-2 shadow-md hover:bg-yellow-600 hover:shadow-lg transition-all duration-300">
+            Register
+          </Button>
+        </Link>
+        <button
+          className="md:hidden text-white"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        >
+          <Menu className="h-8 w-8" />
+        </button>
+      </div>
+
+      {isMenuOpen && (
+        <div className="md:hidden bg-gray-200/90 border-t border-gray-300">
+          <div className="container mx-auto px-6 py-4 flex flex-col space-y-4">
+            {["Home", "Books", "About", "Contact"].map((item) => (
+              <a
+                key={item}
+                href={`#${item.toLowerCase()}`}
+                className="text-white font-medium hover:text-yellow-300 transition-colors duration-300"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {item}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </header>
   );
 };
 
-export default AddReviewForm;
+export default Header;
